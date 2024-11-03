@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- <file>resource/remote_conn/history_select.svg</file>  -->
+    </qresource>
+</RCC>
