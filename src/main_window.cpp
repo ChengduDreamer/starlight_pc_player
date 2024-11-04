@@ -4,7 +4,7 @@
 namespace sp {
 
 MainWindow::MainWindow(QWidget* parent) : ElaWindow(parent) {
-	
+	setIsNavigationBarEnable(false);
 }
 
 MainWindow::~MainWindow() {
