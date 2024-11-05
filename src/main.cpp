@@ -5,7 +5,7 @@
 #include "ElaApplication.h"
 #include "main_window.h"
 
-using namespace sp;
+using namespace yk;
 
 int main(int argc, char* argv[])
 {
