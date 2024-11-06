@@ -7,7 +7,10 @@ class QVBoxLayout;
 
 namespace yk {
 	
+class BasePage;
 class PlayWidget;
+class PlayControlWidget;
+class PlayListWidget;
 
 class MainWindow : public ElaWindow {
 	Q_OBJECT
@@ -18,8 +21,17 @@ public:
 	void InitView();
 
 private:
-	QVBoxLayout* vbox_play_layout_ = nullptr;
+	QWidget* bg_page_ = nullptr;
+
+	//BasePage* main_page_ = nullptr;
+	QHBoxLayout* main_hbox_layout_ = nullptr;
+
+	QVBoxLayout* play_vbox_layout_ = nullptr;
 	PlayWidget* play_widget_ = nullptr;
+	PlayControlWidget* play_control_widget_ = nullptr;
+
+	QVBoxLayout* list_vbox_layout_ = nullptr;
+	PlayListWidget* list_widget_ = nullptr;
 };
 
 

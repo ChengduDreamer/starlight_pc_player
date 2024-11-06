@@ -39,10 +39,12 @@ include_directories(${CMAKE_SOURCE_DIR}
 )
 
 set(src_SOURCES
+	src/public/base_page.cpp 
 	src/main.cpp
 	src/main_window.cpp
 	src/play_widget.cpp
-	src/public/base_page.cpp 
+	src/play_list_widget.cpp
+	src/play_control_widget.cpp
 	resources.qrc
 	ico.rc
 	)

@@ -1,11 +1,8 @@
 #pragma once
-
 #include <qwidget.h>
-#include "public/base_page.h"
-
 namespace yk {
 	
-class PlayWidget : public BasePage {
+class PlayWidget : public QWidget{
 public:
 	PlayWidget(QWidget* parent = nullptr);
 	~PlayWidget();

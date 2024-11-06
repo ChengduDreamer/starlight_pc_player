@@ -9,7 +9,7 @@ using namespace yk;
 
 int main(int argc, char* argv[])
 {
-    // ÏÂÃæÕâÁ½ĞĞĞèÒª ²âÊÔÏÂĞ§¹û
+    // ä¸‹é¢è¿™ä¸¤è¡Œéœ€è¦ æµ‹è¯•ä¸‹æ•ˆæœ
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
     QApplication a(argc, argv);

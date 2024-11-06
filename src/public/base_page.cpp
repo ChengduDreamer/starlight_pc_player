@@ -10,9 +10,7 @@
 
 namespace yk {
 
-BasePage::BasePage(QWidget* parent)
-    : ElaScrollPage(parent)
-{
+BasePage::BasePage(QWidget* parent) : ElaScrollPage(parent) {
     connect(eTheme, &ElaTheme::themeModeChanged, this, [=]() {
         if (!parent)
         {
