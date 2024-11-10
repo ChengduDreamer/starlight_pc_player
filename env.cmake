@@ -1,6 +1,6 @@
 set(QT_ROOT E:/Qt/6.8.0/msvc2022_64)
 
-
+set(VLC_LIB_ROOT D:/work/lib/vlc-3.0.21)
 
 #安装包需要的路径参数, 需要设置为本机实际路径
 #set(DOLIT_7Z_PATH "F:/Program Files/7-Zip")

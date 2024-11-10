@@ -45,6 +45,7 @@ set(src_SOURCES
 	src/play_widget.cpp
 	src/play_list_widget.cpp
 	src/play_control_widget.cpp
+	src/play_view.cpp
 	resources.qrc
 	ico.rc
 	)
@@ -70,10 +71,12 @@ include_directories(
 				#${CMAKE_SOURCE_DIR}/3rdparty/boost-1.81.0/libs/locale/include
 				${CMAKE_SOURCE_DIR}/3rdparty/ElaWidgetTools/src/include
 				${CMAKE_BINARY_DIR}
+				${VLC_LIB_ROOT}/sdk/include
 				)
 
 link_directories(
 		${OPENSSL_ROOT_DIR}/lib/VC/static
+		${VLC_LIB_ROOT}/sdk/lib
 )
 
 #set(GENERATE_SETUP true)
@@ -91,9 +94,22 @@ endif()
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg elawidgettools libvlc libvlccore)
 
+configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
+configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)
+configure_file(${VLC_LIB_ROOT}/libvlccore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlccore.dll COPYONLY)
+configure_file(${VLC_LIB_ROOT}/axvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/axvlc.dll COPYONLY)
 
-target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg elawidgettools)
+file(COPY ${VLC_LIB_ROOT}/hrtfs DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/languages DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/locale DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/lua DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/msi DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/plugins DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/sdk DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${VLC_LIB_ROOT}/skins DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_custom_command(
