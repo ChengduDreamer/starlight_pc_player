@@ -46,9 +46,14 @@ set(src_SOURCES
 	src/play_list_widget.cpp
 	src/play_control_widget.cpp
 	src/play_view.cpp
+	src/vlc_wrapper/vlc_player.cpp
 	resources.qrc
 	ico.rc
 	)
+
+set(unit_test_01_SOURCES
+	unit_test/test_01.cpp
+) 
 
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
@@ -91,6 +96,14 @@ else()
 		${src_SOURCES}
 	)
 endif()
+
+#test
+
+add_executable(test_01
+		${unit_test_01_SOURCES}
+)
+
+target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 

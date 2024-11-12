@@ -5,6 +5,9 @@
 #include "ElaApplication.h"
 #include "main_window.h"
 
+// test
+#include "play_view.h"
+
 using namespace yk;
 
 int main(int argc, char* argv[])
@@ -16,5 +19,11 @@ int main(int argc, char* argv[])
     eApp->init();
     MainWindow w;
     w.show();
+
+    // 这样能播放
+    //auto p = new PlayView();
+    //p->show();
+    //p->Play();
+
     return a.exec();
 }
