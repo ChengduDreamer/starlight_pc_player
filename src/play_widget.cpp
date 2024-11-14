@@ -26,23 +26,16 @@ void PlayWidget::InitView() {
 	this->setLayout(main_vbox_layout);
 
 
-	//stacked_widget_ = new QStackedWidget(this);
-	//stacked_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	//
-	play_view_ = new PlayView(this);
+	stacked_widget_ = new QStackedWidget();
+	stacked_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+	play_view_ = new PlayView();
 	play_view_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-	//stacked_widget_->addWidget(play_view_);
-	//
-	//stacked_widget_->setCurrentWidget(play_view_);
-
-	play_view_->show();
-
-	//play_view_->setFixedSize(500, 600);
-
+	stacked_widget_->addWidget(play_view_);
+	stacked_widget_->setCurrentWidget(play_view_);
 	play_view_->setStyleSheet(".QWidget {background-color: #888888;}");
 
-	main_vbox_layout->addWidget(play_view_);
+	main_vbox_layout->addWidget(stacked_widget_);
 
 	QTimer::singleShot(1000, [=]() {
 		play_view_->Play();	

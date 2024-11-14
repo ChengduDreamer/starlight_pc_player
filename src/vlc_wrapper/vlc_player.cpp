@@ -92,7 +92,7 @@ void VLCPlayer::OpenMediaFile() {
 	//	(void*)"C:\\code\\proj\\starlight_pc_player\\test_video\\1.mp4"
 	//);
 
-	libvlc_media_ = libvlc_media_new_path(libvlc_instance_,"C:\\code\\proj\\starlight_pc_player\\test_video\\1.mp4");
+	libvlc_media_ = libvlc_media_new_path(libvlc_instance_,"C:\\code\\proj\\starlight_pc_player\\test_video\\2.mp4");
 
 	/* Create a media player playing environement */
 	libvlc_media_player_ = libvlc_media_player_new_from_media(libvlc_media_);

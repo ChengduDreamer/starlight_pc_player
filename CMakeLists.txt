@@ -40,6 +40,8 @@ include_directories(${CMAKE_SOURCE_DIR}
 
 set(src_SOURCES
 	src/public/base_page.cpp 
+	src/public/yk_icon_button.cpp 
+	src/public/yk_progress_bar.cpp 
 	src/main.cpp
 	src/main_window.cpp
 	src/play_widget.cpp
@@ -47,9 +49,9 @@ set(src_SOURCES
 	src/play_control_widget.cpp
 	src/play_view.cpp
 	src/vlc_wrapper/vlc_player.cpp
-	resources.qrc
 	ico.rc
-	)
+	resources.qrc
+)
 
 set(unit_test_01_SOURCES
 	unit_test/test_01.cpp

@@ -1,5 +1,45 @@
 <RCC>
     <qresource prefix="/">
-        <!-- <file>resource/remote_conn/history_select.svg</file>  -->
+		<file>resource/control/fullscreen_exit_normal.svg</file>
+		<file>resource/control/fullscreen_exit_hover.svg</file>
+		<file>resource/control/fullscreen_exit_press.svg</file>
+
+		<file>resource/control/pause_normal.svg</file>
+		<file>resource/control/pause_hover.svg</file>
+		<file>resource/control/pause_press.svg</file>
+
+		<file>resource/control/play_normal.svg</file>
+		<file>resource/control/play_hover.svg</file>
+		<file>resource/control/play_press.svg</file>
+
+		<file>resource/control/skip_next_normal.svg</file>
+		<file>resource/control/skip_next_hover.svg</file>
+		<file>resource/control/skip_next_press.svg</file>
+
+		<file>resource/control/skip_previous_normal.svg</file>
+		<file>resource/control/skip_previous_hover.svg</file>
+		<file>resource/control/skip_previous_press.svg</file>
+
+		<file>resource/control/stop_normal.svg</file>
+		<file>resource/control/stop_hover.svg</file>
+		<file>resource/control/stop_press.svg</file>
+
+		<file>resource/control/volume_normal.svg</file>
+		<file>resource/control/volume_hover.svg</file>
+		<file>resource/control/volume_press.svg</file>
+
+		<file>resource/control/volume_off_normal.svg</file>
+		<file>resource/control/volume_off_hover.svg</file>
+		<file>resource/control/volume_off_press.svg</file>
+
+		<file>resource/control/fullscreen_normal.svg</file>
+		<file>resource/control/fullscreen_hover.svg</file>
+		<file>resource/control/fullscreen_press.svg</file>
+
+		<file>resource/control/292.png</file>
+
+		<file>resource/play_before/open_file_normal.svg</file>
+		<file>resource/play_before/open_file_hover.svg</file>
+		<file>resource/play_before/open_file_press.svg</file>
     </qresource>
 </RCC>

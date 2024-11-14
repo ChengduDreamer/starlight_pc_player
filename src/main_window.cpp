@@ -8,8 +8,8 @@
 
 namespace yk {
 
-MainWindow::MainWindow(QWidget* parent) : ElaWindow(parent) {
-	setIsNavigationBarEnable(false);
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
+	//setIsNavigationBarEnable(false);
 	InitView();
 }
 
@@ -19,11 +19,13 @@ MainWindow::~MainWindow() {
 
 void MainWindow::InitView() {
 	ElaTheme::getInstance()->setThemeMode(ElaThemeType::ThemeMode::Dark);
-	setWindowButtonFlag(ElaAppBarType::ButtonType::ThemeChangeButtonHint, false);
-	setWindowButtonFlag(ElaAppBarType::ButtonType::RouteBackButtonHint, false);
+	//setWindowButtonFlag(ElaAppBarType::ButtonType::ThemeChangeButtonHint, false);
+	//setWindowButtonFlag(ElaAppBarType::ButtonType::RouteBackButtonHint, false);
 	
 	//setStyleSheet("QWidget {background-color: #556600;}");
 	// this->setCustomWidget 设置在标题栏上 位置上的
+
+	resize(800, 600);
 
 	bg_page_ = new QWidget(this);
 	setCentralWidget(bg_page_);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ElaWindow.h"
+#include <qmainwindow.h>
 
 class QHBoxLayout;
 class QVBoxLayout;
@@ -12,7 +13,7 @@ class PlayWidget;
 class PlayControlWidget;
 class PlayListWidget;
 
-class MainWindow : public ElaWindow {
+class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
