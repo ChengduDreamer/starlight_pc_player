@@ -36,8 +36,6 @@
 		<file>resource/control/fullscreen_hover.svg</file>
 		<file>resource/control/fullscreen_press.svg</file>
 
-		<file>resource/control/292.png</file>
-
 		<file>resource/play_before/open_file_normal.svg</file>
 		<file>resource/play_before/open_file_hover.svg</file>
 		<file>resource/play_before/open_file_press.svg</file>

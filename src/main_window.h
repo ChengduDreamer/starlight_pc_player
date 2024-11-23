@@ -1,6 +1,4 @@
 #pragma once
-
-#include "ElaWindow.h"
 #include <qmainwindow.h>
 
 class QHBoxLayout;
@@ -24,7 +22,6 @@ public:
 private:
 	QWidget* bg_page_ = nullptr;
 
-	//BasePage* main_page_ = nullptr;
 	QHBoxLayout* main_hbox_layout_ = nullptr;
 
 	QVBoxLayout* play_vbox_layout_ = nullptr;

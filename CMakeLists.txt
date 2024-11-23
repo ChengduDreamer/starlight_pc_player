@@ -39,15 +39,19 @@ include_directories(${CMAKE_SOURCE_DIR}
 )
 
 set(src_SOURCES
-	src/public/base_page.cpp 
 	src/public/yk_icon_button.cpp 
 	src/public/yk_progress_bar.cpp 
+	src/public/yk_button.cpp
+	src/public/yk_line_edit.cpp
+	src/public/yk_label.cpp
 	src/main.cpp
 	src/main_window.cpp
 	src/play_widget.cpp
 	src/play_list_widget.cpp
 	src/play_control_widget.cpp
 	src/play_view.cpp
+	src/qdrag_widget.cpp
+	src/play_before_widget.cpp
 	src/vlc_wrapper/vlc_player.cpp
 	ico.rc
 	resources.qrc
@@ -71,12 +75,11 @@ endif()
 
 set(OPENSSL_ROOT_DIR ${CMAKE_SOURCE_DIR}/3rdparty/libopenssl/win64)
 
-add_subdirectory(3rdparty)
+#add_subdirectory(3rdparty)
 
 include_directories(
 				${OPENSSL_ROOT_DIR}/include
 				#${CMAKE_SOURCE_DIR}/3rdparty/boost-1.81.0/libs/locale/include
-				${CMAKE_SOURCE_DIR}/3rdparty/ElaWidgetTools/src/include
 				${CMAKE_BINARY_DIR}
 				${VLC_LIB_ROOT}/sdk/include
 				)
@@ -109,7 +112,7 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg elawidgettools libvlc libvlccore)
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg libvlc libvlccore)
 
 configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
 configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)

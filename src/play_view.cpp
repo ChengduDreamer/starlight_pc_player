@@ -5,7 +5,7 @@ namespace yk {
 
 PlayView::PlayView(QWidget* parent) : QWidget(parent) {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	setStyleSheet("QWidget {background-color: #ff0000;}");
+	setStyleSheet("QWidget {background-color: #000000;}");
 	vlc_player_ptr_ = VLCPlayer::Make((HWND*)this->winId());
 }
 

@@ -1,15 +1,12 @@
 #include "main_window.h"
 #include <qboxlayout.h>
-#include "public/base_page.h"
 #include "play_widget.h"
 #include "play_control_widget.h"
 #include "play_list_widget.h"
-#include "ElaTheme.h"
 
 namespace yk {
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
-	//setIsNavigationBarEnable(false);
 	InitView();
 }
 
@@ -18,13 +15,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::InitView() {
-	ElaTheme::getInstance()->setThemeMode(ElaThemeType::ThemeMode::Dark);
-	//setWindowButtonFlag(ElaAppBarType::ButtonType::ThemeChangeButtonHint, false);
-	//setWindowButtonFlag(ElaAppBarType::ButtonType::RouteBackButtonHint, false);
 	
-	//setStyleSheet("QWidget {background-color: #556600;}");
-	// this->setCustomWidget 设置在标题栏上 位置上的
-
 	resize(800, 600);
 
 	bg_page_ = new QWidget(this);
@@ -45,7 +36,7 @@ void MainWindow::InitView() {
 
 	play_control_widget_ = new PlayControlWidget(this);
 
-	play_vbox_layout_->addWidget(play_widget_, 5);
+	play_vbox_layout_->addWidget(play_widget_, 8);
 	play_vbox_layout_->addWidget(play_control_widget_, 1);
 
 	list_vbox_layout_ = new QVBoxLayout();

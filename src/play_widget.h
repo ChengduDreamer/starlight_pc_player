@@ -6,6 +6,7 @@ class QStackedWidget;
 namespace yk {
 
 class PlayView;
+class PlayBeforeWidget;
 
 class PlayWidget : public QWidget{
 public:
@@ -17,7 +18,7 @@ private:
 
 	QStackedWidget* stacked_widget_ = nullptr;
 	PlayView* play_view_ = nullptr;
-	
+	PlayBeforeWidget* play_before_widget_ = nullptr;
 };
 
 
