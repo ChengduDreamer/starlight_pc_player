@@ -22,7 +22,8 @@ PlayControlWidget::~PlayControlWidget() {
 }
 
 void PlayControlWidget::InitView() {
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	setFixedHeight(60);
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	setAttribute(Qt::WA_StyledBackground);
 	setStyleSheet("QWidget {background-color: #000000;}");
 
@@ -32,13 +33,13 @@ void PlayControlWidget::InitView() {
 	main_vbox_layout->setSpacing(0);
 	
 	play_progress_bar_ = new YKProgressBar();
-	play_progress_bar_->setFixedHeight(14);
+	play_progress_bar_->setFixedHeight(12);
 	play_progress_bar_->setOrientation(Qt::Horizontal); //不设置这一项，样式表无效
 	play_progress_bar_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	play_progress_bar_->setAttribute(Qt::WA_StyledBackground);
 	play_progress_bar_->setStyleSheet(QString::fromStdString(KPlayerSliderCss));
 
-	main_vbox_layout->addSpacing(6);
+	main_vbox_layout->addSpacing(4);
 	main_vbox_layout->addWidget(play_progress_bar_);
 
 	QHBoxLayout* control_hbox_layout = new QHBoxLayout();
@@ -123,13 +124,13 @@ void PlayControlWidget::InitView() {
 	control_hbox_layout->addWidget(sound_mute_btn_stack_);
 	control_hbox_layout->addSpacing(12);
 	control_hbox_layout->addWidget(voice_progressbar_);
-	control_hbox_layout->addStretch(1);
+	control_hbox_layout->addSpacing(12);
 	control_hbox_layout->addWidget(fullscreen_stack_);
 	control_hbox_layout->addStretch(1);
-	control_hbox_layout->addSpacing(30);
 
 	main_vbox_layout->addSpacing(6);
 	main_vbox_layout->addLayout(control_hbox_layout);
+	main_vbox_layout->addSpacing(6);
 }
 
 void PlayControlWidget::InitSignalChannels() {

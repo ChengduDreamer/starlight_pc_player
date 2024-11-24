@@ -22,6 +22,9 @@ endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN)
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
@@ -55,12 +58,15 @@ set(src_SOURCES
 	src/vlc_wrapper/vlc_player.cpp
 	ico.rc
 	resources.qrc
+	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/mainwindow/mainwindow.qrc
+	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/shared/resources/shared.qrc
+	
 )
 
 set(unit_test_01_SOURCES
 	unit_test/test_01.cpp
 ) 
-
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 #add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
@@ -75,13 +81,15 @@ endif()
 
 set(OPENSSL_ROOT_DIR ${CMAKE_SOURCE_DIR}/3rdparty/libopenssl/win64)
 
-#add_subdirectory(3rdparty)
+add_subdirectory(3rdparty)
 
 include_directories(
 				${OPENSSL_ROOT_DIR}/include
 				#${CMAKE_SOURCE_DIR}/3rdparty/boost-1.81.0/libs/locale/include
 				${CMAKE_BINARY_DIR}
 				${VLC_LIB_ROOT}/sdk/include
+				${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/src/widgets
+				${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/shared/widgetframe
 				)
 
 link_directories(
@@ -112,7 +120,7 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg libvlc libvlccore)
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg QWKCore QWKWidgets WidgetFrame libvlc libvlccore)
 
 configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
 configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)

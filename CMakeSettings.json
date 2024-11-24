@@ -1,8 +1,7 @@
 ﻿{
   "environments": [
     {
-      "7Z_PATH": "f:/Program Files/7-Zip",
-      "NSIS_PATH": "f:/newNSIS3.06.1"
+     
     }
   ],
   "configurations": [

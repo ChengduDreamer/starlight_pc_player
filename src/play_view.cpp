@@ -14,8 +14,8 @@ PlayView::~PlayView() {
 
 }
 
-void PlayView::Play() {
-	vlc_player_ptr_->OpenMediaFile();
+void PlayView::Play(const QString& url) {
+	vlc_player_ptr_->OpenMediaFile(url);
 }
 
 }

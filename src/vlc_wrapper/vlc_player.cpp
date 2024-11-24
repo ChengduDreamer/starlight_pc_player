@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <mutex>
 
 namespace yk {
 
@@ -86,13 +87,15 @@ bool VLCPlayer::Init() {
 	return true;
 }
 
-void VLCPlayer::OpenMediaFile() {
+void VLCPlayer::OpenMediaFile(const QString& url) {
+	// 自定义IO
 	//libvlc_media_ = libvlc_media_new_callbacks(
 	//	libvlc_instance_, MediaOpen, MediaRead, MediaSeek, MediaClose, 
 	//	(void*)"C:\\code\\proj\\starlight_pc_player\\test_video\\1.mp4"
 	//);
-
-	libvlc_media_ = libvlc_media_new_path(libvlc_instance_,"C:\\code\\proj\\starlight_pc_player\\test_video\\2.mp4");
+	std::string url_str = url.toStdString();
+	const char* url_cstr = url_str.c_str();
+	libvlc_media_ = libvlc_media_new_path(libvlc_instance_, url_cstr);
 
 	/* Create a media player playing environement */
 	libvlc_media_player_ = libvlc_media_player_new_from_media(libvlc_media_);
@@ -101,13 +104,36 @@ void VLCPlayer::OpenMediaFile() {
 
 	libvlc_media_parse(libvlc_media_);
 
+	libvlc_media_release(libvlc_media_);
+
 	if (!hwnd_) {
 		return;
 	}
-	//EnableWindow(*hwnd_, FALSE);// 能让qt窗口接收到事件
+	static std::once_flag flag; 
+	std::call_once(flag, [this]() {
+		EnableWindow(*hwnd_, FALSE);// 能让qt窗口接收到事件
+	});
+
 	libvlc_media_player_set_hwnd(libvlc_media_player_, hwnd_);
 	// play the media_player
 	libvlc_media_player_play(libvlc_media_player_);
+
+	duration_ = libvlc_media_player_get_length(libvlc_media_player_);
+}
+
+void VLCPlayer::Stop() {
+	if (NULL != libvlc_media_player_) {
+		libvlc_media_player_stop(libvlc_media_player_);
+		libvlc_media_player_ = NULL;
+	}
+}
+
+void VLCPlayer::SetPosition(float position)
+{
+	if (NULL == libvlc_media_player_) {
+		return;
+	}
+	libvlc_media_player_set_position(libvlc_media_player_, position / duration_);
 }
 
 

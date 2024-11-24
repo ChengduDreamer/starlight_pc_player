@@ -49,4 +49,13 @@ void PlayWidget::InitView() {
 	
 }
 
+void PlayWidget::InitSigChannels() {
+
+	connect(play_before_widget_, &PlayBeforeWidget::SigOpenUrl, this, [this](QString url) {
+		
+	});
+
+}
+
+
 }

@@ -4,6 +4,11 @@
 class QHBoxLayout;
 class QVBoxLayout;
 
+namespace QWK {
+class WidgetWindowAgent;
+}
+
+
 namespace yk {
 	
 class BasePage;
@@ -17,7 +22,11 @@ class MainWindow : public QMainWindow {
 public:
 	MainWindow(QWidget* parent = nullptr);
 	~MainWindow();
+	
+private:
+	void InstallWindowAgent();
 	void InitView();
+	void InitTitlebar();
 
 private:
 	QWidget* bg_page_ = nullptr;
@@ -30,6 +39,8 @@ private:
 
 	QVBoxLayout* list_vbox_layout_ = nullptr;
 	PlayListWidget* list_widget_ = nullptr;
+
+	QWK::WidgetWindowAgent* windowAgent = nullptr;
 };
 
 

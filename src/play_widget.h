@@ -9,12 +9,14 @@ class PlayView;
 class PlayBeforeWidget;
 
 class PlayWidget : public QWidget{
+	Q_OBJECT
 public:
 	PlayWidget(QWidget* parent = nullptr);
 	~PlayWidget();
 	
 private:
 	void InitView();
+	void InitSigChannels();
 
 	QStackedWidget* stacked_widget_ = nullptr;
 	PlayView* play_view_ = nullptr;

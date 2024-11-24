@@ -9,7 +9,7 @@ extern "C" {
 #include <vlc/vlc.h>
 }
 #include <memory>
-
+#include <qstring.h>
 namespace yk {
 
 class VLCPlayer {
@@ -21,8 +21,9 @@ public:
 	VLCPlayer(HWND* hwnd);
 	~VLCPlayer();
 
-	void OpenMediaFile();
-
+	void OpenMediaFile(const QString& url);
+	void Stop();
+	void SetPosition(float position);
 private:
 	bool Init();
 
@@ -33,6 +34,8 @@ private:
 	libvlc_state_t libvlc_state_;
 
 	HWND* hwnd_ = nullptr;
+	float duration_ = 0.0f;
+
 };
 
 }

@@ -4,13 +4,13 @@ namespace yk {
 const std::string KPlayerSliderCss = R"(
 QSlider::groove:horizontal {
 	background: #3D8BF9;
-	height: 6px;
-	border-radius: 3px;
+	height: 4px;
+	border-radius: 2px;
 }
 
 QSlider::handle:horizontal {
-	width: 14px;
-	height: 14px;
+	width: 12px;
+	height: 12px;
 	background: #ffffff;
 	margin: -4px 0px; 
 	border-radius: 6px;  

@@ -3,6 +3,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
+#include <qfiledialog.h>
 #include "public/yk_label.h"
 #include "public/yk_button.h"
 #include "public/yk_line_edit.h"
@@ -143,7 +144,11 @@ void PlayBeforeWidget::InitView() {
 }
 
 void PlayBeforeWidget::InitSigChannel() {
-
+	connect(open_file_btn_, &QPushButton::clicked, this, [=]() {
+		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\", "ALL(*.*)");
+		qDebug() << "fileName = " << fileName;
+		emit SigOpenUrl(fileName);
+	});
 }
 
 PlayBeforeWidget::~PlayBeforeWidget() {
