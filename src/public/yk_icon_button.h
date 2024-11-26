@@ -25,7 +25,11 @@ public:
 	virtual void paintEvent(QPaintEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
 	virtual void mouseReleaseEvent(QMouseEvent* event) override;
-    virtual void enterEvent(QEnterEvent* event) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+	virtual void enterEvent(QEnterEvent* event) override;
+#else
+	virtual void enterEvent(QEvent* event) override;
+#endif
 	virtual void leaveEvent(QEvent* event) override;
 
 	void SetUseSvg(bool use_svg);

@@ -118,7 +118,12 @@ void YKIconButton::mouseReleaseEvent(QMouseEvent* event) {
 	QPushButton::mouseReleaseEvent(event);
 }
 
-void YKIconButton::enterEvent(QEnterEvent* event) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void YKIconButton::enterEvent(QEnterEvent* event)
+#else
+void YKIconButton::enterEvent(QEvent* event)
+#endif
+{
 	m_cursor_in = true;
 	repaint();
 	QPushButton::enterEvent(event);

@@ -6,10 +6,12 @@ class YKLineEdit;
 
 namespace yk {
 
+class Context;
+
 class PlayBeforeWidget : public QDragWidget {
 	Q_OBJECT
 public:
-	PlayBeforeWidget(QWidget* parent = nullptr);
+	PlayBeforeWidget(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~PlayBeforeWidget();
 private:
 	void InitView();

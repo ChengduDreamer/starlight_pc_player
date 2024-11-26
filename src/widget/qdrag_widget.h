@@ -5,16 +5,18 @@
 
 namespace yk {
 
+class Context;
+
 class QDragWidget : public QWidget {
 	Q_OBJECT
 public:
-	QDragWidget(QWidget* parent = NULL);
+	QDragWidget(const std::shared_ptr<Context>& context, QWidget* parent = NULL);
 	~QDragWidget();
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
 
-signals:
-	void SigOpenUrl(QString url);
+protected:
+	std::shared_ptr<Context> context_ = nullptr;
 };
 
 }

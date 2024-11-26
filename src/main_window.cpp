@@ -50,10 +50,10 @@ static inline void emulateLeaveEvent(QWidget* widget) {
 }
 
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
+MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), QMainWindow(parent) {
 	setAttribute(Qt::WA_DontCreateNativeAncestors);
-	//InstallWindowAgent(); // qt6.5 qt6.8 显示异常
-	//InitTitlebar();
+	InstallWindowAgent(); // qt6.5 qt6.8 显示异常
+	InitTitlebar();
 	InitView();
 }
 
@@ -61,14 +61,24 @@ MainWindow::~MainWindow() {
 
 }
 
+void MainWindow::paintEvent(QPaintEvent* event) {
+    QPainter painter(this);
+    QPen pen(QColor(0x00,0x00,0x00));
+    pen.setWidth(2);
+    painter.setPen(pen);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawLine(0, 0, width(), 0);
+    QMainWindow::paintEvent(event);
+}
+
 void MainWindow::InitView() {
 	
 	resize(800, 600);
 
-    /*if (QFile qss(QStringLiteral(":/dark-style.qss"));
+    if (QFile qss(QStringLiteral(":/dark-style.qss"));
         qss.open(QIODevice::ReadOnly | QIODevice::Text)) {
         setStyleSheet(QString::fromUtf8(qss.readAll()));
-    }*/
+    }
 
 
 	bg_page_ = new QWidget();
@@ -85,7 +95,7 @@ void MainWindow::InitView() {
 	play_vbox_layout_->setSpacing(0);
 	play_vbox_layout_->setContentsMargins(0, 0, 0, 0);
 	play_vbox_layout_->setAlignment(Qt::AlignTop);
-	play_widget_ = new PlayWidget(this);
+	play_widget_ = new PlayWidget(context_, this);
     
 	play_control_widget_ = new PlayControlWidget(this);
     
@@ -122,48 +132,52 @@ void MainWindow::InitTitlebar() {
     auto titleLabel = new QLabel();
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setObjectName(QStringLiteral("win-title-label"));
-    titleLabel->setText(QStringLiteral("星光播放器"));
+    titleLabel->setText(QStringLiteral("愿你的世界充满星光"));
+    //titleLabel->setStyleSheet("QLabel {}");
 
     auto iconButton = new QWK::WindowButton();
     iconButton->setObjectName(QStringLiteral("icon-button"));
     iconButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    auto minButton = new QWK::WindowButton();
-    minButton->setObjectName(QStringLiteral("min-button"));
-    minButton->setProperty("system-button", true);
-    minButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    auto min_btn = new QPushButton(this);
+    min_btn->setObjectName("minimizeButton");
+    min_btn->setToolTip(QObject::tr("最小化"));
+    min_btn->setFixedSize(30, 20);
+    // 样式表设置padding: 4px; 是为了不然svg填充整个图片
+    min_btn->setStyleSheet("QPushButton {image: url(:/resource/window/minimize.svg); padding: 4px; border: 0px; background-color:#000000;} QPushButton:hover{background-color:#333333;} QPushButton:pressed{background-color:#555555;}");
 
-    auto maxButton = new QWK::WindowButton();
-    maxButton->setCheckable(true);
-    maxButton->setObjectName(QStringLiteral("max-button"));
-    maxButton->setProperty("system-button", true);
-    maxButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    auto max_btn = new QPushButton(this);
+    max_btn->setToolTip(QObject::tr("最大化"));
+    max_btn->setFixedSize(30, 20);
+    max_btn->setStyleSheet("QPushButton:checked{image: url(:/resource/window/restore.svg);} QPushButton {padding: 4px; border: 0px; background-color:#000000; image: url(:/resource/window/maximize.svg);} QPushButton:hover{background-color:#333333;} QPushButton:pressed{background-color:#555555;}");
+    max_btn->setCheckable(true);
 
-    auto closeButton = new QWK::WindowButton();
-    closeButton->setObjectName(QStringLiteral("close-button"));
-    closeButton->setProperty("system-button", true);
-    closeButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    auto close_btn = new QPushButton(this);
+    close_btn->setFixedSize(30, 20);
+    close_btn->setStyleSheet("QPushButton {image:url(:/resource/window/close.svg); border: 0px; background-color:#000000; padding: 4px;} QPushButton:hover{background-color:#333333;} QPushButton:pressed{background-color:#555555;}");
+    close_btn->setObjectName("closeButton");
+    close_btn->setToolTip(QObject::tr("关闭"));
 
     auto windowBar = new QWK::WindowBar();
     windowBar->setStyleSheet("QWidget {background-color:#000000;}");
     windowBar->setAttribute(Qt::WA_StyledBackground);
     windowBar->setIconButton(iconButton);
-    windowBar->setMinButton(minButton);
-    windowBar->setMaxButton(maxButton);
-    windowBar->setCloseButton(closeButton);
+    windowBar->setMinButton(min_btn);
+    windowBar->setMaxButton(max_btn);
+    windowBar->setCloseButton(close_btn);
     windowBar->setMenuBar(menuBar);
     windowBar->setTitleLabel(titleLabel);
     windowBar->setHostWidget(this);
     windowAgent->setTitleBar(windowBar);
     windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
-    windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, minButton);
-    windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, maxButton);
-    windowAgent->setSystemButton(QWK::WindowAgentBase::Close, closeButton);
+    windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, min_btn);
+    windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, max_btn);
+    windowAgent->setSystemButton(QWK::WindowAgentBase::Close, close_btn);
     windowAgent->setHitTestVisible(menuBar, true);
 
     setMenuWidget(windowBar);
     connect(windowBar, &QWK::WindowBar::minimizeRequested, this, &QWidget::showMinimized);
-    connect(windowBar, &QWK::WindowBar::maximizeRequested, this, [this, maxButton](bool max) {
+    connect(windowBar, &QWK::WindowBar::maximizeRequested, this, [this, max_btn](bool max) {
         if (max) {
             showMaximized();
         }
@@ -174,7 +188,7 @@ void MainWindow::InitTitlebar() {
         // It's a Qt issue that if a QAbstractButton::clicked triggers a window's maximization,
         // the button remains to be hovered until the mouse move. As a result, we need to
         // manually send leave events to the button.
-        emulateLeaveEvent(maxButton);
+        emulateLeaveEvent(max_btn);
         });
     connect(windowBar, &QWK::WindowBar::closeRequested, this, &QWidget::close);
 }

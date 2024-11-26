@@ -4,13 +4,16 @@
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qfiledialog.h>
+#include <qdebug.h>
 #include "public/yk_label.h"
 #include "public/yk_button.h"
 #include "public/yk_line_edit.h"
+#include "app_messages.h"
+#include "context.h"
 
 namespace yk {
 
-PlayBeforeWidget::PlayBeforeWidget(QWidget* parent) : QDragWidget(parent) {
+PlayBeforeWidget::PlayBeforeWidget(const std::shared_ptr<Context>& context, QWidget* parent) : QDragWidget(context, parent) {
 	InitView();
 	InitSigChannel();
 }
@@ -145,9 +148,10 @@ void PlayBeforeWidget::InitView() {
 
 void PlayBeforeWidget::InitSigChannel() {
 	connect(open_file_btn_, &QPushButton::clicked, this, [=]() {
-		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\", "ALL(*.*)");
+		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\code\\proj\\starlight_pc_player\\test_video", "ALL(*.*)");
 		qDebug() << "fileName = " << fileName;
-		emit SigOpenUrl(fileName);
+		AppOpenUrlMsg msg{ .url = fileName };
+		context_->SendAppMessage(msg);
 	});
 }
 

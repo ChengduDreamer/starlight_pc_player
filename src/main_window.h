@@ -1,6 +1,7 @@
 #pragma once
+#include <memory>
 #include <qmainwindow.h>
-
+#include <qpainter.h>
 class QHBoxLayout;
 class QVBoxLayout;
 
@@ -11,6 +12,7 @@ class WidgetWindowAgent;
 
 namespace yk {
 	
+class Context;
 class BasePage;
 class PlayWidget;
 class PlayControlWidget;
@@ -20,13 +22,27 @@ class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget* parent = nullptr);
+	MainWindow(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~MainWindow();
 	
+	void paintEvent(QPaintEvent* event) override;
+
+	enum Theme {
+		Dark,
+		Light,
+	};
+	//Q_ENUM(Theme)
+Q_SIGNALS:
+	void themeChanged();
 private:
 	void InstallWindowAgent();
 	void InitView();
 	void InitTitlebar();
+
+
+	//void loadStyleSheet(Theme theme);
+
+	//Theme currentTheme{};
 
 private:
 	QWidget* bg_page_ = nullptr;
@@ -41,6 +57,8 @@ private:
 	PlayListWidget* list_widget_ = nullptr;
 
 	QWK::WidgetWindowAgent* windowAgent = nullptr;
+
+	std::shared_ptr<Context> context_ = nullptr;
 };
 
 

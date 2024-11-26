@@ -77,7 +77,12 @@ void YKLineEdit::leaveEvent(QEvent* event) {
 	repaint();
 }
 
-void YKLineEdit::enterEvent(QEnterEvent* event) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void YKLineEdit::enterEvent(QEnterEvent* event)
+#else
+void YKLineEdit::enterEvent(QEvent* event)
+#endif
+{
 	QLineEdit::enterEvent(event);
 	m_cursor_in = true;
 	repaint();

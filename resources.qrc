@@ -39,5 +39,12 @@
 		<file>resource/play_before/open_file_normal.svg</file>
 		<file>resource/play_before/open_file_hover.svg</file>
 		<file>resource/play_before/open_file_press.svg</file>
+
+		<file>resource/window/close.svg</file>
+		<file>resource/window/fullscreen.svg</file>
+		<file>resource/window/maximize.svg</file>
+		<file>resource/window/minimize.svg</file>
+		<file>resource/window/more-line.svg</file>
+		<file>resource/window/restore.svg</file>
     </qresource>
 </RCC>

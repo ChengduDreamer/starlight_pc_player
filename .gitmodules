@@ -2,3 +2,15 @@
 [submodule "3rdparty/qwindowkit"]
 	path = 3rdparty/qwindowkit
 	url = https://github.com/ChengduDreamer/qwindowkit.git
+[submodule "3rdparty/EventBus"]
+	path = 3rdparty/EventBus
+	url = https://github.com/gelldur/EventBus.git
+[submodule "3rdparty/cpp_base_lib"]
+	path = 3rdparty/cpp_base_lib
+	url = git@github.com:ChengduDreamer/cpp_base_lib.git
+[submodule "3rdparty/spdlog"]
+	path = 3rdparty/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "3rdparty/asio2"]
+	path = 3rdparty/asio2
+	url = https://github.com/zhllxt/asio2.git

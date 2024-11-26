@@ -27,9 +27,10 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN)
 
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 COMPONENTS Svg REQUIRED)
-find_package(Qt6 COMPONENTS Network REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Svg REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
 
 if(${CMAKE_SIZEOF_VOID_P} STREQUAL "4")
 	set(PLATFORM_WIN64 FALSE)
@@ -39,6 +40,11 @@ endif()
 
 include_directories(${CMAKE_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/src
+					${CMAKE_SOURCE_DIR}/3rdparty/EventBus/lib/src
+					${CMAKE_SOURCE_DIR}/3rdparty
+					${CMAKE_SOURCE_DIR}/3rdparty/asio2/include
+					${CMAKE_SOURCE_DIR}/3rdparty/asio2/3rd
+					${CMAKE_SOURCE_DIR}/src/widget
 )
 
 set(src_SOURCES
@@ -48,13 +54,16 @@ set(src_SOURCES
 	src/public/yk_line_edit.cpp
 	src/public/yk_label.cpp
 	src/main.cpp
+	src/context.cpp
+	src/settings.cpp
+	src/app_messages.cpp
 	src/main_window.cpp
-	src/play_widget.cpp
-	src/play_list_widget.cpp
-	src/play_control_widget.cpp
-	src/play_view.cpp
-	src/qdrag_widget.cpp
-	src/play_before_widget.cpp
+	src/widget/play_widget.cpp
+	src/widget/play_list_widget.cpp
+	src/widget/play_control_widget.cpp
+	src/widget/play_view.cpp
+	src/widget/qdrag_widget.cpp
+	src/widget/play_before_widget.cpp
 	src/vlc_wrapper/vlc_player.cpp
 	ico.rc
 	resources.qrc
@@ -120,7 +129,7 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Network Qt6::Svg QWKCore QWKWidgets WidgetFrame libvlc libvlccore)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame libvlc libvlccore yk_base_lib)
 
 configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
 configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)
