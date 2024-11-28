@@ -28,7 +28,10 @@ public:
 	void Stop();
 	void Pause();
 	void Resume();
+	void SetVolume(int volume);
 	void SetPosition(float position);
+	void SetMute();
+	void SetUnmute();
 
 private:
 	bool Init();

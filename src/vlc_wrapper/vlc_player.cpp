@@ -188,6 +188,27 @@ void VLCPlayer::SetPosition(float position)
 	libvlc_media_player_set_position(libvlc_media_player_, position / duration_);
 }
 
+void VLCPlayer::SetVolume(int volume) {
+	if (NULL == libvlc_media_player_) {
+		return;
+	}
+	libvlc_audio_set_volume(libvlc_media_player_, volume);
+}
+
+void VLCPlayer::SetMute() {
+	if (NULL == libvlc_media_player_) {
+		return;
+	}
+	libvlc_audio_set_mute(libvlc_media_player_, true);
+}
+
+void VLCPlayer::SetUnmute() {
+	if (NULL == libvlc_media_player_) {
+		return;
+	}
+	libvlc_audio_set_mute(libvlc_media_player_, false);
+}
+
 
 void VLCPlayer::AttachEvents() {
 	// 事件列表
@@ -271,6 +292,16 @@ void VLCPlayer::HandleLibvlcEvents(const libvlc_event_t* event, void* user_data)
 	case libvlc_MediaPlayerEndReached: {
 		//当视频播放结束时触发该信号
 		AppLibvlcMediaPlayerEndReachedMsg msg{};
+		player->context_->SendAppMessage(msg);
+		break;
+	}
+	case libvlc_MediaPlayerMuted: {
+		AppLibvlcMediaPlayerMutedMsg msg{};
+		player->context_->SendAppMessage(msg);
+		break;
+	}
+	case libvlc_MediaPlayerUnmuted: {
+		AppLibvlcMediaPlayerUnmutedMsg msg{};
 		player->context_->SendAppMessage(msg);
 		break;
 	}

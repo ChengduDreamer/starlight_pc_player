@@ -39,7 +39,9 @@ private:
 	void Restore();
 	QString GetFormatTimeString(int ms);
 
-
+	//表示正在seek
+	bool progress_seeking_ = false;
+	int seek_pos_ = 0;
 	YKProgressBar* play_progress_bar_ = nullptr;
 
 	QWidget* pos_dur_widget_ = nullptr;

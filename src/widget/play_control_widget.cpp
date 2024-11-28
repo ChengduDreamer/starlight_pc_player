@@ -5,6 +5,7 @@
 #include <qstackedwidget.h>
 #include <qboxlayout.h>
 #include <qpixmap.h>
+#include <qtimer.h>
 
 #include "public/yk_icon_button.h"
 #include "public/yk_progress_bar.h"
@@ -99,16 +100,16 @@ void PlayControlWidget::InitView() {
 		":/resource/control/skip_next_hover.svg", ":/resource/control/skip_next_press.svg");
 
 	sound_mute_btn_stack_ = new QStackedWidget();
-	mute_btn_ = new YKIconButton();
-	mute_btn_->Init(QSize(26, 26), ":/resource/control/volume_normal.svg",
+	sound_btn_ = new YKIconButton();
+	sound_btn_->Init(QSize(26, 26), ":/resource/control/volume_normal.svg",
 		":/resource/control/volume_hover.svg", ":/resource/control/volume_press.svg");
 
-	sound_btn_ = new YKIconButton();
-	sound_btn_->Init(QSize(26, 26), ":/resource/control/volume_off_normal.svg",
+	mute_btn_ = new YKIconButton();
+	mute_btn_->Init(QSize(26, 26), ":/resource/control/volume_off_normal.svg",
 		":/resource/control/volume_off_hover.svg", ":/resource/control/volume_off_press.svg");
 
-	sound_mute_btn_stack_->addWidget(mute_btn_);
 	sound_mute_btn_stack_->addWidget(sound_btn_);
+	sound_mute_btn_stack_->addWidget(mute_btn_);
 	sound_mute_btn_stack_->setFixedSize(sound_btn_->size());
 
 	voice_progressbar_ = new YKProgressBar();
@@ -175,16 +176,35 @@ void PlayControlWidget::InitSignalChannels() {
 		Q_EMIT SigNext();
 	});
 	connect(mute_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigMute();
+		AppSetUnmuteMsg msg{};
+		context_->SendAppMessage(msg);
 	});
 	connect(sound_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigSound();
+		AppSetMuteMsg msg{};
+		context_->SendAppMessage(msg);
 	});
 	connect(fullscreen_btn_, &QPushButton::clicked, this, [=]() {
 		Q_EMIT SigFullScreen();
 	});
 	connect(exit_fullscreen_btn_, &QPushButton::clicked, this, [=]() {
 		Q_EMIT SigExitFullScreen();
+	});
+
+
+	connect(play_progress_bar_, &YKProgressBar::SigPosChanged, this, [=]() {
+		progress_seeking_ = true;
+		seek_pos_ = play_progress_bar_->value();
+		AppSeekPosMsg msg{.pos = seek_pos_};
+		context_->SendAppMessage(msg);
+		QTimer::singleShot(1500, [=]() {
+			progress_seeking_ = false;
+		});
+	});
+
+	connect(voice_progressbar_, &YKProgressBar::SigPosChanged, this, [=]() {
+		auto volume = voice_progressbar_->value();
+		AppSetVolumeMsg msg{ .volume = volume };
+		context_->SendAppMessage(msg);
 	});
 }
 
@@ -200,6 +220,8 @@ void PlayControlWidget::RegisterEvents() {
 				pos_dur_widget_->show();
 			}
 			duration_lab_->setText(duration_str);
+			play_progress_bar_->setEnabled(true);
+			play_progress_bar_->setRange(0, event.duration);
 		});
 	});
 
@@ -223,6 +245,7 @@ void PlayControlWidget::RegisterEvents() {
 
 	msg_listener_->Listen<AppLibvlcMediaPlayerPlayingMsg>([=, this](const AppLibvlcMediaPlayerPlayingMsg& event) {
 		context_->PostUITask([=, this]() {
+			voice_progressbar_->setEnabled(true);
 			pos_dur_widget_->show();
 			start_pause_btn_stack_->setCurrentWidget(pause_btn_);
 		});
@@ -238,14 +261,32 @@ void PlayControlWidget::RegisterEvents() {
 		context_->PostUITask([=, this]() {
 			auto current_movie_time = GetFormatTimeString(event.current_movie_time);
 			pos_lab_->setText(current_movie_time);
+			if (!progress_seeking_) {
+				play_progress_bar_->setValue(event.current_movie_time);
+			}
 		});
 	});
 
+	msg_listener_->Listen<AppLibvlcMediaPlayerMutedMsg>([=, this](const AppLibvlcMediaPlayerMutedMsg& event) {
+		context_->PostUITask([=, this]() {
+			sound_mute_btn_stack_->setCurrentWidget(mute_btn_);
+		});
+	});
 
+	msg_listener_->Listen<AppLibvlcMediaPlayerUnmutedMsg>([=, this](const AppLibvlcMediaPlayerUnmutedMsg& event) {
+		context_->PostUITask([=, this]() {
+			sound_mute_btn_stack_->setCurrentWidget(sound_btn_);
+		});
+	});
 }
 
 void PlayControlWidget::Restore() {
+	seek_pos_ = 0;
+	voice_progressbar_->setEnabled(false);
+	play_progress_bar_->setEnabled(false);
+	play_progress_bar_->setRange(0, 0);
 	pos_dur_widget_->hide();
+	sound_mute_btn_stack_->setCurrentWidget(sound_btn_);
 	start_pause_btn_stack_->setCurrentWidget(start_btn_);
 	// 退出全屏
 	// 全屏按钮不可点击

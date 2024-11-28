@@ -16,6 +16,10 @@ public:
 	void Stop();
 	void Pause();
 	void Resume();
+	void SeekPos(int ms);
+	void SetMute();
+	void SetUnmute();
+	void SetVolume(int volume);
 Q_SIGNALS:
 	void SigGetDuration();
 private:

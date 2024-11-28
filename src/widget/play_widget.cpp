@@ -95,6 +95,30 @@ void PlayWidget::RegisterEvents() {
 			play_view_->Resume();
 		});
 	});
+
+	msg_listener_->Listen<AppSeekPosMsg>([=, this](const AppSeekPosMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->SeekPos(event.pos);
+		});
+	});
+
+	msg_listener_->Listen<AppSetMuteMsg>([=, this](const AppSetMuteMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->SetMute();
+		});
+	});
+
+	msg_listener_->Listen<AppSetUnmuteMsg>([=, this](const AppSetUnmuteMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->SetUnmute();
+		});
+	});
+
+	msg_listener_->Listen<AppSetVolumeMsg>([=, this](const AppSetVolumeMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->SetVolume(event.volume);
+		});
+	});
 }
 
 

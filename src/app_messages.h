@@ -32,6 +32,26 @@ namespace yk {
 
 	};
 
+	class AppSeekPosMsg {
+	public:
+		int pos = 0;
+	};
+
+	class AppSetVolumeMsg {
+	public:
+		int volume = 0; // [0, 100]
+	};
+
+	class AppSetMuteMsg {
+	public:
+		
+	};
+
+	class AppSetUnmuteMsg {
+	public:
+
+	};
+
 	class AppGotDurationMsg {
 	public:
 		float duration = 0.0f; // ms
@@ -73,5 +93,15 @@ namespace yk {
 	class AppLibvlcMediaPlayerTimeChangedMsg {
 	public:
 		uint64_t current_movie_time = 0; //ms
+	};
+
+	class AppLibvlcMediaPlayerMutedMsg {
+	public:
+		
+	};
+
+	class AppLibvlcMediaPlayerUnmutedMsg {
+	public:
+		
 	};
 }

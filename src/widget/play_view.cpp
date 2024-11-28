@@ -33,5 +33,21 @@ void PlayView::Resume() {
 	vlc_player_ptr_->Resume();
 }
 
+void PlayView::SeekPos(int ms) {
+	vlc_player_ptr_->SetPosition(ms);
+}
+
+void PlayView::SetMute() {
+	vlc_player_ptr_->SetMute();
+}
+
+
+void PlayView::SetUnmute() {
+	vlc_player_ptr_->SetUnmute();
+}
+
+void PlayView::SetVolume(int volume) {
+	vlc_player_ptr_->SetVolume(volume);
+}
 
 }
