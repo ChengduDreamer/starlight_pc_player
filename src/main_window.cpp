@@ -53,6 +53,7 @@ static inline void emulateLeaveEvent(QWidget* widget) {
 MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), QMainWindow(parent) {
 	setAttribute(Qt::WA_DontCreateNativeAncestors);
 	InstallWindowAgent(); // qt6.5 qt6.8 显示异常
+    setMouseTracking(true);
 	InitTitlebar();
 	InitView();
 }
@@ -80,11 +81,12 @@ void MainWindow::InitView() {
         setStyleSheet(QString::fromUtf8(qss.readAll()));
     }
 
-
 	bg_page_ = new QWidget();
     setCentralWidget(bg_page_);
 	bg_page_->setContentsMargins(0,0,0,0);
-	bg_page_->setStyleSheet("QWidget {background-color: #ff6632;}");
+	//bg_page_->setStyleSheet("QWidget {background-color: #ff6632;}");
+    bg_page_->setStyleSheet("QWidget {background-color: #000000;}");
+    bg_page_->setMouseTracking(true);
 	main_hbox_layout_ = new QHBoxLayout();
 	bg_page_->setLayout(main_hbox_layout_);
 	main_hbox_layout_->setAlignment(Qt::AlignLeft);
@@ -97,7 +99,7 @@ void MainWindow::InitView() {
 	play_vbox_layout_->setAlignment(Qt::AlignTop);
 	play_widget_ = new PlayWidget(context_, this);
     
-	play_control_widget_ = new PlayControlWidget(this);
+	play_control_widget_ = new PlayControlWidget(context_, this);
     
 	play_vbox_layout_->addWidget(play_widget_, 8);
 	play_vbox_layout_->addWidget(play_control_widget_, 1);

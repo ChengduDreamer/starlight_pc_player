@@ -13,6 +13,9 @@ public:
 	~PlayView();
 
 	bool Play(const QString& url);
+	void Stop();
+	void Pause();
+	void Resume();
 Q_SIGNALS:
 	void SigGetDuration();
 private:

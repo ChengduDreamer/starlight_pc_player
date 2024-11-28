@@ -12,6 +12,7 @@ namespace yk {
 
 PlayWidget::PlayWidget(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), QWidget(parent) {
 	msg_listener_ = context_->CreateMessageListener();
+	setMouseTracking(true);
 	InitView();
 	InitSigChannels();
 	RegisterEvents();
@@ -31,7 +32,6 @@ void PlayWidget::InitView() {
 	main_vbox_layout->setAlignment(Qt::AlignTop);
 	this->setLayout(main_vbox_layout);
 
-
 	stacked_widget_ = new QStackedWidget();
 	stacked_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -43,15 +43,9 @@ void PlayWidget::InitView() {
 	stacked_widget_->addWidget(play_view_);
 	stacked_widget_->setCurrentWidget(play_before_widget_);
 
-	// test, to do del
-	play_view_->setStyleSheet(".QWidget {background-color: #888888;}");
+
 
 	main_vbox_layout->addWidget(stacked_widget_);
-
-	//QTimer::singleShot(1000, [=]() {
-	//	play_view_->Play();	
-	//});
-	
 }
 
 void PlayWidget::InitSigChannels() {
@@ -71,9 +65,34 @@ void PlayWidget::RegisterEvents() {
 
 	msg_listener_->Listen<AppOpenUrlMsg>([=, this](const AppOpenUrlMsg& event) {
 		context_->PostUITask([=, this]() {
-			if (play_view_->Play(event.url)) {
-				stacked_widget_->setCurrentWidget(play_view_);
-			}
+			stacked_widget_->setCurrentWidget(play_view_);
+			play_view_->Play(event.url);
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerEncounteredErrorMsg>([=, this](const AppLibvlcMediaPlayerEncounteredErrorMsg& event) {
+		context_->PostUITask([=, this]() {
+			stacked_widget_->setCurrentWidget(play_before_widget_);
+			// to do µ¯´° 
+		});
+	});
+
+	msg_listener_->Listen<AppStopPlayMsg>([=, this](const AppStopPlayMsg& event) {
+		context_->PostUITask([=, this]() {
+			stacked_widget_->setCurrentWidget(play_before_widget_);
+			play_view_->Stop();
+		});
+	});
+
+	msg_listener_->Listen<AppPausePlayMsg>([=, this](const AppPausePlayMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->Pause();
+		});
+	});
+
+	msg_listener_->Listen<AppResumePlayMsg>([=, this](const AppResumePlayMsg& event) {
+		context_->PostUITask([=, this]() {
+			play_view_->Resume();
 		});
 	});
 }

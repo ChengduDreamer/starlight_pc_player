@@ -17,7 +17,7 @@ private:
 	void InitView();
 	void InitSigChannel();
 private:
-	YKButton* open_file_btn_ = nullptr;
+	YKButton* open_file_dialog_btn_ = nullptr;
 	YKLineEdit* url_edit_ = nullptr;
 	YKButton* open_url_btn_ = nullptr;
 };

@@ -51,7 +51,7 @@ void PlayBeforeWidget::InitView() {
 	main_vbox_layout->setAlignment(player_name_lab, Qt::AlignHCenter);
 
 	//open local file btn
-	open_file_btn_ = new YKButton();
+	open_file_dialog_btn_ = new YKButton();
 	{
 		YKButton::BorderInfo btn_border_info;
 		YKButton::TextInfo btn_text_info;
@@ -77,11 +77,11 @@ void PlayBeforeWidget::InitView() {
 		btn_bk_info.m_background_color_normal = QColor(0x33, 0x33, 0x33);
 		btn_bk_info.m_background_color_hover = QColor(0x66, 0x55, 0x60);
 		btn_bk_info.m_background_color_press = QColor(0x88, 0x78, 0x80);
-		open_file_btn_->Init(QSize(208, 60), btn_text_info, btn_bk_info, btn_icon_info, btn_border_info);
+		open_file_dialog_btn_->Init(QSize(208, 60), btn_text_info, btn_bk_info, btn_icon_info, btn_border_info);
 	}
 	main_vbox_layout->addStretch(1);
-	main_vbox_layout->addWidget(open_file_btn_);
-	main_vbox_layout->setAlignment(open_file_btn_, Qt::AlignHCenter);
+	main_vbox_layout->addWidget(open_file_dialog_btn_);
+	main_vbox_layout->setAlignment(open_file_dialog_btn_, Qt::AlignHCenter);
 	
 
 
@@ -147,10 +147,20 @@ void PlayBeforeWidget::InitView() {
 }
 
 void PlayBeforeWidget::InitSigChannel() {
-	connect(open_file_btn_, &QPushButton::clicked, this, [=]() {
+	connect(open_file_dialog_btn_, &QPushButton::clicked, this, [=]() {
 		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\code\\proj\\starlight_pc_player\\test_video", "ALL(*.*)");
 		qDebug() << "fileName = " << fileName;
 		AppOpenUrlMsg msg{ .url = fileName };
+		context_->SendAppMessage(msg);
+	});
+
+	connect(open_url_btn_, &QPushButton::clicked, this, [=]() {
+		auto url_link = url_edit_->text().trimmed();
+		if (url_link.isEmpty()) {
+			// to do 弹窗
+			return;
+		}
+		AppOpenUrlMsg msg{ .url = url_link };
 		context_->SendAppMessage(msg);
 	});
 }

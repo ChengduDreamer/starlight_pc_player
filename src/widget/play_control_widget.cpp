@@ -9,12 +9,15 @@
 #include "public/yk_icon_button.h"
 #include "public/yk_progress_bar.h"
 #include "public/yk_style_sheet.h"
+#include "app_messages.h"
+#include "context.h"
 
 namespace yk {
 
-PlayControlWidget::PlayControlWidget(QWidget* parent) : QWidget(parent) {
+PlayControlWidget::PlayControlWidget(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), QWidget(parent) {
 	InitView();
 	InitSignalChannels();
+	RegisterEvents();
 }
 
 PlayControlWidget::~PlayControlWidget() {
@@ -22,6 +25,7 @@ PlayControlWidget::~PlayControlWidget() {
 }
 
 void PlayControlWidget::InitView() {
+	msg_listener_ = context_->CreateMessageListener();
 	setFixedHeight(60);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	setAttribute(Qt::WA_StyledBackground);
@@ -47,10 +51,26 @@ void PlayControlWidget::InitView() {
 	control_hbox_layout->setAlignment(Qt::AlignLeft);
 	control_hbox_layout->setSpacing(0);
 
-	duration_lap_ = new QLabel();
-	duration_lap_->setText("00:00:00 / 00:00:00");
-	duration_lap_->setStyleSheet("QLabel {background-color: transparent; font-family:Microsoft YaHei;font-size:12px; color:#ffffff;}");
-
+	pos_dur_widget_ = new QWidget();
+	auto pos_dur_policy = pos_dur_widget_->sizePolicy();
+	pos_dur_policy.setRetainSizeWhenHidden(true);
+	pos_dur_widget_->setSizePolicy(pos_dur_policy);
+	auto pos_dur_hbox_layout = new QHBoxLayout(pos_dur_widget_);
+	pos_dur_hbox_layout->setSpacing(4);
+	pos_dur_hbox_layout->setAlignment(Qt::AlignLeft);
+	pos_lab_ = new QLabel();
+	pos_lab_->setText("00:00:00");
+	pos_lab_->setStyleSheet("QLabel {background-color: transparent; font-family:Microsoft YaHei;font-size:12px; color:#ffffff;}");
+	auto split_lab = new QLabel();
+	split_lab->setText("/");
+	split_lab->setStyleSheet("QLabel {background-color: transparent; font-family:Microsoft YaHei;font-size:12px; color:#ffffff;}");
+	duration_lab_ = new QLabel();
+	duration_lab_->setText("00:00:00");
+	duration_lab_->setStyleSheet("QLabel {background-color: transparent; font-family:Microsoft YaHei;font-size:12px; color:#ffffff;}");
+	pos_dur_hbox_layout->addWidget(pos_lab_);
+	pos_dur_hbox_layout->addWidget(split_lab);
+	pos_dur_hbox_layout->addWidget(duration_lab_);
+	
 	stop_btn_ = new YKIconButton();
 	stop_btn_->Init(QSize(26, 26), ":/resource/control/stop_normal.svg",
 		":/resource/control/stop_hover.svg", ":/resource/control/stop_press.svg");
@@ -71,6 +91,7 @@ void PlayControlWidget::InitView() {
 
 	start_pause_btn_stack_->addWidget(pause_btn_);
 	start_pause_btn_stack_->addWidget(start_btn_);
+	start_pause_btn_stack_->setCurrentWidget(start_btn_);
 	start_pause_btn_stack_->setFixedSize(pause_btn_->size());
 
 	next_btn_ = new YKIconButton();
@@ -111,7 +132,7 @@ void PlayControlWidget::InitView() {
 	fullscreen_stack_->setFixedSize(fullscreen_btn_->size());
 
 	control_hbox_layout->addSpacing(20);
-	control_hbox_layout->addWidget(duration_lap_);
+	control_hbox_layout->addWidget(pos_dur_widget_);
 	control_hbox_layout->addSpacing(30);
 	control_hbox_layout->addWidget(stop_btn_);
 	control_hbox_layout->addSpacing(30);
@@ -135,16 +156,20 @@ void PlayControlWidget::InitView() {
 
 void PlayControlWidget::InitSignalChannels() {
 	connect(stop_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigStop();
+		AppStopPlayMsg msg{};
+		context_->SendAppMessage(msg);
+		Restore();
 	});
 	connect(previous_btn_, &QPushButton::clicked, this, [=]() {
 		Q_EMIT SigPrevious();
 	});
 	connect(pause_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigPause();
+		AppPausePlayMsg msg{};
+		context_->SendAppMessage(msg);
 	});
 	connect(start_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigPlay();
+		AppResumePlayMsg msg{};
+		context_->SendAppMessage(msg);
 	});
 	connect(next_btn_, &QPushButton::clicked, this, [=]() {
 		Q_EMIT SigNext();
@@ -161,6 +186,76 @@ void PlayControlWidget::InitSignalChannels() {
 	connect(exit_fullscreen_btn_, &QPushButton::clicked, this, [=]() {
 		Q_EMIT SigExitFullScreen();
 	});
+}
+
+void PlayControlWidget::RegisterEvents() {
+	if (!context_) {
+		return;
+	}
+
+	msg_listener_->Listen<AppGotDurationMsg>([=, this](const AppGotDurationMsg& event) {
+		context_->PostUITask([=, this]() {
+			auto duration_str = GetFormatTimeString(event.duration);
+			if (pos_dur_widget_->isHidden()) {
+				pos_dur_widget_->show();
+			}
+			duration_lab_->setText(duration_str);
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerEncounteredErrorMsg>([=, this](const AppLibvlcMediaPlayerEncounteredErrorMsg& event) {
+		context_->PostUITask([=, this]() {
+			Restore();
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerStoppedMsg>([=, this](const AppLibvlcMediaPlayerStoppedMsg& event) {
+		context_->PostUITask([=, this]() {
+			Restore();
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerEndReachedMsg>([=, this](const AppLibvlcMediaPlayerEndReachedMsg& event) {
+		context_->PostUITask([=, this]() {
+			Restore();
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerPlayingMsg>([=, this](const AppLibvlcMediaPlayerPlayingMsg& event) {
+		context_->PostUITask([=, this]() {
+			pos_dur_widget_->show();
+			start_pause_btn_stack_->setCurrentWidget(pause_btn_);
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerPausedMsg>([=, this](const AppLibvlcMediaPlayerPausedMsg& event) {
+		context_->PostUITask([=, this]() {
+			start_pause_btn_stack_->setCurrentWidget(start_btn_);
+		});
+	});
+
+	msg_listener_->Listen<AppLibvlcMediaPlayerTimeChangedMsg>([=, this](const AppLibvlcMediaPlayerTimeChangedMsg& event) {
+		context_->PostUITask([=, this]() {
+			auto current_movie_time = GetFormatTimeString(event.current_movie_time);
+			pos_lab_->setText(current_movie_time);
+		});
+	});
+
+
+}
+
+void PlayControlWidget::Restore() {
+	pos_dur_widget_->hide();
+	start_pause_btn_stack_->setCurrentWidget(start_btn_);
+	// 退出全屏
+	// 全屏按钮不可点击
+}
+
+QString PlayControlWidget::GetFormatTimeString(int ms) {
+	int hour = ms / 1000 / 60 / 60;
+	int minute = ms / 1000 / 60 % 60;
+	int second = ms / 1000 % 60;
+	return QString("%1:%2:%3").arg(hour).arg(minute, 2, 10, QLatin1Char('0')).arg(second, 2, 10, QLatin1Char('0'));
 }
 
 }

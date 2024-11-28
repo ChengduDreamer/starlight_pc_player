@@ -9,7 +9,7 @@ PlayView::PlayView(const std::shared_ptr<Context>& context, QWidget* parent) : c
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setStyleSheet("QWidget {background-color: #000000;}");
 	HWND render_hwnd = (HWND)(this->winId());
-	vlc_player_ptr_ = VLCPlayer::Make(render_hwnd);
+	vlc_player_ptr_ = VLCPlayer::Make(context_, render_hwnd);
 	EnableWindow(render_hwnd, FALSE); // 能让QT窗口接受事件
 }
 
@@ -20,5 +20,18 @@ PlayView::~PlayView() {
 bool PlayView::Play(const QString& url) {
 	return vlc_player_ptr_->OpenMediaFile(url);
 }
+
+void PlayView::Stop() {
+	vlc_player_ptr_->Stop();
+}
+
+void PlayView::Pause() {
+	vlc_player_ptr_->Pause();
+}
+
+void PlayView::Resume() {
+	vlc_player_ptr_->Resume();
+}
+
 
 }
