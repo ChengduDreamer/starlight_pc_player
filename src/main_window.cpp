@@ -5,6 +5,7 @@
 #include <qtimer.h>
 #include <qfile.h>
 #include <qdebug.h>
+#include <qscreen.h>
 #include <QWKWidgets/widgetwindowagent.h>
 #include <widgetframe/windowbar.h>
 #include <widgetframe/windowbutton.h>
@@ -71,6 +72,9 @@ MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent)
     root_layout->setContentsMargins(0,0,0,0);
     root_layout->addWidget(window_bar_);
     root_layout->addWidget(bg_page_);
+
+  
+    located_screen_ = QGuiApplication::screenAt(this->pos());
 }
 
 MainWindow::~MainWindow() {
@@ -80,7 +84,7 @@ MainWindow::~MainWindow() {
 void MainWindow::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     QPen pen(QColor(0x00,0x00,0x00));
-    pen.setWidth(2);
+    pen.setWidth(8);
     painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
     painter.drawLine(0, 0, width(), 0);
@@ -261,6 +265,18 @@ void MainWindow::RegisterEvents() {
         });
     });
 
+    msg_listener_->Listen<AppMainWindowResizeMsg>([=, this](const AppMainWindowResizeMsg& event) {
+        context_->PostUITask([=, this]() {
+            QTimer::singleShot(1000, [this]() {
+                auto w = this->width();
+                auto h = this->height();
+                resize(++w, ++h);
+                update();
+                resize(--w, --h);
+                update();
+            });
+        });
+    });
     this->installEventFilter(this);
 }
 
@@ -272,6 +288,25 @@ void MainWindow::InitTimer() {
         }
     });
     timer_->setInterval(3000);
+}
+
+void MainWindow::moveEvent(QMoveEvent* event) {
+    QPoint new_pos = event->pos();
+    QScreen* current_screen = QGuiApplication::screenAt(new_pos);
+    if (current_screen) {
+        if (located_screen_ != current_screen) {
+            located_screen_ = current_screen;
+            QTimer::singleShot(1000, [this]() {
+                auto w = this->width();
+                auto h = this->height();
+                resize(++w, ++h);
+                update();
+                resize(--w, --h);
+                update();
+            });
+        }
+    }
+    return QWidget::moveEvent(event);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event) {

@@ -8,6 +8,7 @@
 class QHBoxLayout;
 class QVBoxLayout;
 class QTimer;
+class QScreen;
 
 namespace QWK {
 class WidgetWindowAgent;
@@ -25,7 +26,7 @@ class PlayControlWidget;
 class PlayListWidget;
 class BgPage;
 
-class MainWindow : public /*QMainWindow*/ QWidget {
+class MainWindow : public /*QMainWindow*/ QWidget  {
 	Q_OBJECT
 
 public:
@@ -35,7 +36,8 @@ public:
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void paintEvent(QPaintEvent* event) override;
 	bool eventFilter(QObject* obj, QEvent* event) override;
-	void keyPressEvent(QKeyEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override; // 键盘控制播放，最好放在顶层窗口
+	void moveEvent(QMoveEvent* event) override; 
 
 	enum Theme {
 		Dark,
@@ -71,6 +73,7 @@ private:
 	QWK::WidgetWindowAgent* windowAgent = nullptr;
 
 	QTimer* timer_ = nullptr;
+	QScreen* located_screen_ = nullptr;
 private:
 
 	std::shared_ptr<Context> context_ = nullptr;

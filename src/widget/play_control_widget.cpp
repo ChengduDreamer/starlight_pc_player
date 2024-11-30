@@ -254,6 +254,8 @@ void PlayControlWidget::RegisterEvents() {
 	msg_listener_->Listen<AppLibvlcMediaPlayerPlayingMsg>([=, this](const AppLibvlcMediaPlayerPlayingMsg& event) {
 		context_->PostUITask([=, this]() {
 			start_pause_btn_stack_->setCurrentWidget(pause_btn_);
+			AppMainWindowResizeMsg msg{};
+			context_->SendAppMessage(msg);
 			if (has_handle_playing_) {
 				return;
 			}

@@ -87,6 +87,11 @@ namespace yk {
 
 	};
 
+	class AppMainWindowResizeMsg {
+	public:
+
+	};
+
 	class AppGotDurationMsg {
 	public:
 		float duration = 0.0f; // ms
