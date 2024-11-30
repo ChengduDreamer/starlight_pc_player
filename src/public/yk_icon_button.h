@@ -1,7 +1,7 @@
 #pragma once
 /*
 desc:
-仅用于显示图标的按钮
+浠呯敤浜庢樉绀哄浘鏍囩殑鎸夐挳
 */
 
 #include <qpushbutton.h>

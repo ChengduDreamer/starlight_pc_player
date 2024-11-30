@@ -56,6 +56,7 @@ void PlayControlWidget::InitView() {
 	auto pos_dur_policy = pos_dur_widget_->sizePolicy();
 	pos_dur_policy.setRetainSizeWhenHidden(true);
 	pos_dur_widget_->setSizePolicy(pos_dur_policy);
+	pos_dur_widget_->hide();
 	auto pos_dur_hbox_layout = new QHBoxLayout(pos_dur_widget_);
 	pos_dur_hbox_layout->setSpacing(4);
 	pos_dur_hbox_layout->setAlignment(Qt::AlignLeft);
@@ -118,6 +119,7 @@ void PlayControlWidget::InitView() {
 	voice_progressbar_->setOrientation(Qt::Horizontal); //不设置这一项，样式表无效
 	voice_progressbar_->setStyleSheet(QString::fromStdString(KVoiceSliderCss));
 	voice_progressbar_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	voice_progressbar_->setValue(100);
 
 	fullscreen_stack_ = new QStackedWidget();
 	fullscreen_btn_ = new YKIconButton();
@@ -153,6 +155,8 @@ void PlayControlWidget::InitView() {
 	main_vbox_layout->addSpacing(6);
 	main_vbox_layout->addLayout(control_hbox_layout);
 	main_vbox_layout->addSpacing(6);
+
+	Restore();
 }
 
 void PlayControlWidget::InitSignalChannels() {
@@ -183,20 +187,23 @@ void PlayControlWidget::InitSignalChannels() {
 		AppSetMuteMsg msg{};
 		context_->SendAppMessage(msg);
 	});
+
 	connect(fullscreen_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigFullScreen();
-	});
-	connect(exit_fullscreen_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigExitFullScreen();
+		AppFullScreenMsg msg{};
+		context_->SendAppMessage(msg);
 	});
 
+	connect(exit_fullscreen_btn_, &QPushButton::clicked, this, [=]() {
+		AppExitFullScreenMsg msg{};
+		context_->SendAppMessage(msg);
+	});
 
 	connect(play_progress_bar_, &YKProgressBar::SigPosChanged, this, [=]() {
 		progress_seeking_ = true;
 		seek_pos_ = play_progress_bar_->value();
 		AppSeekPosMsg msg{.pos = seek_pos_};
 		context_->SendAppMessage(msg);
-		QTimer::singleShot(1500, [=]() {
+		QTimer::singleShot(1000, [=]() {
 			progress_seeking_ = false;
 		});
 	});
@@ -206,6 +213,7 @@ void PlayControlWidget::InitSignalChannels() {
 		AppSetVolumeMsg msg{ .volume = volume };
 		context_->SendAppMessage(msg);
 	});
+
 }
 
 void PlayControlWidget::RegisterEvents() {
@@ -245,9 +253,24 @@ void PlayControlWidget::RegisterEvents() {
 
 	msg_listener_->Listen<AppLibvlcMediaPlayerPlayingMsg>([=, this](const AppLibvlcMediaPlayerPlayingMsg& event) {
 		context_->PostUITask([=, this]() {
+			start_pause_btn_stack_->setCurrentWidget(pause_btn_);
+			if (has_handle_playing_) {
+				return;
+			}
+			has_handle_playing_ = true;
 			voice_progressbar_->setEnabled(true);
 			pos_dur_widget_->show();
-			start_pause_btn_stack_->setCurrentWidget(pause_btn_);
+			fullscreen_btn_->setEnabled(true);
+			exit_fullscreen_btn_->setEnabled(true);
+			if (sound_mute_btn_stack_->currentWidget() == mute_btn_) {
+				AppSetMuteMsg msg{};
+				context_->SendAppMessage(msg);
+			}
+			else {
+				auto volume = voice_progressbar_->value();
+				AppSetVolumeMsg msg{ .volume = volume };
+				context_->SendAppMessage(msg);
+			}
 		});
 	});
 
@@ -278,18 +301,35 @@ void PlayControlWidget::RegisterEvents() {
 			sound_mute_btn_stack_->setCurrentWidget(sound_btn_);
 		});
 	});
+
+	msg_listener_->Listen<AppFullScreenTakeEffectMsg>([=, this](const AppFullScreenTakeEffectMsg& event) {
+		context_->PostUITask([=, this]() {
+			fullscreen_stack_->setCurrentWidget(exit_fullscreen_btn_);
+		});
+	});
+
+	msg_listener_->Listen<AppExitFullScreenTakeEffectMsg>([=, this](const AppExitFullScreenTakeEffectMsg& event) {
+		context_->PostUITask([=, this]() {
+			fullscreen_stack_->setCurrentWidget(fullscreen_btn_);
+		});
+	});
+
+	fullscreen_btn_->installEventFilter(this);
+	exit_fullscreen_btn_->installEventFilter(this);
 }
 
 void PlayControlWidget::Restore() {
+	has_handle_playing_ = false;
 	seek_pos_ = 0;
 	voice_progressbar_->setEnabled(false);
 	play_progress_bar_->setEnabled(false);
 	play_progress_bar_->setRange(0, 0);
 	pos_dur_widget_->hide();
-	sound_mute_btn_stack_->setCurrentWidget(sound_btn_);
 	start_pause_btn_stack_->setCurrentWidget(start_btn_);
-	// 退出全屏
-	// 全屏按钮不可点击
+	AppExitFullScreenMsg msg{};
+	context_->SendAppMessage(msg);
+	fullscreen_btn_->setEnabled(false);
+	exit_fullscreen_btn_->setEnabled(false);
 }
 
 QString PlayControlWidget::GetFormatTimeString(int ms) {
@@ -297,6 +337,18 @@ QString PlayControlWidget::GetFormatTimeString(int ms) {
 	int minute = ms / 1000 / 60 % 60;
 	int second = ms / 1000 % 60;
 	return QString("%1:%2:%3").arg(hour).arg(minute, 2, 10, QLatin1Char('0')).arg(second, 2, 10, QLatin1Char('0'));
+}
+
+bool PlayControlWidget::eventFilter(QObject* obj, QEvent* event) {
+	if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Space) {
+			if (obj == fullscreen_btn_ || obj == exit_fullscreen_btn_) {
+				return true; // 阻止事件继续传播
+			}		
+		}
+	}
+	return QWidget::eventFilter(obj, event);
 }
 
 }

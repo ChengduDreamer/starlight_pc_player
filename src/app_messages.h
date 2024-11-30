@@ -52,24 +52,59 @@ namespace yk {
 
 	};
 
+	class AppFullScreenMsg {
+	public:
+
+	};
+
+	class AppExitFullScreenMsg {
+	public:
+
+	};
+
+	class AppFullScreenTakeEffectMsg {
+	public:
+
+	};
+
+	class AppExitFullScreenTakeEffectMsg {
+	public:
+
+	};
+
+	class AppPlayViewMouseDoubleClickedMsg {
+	public:
+
+	};
+
+	class AppPlayViewKeySpaceMsg {
+	public:
+
+	};
+
+	class AppPlayViewKeyEscMsg {
+	public:
+
+	};
+
 	class AppGotDurationMsg {
 	public:
 		float duration = 0.0f; // ms
 	};
 
-	// µ±Ã½Ìå²¥·ÅÆ÷¿ªÊ¼´ò¿ªÃ½ÌåÊ±´¥·¢¡£
+	// å½“åª’ä½“æ’­æ”¾å™¨å¼€å§‹æ‰“å¼€åª’ä½“æ—¶è§¦å‘ã€‚
 	class AppLibvlcMediaPlayerOpeningMsg {
 	public:
 
 	};
 
-	// µ±Ã½Ìå²¥·ÅÆ÷ĞèÒª»º³åÊı¾İÊ±´¥·¢¡£
+	// å½“åª’ä½“æ’­æ”¾å™¨éœ€è¦ç¼“å†²æ•°æ®æ—¶è§¦å‘ã€‚
 	class AppLibvlMediaPlayerBufferingMsg {
 	public:
 
 	};
 
-	// µ±Ã½Ìå²¥·ÅÆ÷¿ªÊ¼²¥·ÅÃ½ÌåÊ±´¥·¢¡£
+	// å½“åª’ä½“æ’­æ”¾å™¨å¼€å§‹æ’­æ”¾åª’ä½“æ—¶è§¦å‘ã€‚
 	class AppLibvlcMediaPlayerPlayingMsg {
 	public:
 

@@ -32,7 +32,7 @@ void YKButton::paintEvent(QPaintEvent* event) {
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	painter.setPen(Qt::NoPen);
-	painter.save(); // QPainter::end: Painter ended with 2 saved states  QPainter µÄ save ·½·¨ºÍ restore ·½·¨Ó¦³É¶Ô³öÏÖ£¬²»ÒªÒÅÂ©¡£
+	painter.save(); // QPainter::end: Painter ended with 2 saved states  QPainter çš„ save æ–¹æ³•å’Œ restore æ–¹æ³•åº”æˆå¯¹å‡ºç°ï¼Œä¸è¦é—æ¼ã€‚
 	
 	QPen pen;
 	pen.setStyle(Qt::SolidLine);
@@ -65,7 +65,7 @@ void YKButton::paintEvent(QPaintEvent* event) {
 	}
 	painter.drawRoundedRect(this->rect(), m_border_info.m_border_radius, m_border_info.m_border_radius);
 	painter.restore();
-	painter.save(); // QPainter::restore: Unbalanced save/restore  restore Óë saveÊÇ³É¶Ô´æÔÚµÄ
+	painter.save(); // QPainter::restore: Unbalanced save/restore  restore ä¸ saveæ˜¯æˆå¯¹å­˜åœ¨çš„
 	if (m_icon_info.m_have_icon) {
 		if (isEnabled()) {
 			if (m_pressed) {
@@ -137,7 +137,7 @@ void YKButton::paintEvent(QPaintEvent* event) {
 	}
 	painter.setPen(font_pen);
 	painter.setFont(font);
-	painter.drawText(m_text_info.m_padding_left, m_text_info.m_padding_top, m_text_info.m_text); // ×¢Òâ ÕâÀïµÄy×ø±ê  ÊÇ ÎÄ×Öµ×²¿ ¾àÀë °´Å¥ÉÏ±ß¿ò ¾àÀë
+	painter.drawText(m_text_info.m_padding_left, m_text_info.m_padding_top, m_text_info.m_text); // æ³¨æ„ è¿™é‡Œçš„yåæ ‡  æ˜¯ æ–‡å­—åº•éƒ¨ è·ç¦» æŒ‰é’®ä¸Šè¾¹æ¡† è·ç¦»
 }
 
 

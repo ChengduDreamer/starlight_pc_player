@@ -58,6 +58,7 @@ set(src_SOURCES
 	src/settings.cpp
 	src/app_messages.cpp
 	src/main_window.cpp
+	src/widget/bg_page.cpp
 	src/widget/play_widget.cpp
 	src/widget/play_list_widget.cpp
 	src/widget/play_control_widget.cpp

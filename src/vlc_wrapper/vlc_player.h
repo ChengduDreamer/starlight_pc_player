@@ -14,6 +14,7 @@ extern "C" {
 namespace yk {
 
 class Context;
+class MessageListener;
 
 class VLCPlayer {
 public:
@@ -23,7 +24,7 @@ public:
 
 	VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd);
 	~VLCPlayer();
-
+	void RegisterEvents();
 	bool OpenMediaFile(const QString& url);
 	void Stop();
 	void Pause();
@@ -49,6 +50,7 @@ private:
 	float duration_ = 0.0f;
 
 	std::shared_ptr<Context> context_ = nullptr;
+	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 };
 
 }

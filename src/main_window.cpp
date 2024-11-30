@@ -4,12 +4,17 @@
 #include <qguiapplication.h>
 #include <qtimer.h>
 #include <qfile.h>
+#include <qdebug.h>
 #include <QWKWidgets/widgetwindowagent.h>
 #include <widgetframe/windowbar.h>
 #include <widgetframe/windowbutton.h>
 #include "play_widget.h"
 #include "play_control_widget.h"
 #include "play_list_widget.h"
+#include "bg_page.h"
+#include "context.h"
+#include "app_messages.h"
+#include "cpp_base_lib/yk_logger.h"
 
 namespace yk {
 
@@ -50,12 +55,22 @@ static inline void emulateLeaveEvent(QWidget* widget) {
 }
 
 
-MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), QMainWindow(parent) {
+MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent) : context_(context), /*QMainWindow*/ QWidget(parent) {
+    msg_listener_ = context_->CreateMessageListener();
 	setAttribute(Qt::WA_DontCreateNativeAncestors);
 	InstallWindowAgent(); // qt6.5 qt6.8 显示异常
     setMouseTracking(true);
 	InitTitlebar();
 	InitView();
+    RegisterEvents();
+    InitTimer();
+   // centralWidget()->setMouseTracking(true);
+
+    auto root_layout = new QVBoxLayout(this);
+    root_layout->setSpacing(0);
+    root_layout->setContentsMargins(0,0,0,0);
+    root_layout->addWidget(window_bar_);
+    root_layout->addWidget(bg_page_);
 }
 
 MainWindow::~MainWindow() {
@@ -69,7 +84,8 @@ void MainWindow::paintEvent(QPaintEvent* event) {
     painter.setPen(pen);
     painter.setBrush(Qt::NoBrush);
     painter.drawLine(0, 0, width(), 0);
-    QMainWindow::paintEvent(event);
+    //QMainWindow::paintEvent(event);
+    QWidget::paintEvent(event);
 }
 
 void MainWindow::InitView() {
@@ -80,13 +96,15 @@ void MainWindow::InitView() {
         qss.open(QIODevice::ReadOnly | QIODevice::Text)) {
         setStyleSheet(QString::fromUtf8(qss.readAll()));
     }
-
-	bg_page_ = new QWidget();
-    setCentralWidget(bg_page_);
+    
+	bg_page_ = new BgPage(this);
+    bg_page_->setMouseTracking(true);
+    //setCentralWidget(bg_page_);
 	bg_page_->setContentsMargins(0,0,0,0);
 	//bg_page_->setStyleSheet("QWidget {background-color: #ff6632;}");
-    bg_page_->setStyleSheet("QWidget {background-color: #000000;}");
+    bg_page_->setStyleSheet("QWidget {background-color: #0000ff;}");
     bg_page_->setMouseTracking(true);
+    bg_page_->setMinimumHeight(200);
 	main_hbox_layout_ = new QHBoxLayout();
 	bg_page_->setLayout(main_hbox_layout_);
 	main_hbox_layout_->setAlignment(Qt::AlignLeft);
@@ -98,20 +116,19 @@ void MainWindow::InitView() {
 	play_vbox_layout_->setContentsMargins(0, 0, 0, 0);
 	play_vbox_layout_->setAlignment(Qt::AlignTop);
 	play_widget_ = new PlayWidget(context_, this);
-    
-	play_control_widget_ = new PlayControlWidget(context_, this);
+	play_control_widget_ = new PlayControlWidget(context_, bg_page_);
     
 	play_vbox_layout_->addWidget(play_widget_, 8);
 	play_vbox_layout_->addWidget(play_control_widget_, 1);
-    
+#if 0
 	list_vbox_layout_ = new QVBoxLayout();
 	list_vbox_layout_->setSpacing(0);
 	list_vbox_layout_->setContentsMargins(0, 0, 0, 0);
 	list_widget_ = new PlayListWidget(this);
 	list_vbox_layout_->addWidget(list_widget_);
-    
+#endif
 	main_hbox_layout_->addLayout(play_vbox_layout_, 6);
-	main_hbox_layout_->addLayout(list_vbox_layout_, 1);
+	///main_hbox_layout_->addLayout(list_vbox_layout_, 1);
 }
 
 void MainWindow::InstallWindowAgent() {
@@ -160,26 +177,26 @@ void MainWindow::InitTitlebar() {
     close_btn->setObjectName("closeButton");
     close_btn->setToolTip(QObject::tr("关闭"));
 
-    auto windowBar = new QWK::WindowBar();
-    windowBar->setStyleSheet("QWidget {background-color:#000000;}");
-    windowBar->setAttribute(Qt::WA_StyledBackground);
-    windowBar->setIconButton(iconButton);
-    windowBar->setMinButton(min_btn);
-    windowBar->setMaxButton(max_btn);
-    windowBar->setCloseButton(close_btn);
-    windowBar->setMenuBar(menuBar);
-    windowBar->setTitleLabel(titleLabel);
-    windowBar->setHostWidget(this);
-    windowAgent->setTitleBar(windowBar);
+    window_bar_ = new QWK::WindowBar();
+    window_bar_->setStyleSheet("QWidget {background-color:#000000;}");
+    window_bar_->setAttribute(Qt::WA_StyledBackground);
+    window_bar_->setIconButton(iconButton);
+    window_bar_->setMinButton(min_btn);
+    window_bar_->setMaxButton(max_btn);
+    window_bar_->setCloseButton(close_btn);
+    window_bar_->setMenuBar(menuBar);
+    window_bar_->setTitleLabel(titleLabel);
+    window_bar_->setHostWidget(this);
+    windowAgent->setTitleBar(window_bar_);
     windowAgent->setSystemButton(QWK::WindowAgentBase::WindowIcon, iconButton);
     windowAgent->setSystemButton(QWK::WindowAgentBase::Minimize, min_btn);
     windowAgent->setSystemButton(QWK::WindowAgentBase::Maximize, max_btn);
     windowAgent->setSystemButton(QWK::WindowAgentBase::Close, close_btn);
     windowAgent->setHitTestVisible(menuBar, true);
 
-    setMenuWidget(windowBar);
-    connect(windowBar, &QWK::WindowBar::minimizeRequested, this, &QWidget::showMinimized);
-    connect(windowBar, &QWK::WindowBar::maximizeRequested, this, [this, max_btn](bool max) {
+    //setMenuWidget(window_bar_);
+    connect(window_bar_, &QWK::WindowBar::minimizeRequested, this, &QWidget::showMinimized);
+    connect(window_bar_, &QWK::WindowBar::maximizeRequested, this, [this, max_btn](bool max) {
         if (max) {
             showMaximized();
         }
@@ -192,7 +209,95 @@ void MainWindow::InitTitlebar() {
         // manually send leave events to the button.
         emulateLeaveEvent(max_btn);
         });
-    connect(windowBar, &QWK::WindowBar::closeRequested, this, &QWidget::close);
+    connect(window_bar_, &QWK::WindowBar::closeRequested, this, &QWidget::close);
+}
+
+void MainWindow::RegisterEvents() {
+    msg_listener_->Listen<AppFullScreenMsg>([=, this](const AppFullScreenMsg& event) {
+        context_->PostUITask([=, this]() {
+            timer_->start();
+            window_bar_->hide();
+            //list_widget_->hide();
+            YK_LOGI("showFullScreen");
+            this->showFullScreen();
+            AppFullScreenTakeEffectMsg te_msg{};
+            context_->SendAppMessage(te_msg);
+        });
+    });
+
+    msg_listener_->Listen<AppExitFullScreenMsg>([=, this](const AppExitFullScreenMsg& event) {
+        context_->PostUITask([=, this]() {
+            timer_->stop();
+            window_bar_->show();
+            //list_widget_->show();
+            YK_LOGI("exitFullScreen");
+            this->showNormal();
+            play_control_widget_->show();
+            AppExitFullScreenTakeEffectMsg te_msg{};
+            context_->SendAppMessage(te_msg);
+        });
+    });
+
+    msg_listener_->Listen<AppPlayViewMouseDoubleClickedMsg>([=, this](const AppPlayViewMouseDoubleClickedMsg& event) {
+        context_->PostUITask([=, this]() {
+            if (this->isFullScreen()) {
+                AppExitFullScreenMsg msg{};
+                context_->SendAppMessage(msg);
+            }
+            else {
+                AppFullScreenMsg msg{};
+                context_->SendAppMessage(msg);
+            }
+        });
+     });
+
+    msg_listener_->Listen<AppPlayViewKeyEscMsg>([=, this](const AppPlayViewKeyEscMsg& event) {
+        context_->PostUITask([=, this]() {
+            qDebug() << "Listen AppPlayViewKeyEscMsg";
+            if (this->isFullScreen()) {
+                AppExitFullScreenMsg msg{};
+                context_->SendAppMessage(msg);
+            }
+        });
+    });
+
+    this->installEventFilter(this);
+}
+
+void MainWindow::InitTimer() {
+    timer_ = new QTimer();
+    connect(timer_, &QTimer::timeout, this, [this]() {
+        if (this->isFullScreen()) {
+            play_control_widget_->hide();
+        }
+    });
+    timer_->setInterval(3000);
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent* event) {
+    if (this->isFullScreen()) {
+        play_control_widget_->show();
+    }
+    //return QMainWindow::mouseMoveEvent(event);
+    return QWidget::mouseMoveEvent(event);
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    return QWidget::eventFilter(obj, event);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Escape) {
+        qDebug() << "MainWindow keyPressEvent Key_Escape";
+        AppPlayViewKeyEscMsg msg;
+        context_->SendAppMessage(msg);
+    }
+    else if (event->key() == Qt::Key_Space) {
+        qDebug() << "MainWindow keyPressEvent Key_Space";
+        AppPlayViewKeySpaceMsg msg;
+        context_->SendAppMessage(msg);
+    }
+    QWidget::keyPressEvent(event);
 }
 
 }

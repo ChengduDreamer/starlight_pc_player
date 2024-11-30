@@ -7,6 +7,7 @@
 #include "play_before_widget.h"
 #include "context.h"
 #include "app_messages.h"
+#include "cpp_base_lib/yk_logger.h"
 
 namespace yk {
 
@@ -34,11 +35,12 @@ void PlayWidget::InitView() {
 
 	stacked_widget_ = new QStackedWidget();
 	stacked_widget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	stacked_widget_->setMouseTracking(true); // QStackedWidget 也需要设置setMouseTracking 不然play_view_ 无法接收到鼠标移动事件
 
-	play_view_ = new PlayView(context_);
-
+	play_view_ = new PlayView(context_, this);
+	play_view_->setMouseTracking(true);
 	play_before_widget_ = new PlayBeforeWidget(context_);
-
+	play_before_widget_->setMouseTracking(true);
 	stacked_widget_->addWidget(play_before_widget_);
 	stacked_widget_->addWidget(play_view_);
 	stacked_widget_->setCurrentWidget(play_before_widget_);
@@ -63,9 +65,14 @@ void PlayWidget::RegisterEvents() {
 		return;
 	}
 
-	msg_listener_->Listen<AppOpenUrlMsg>([=, this](const AppOpenUrlMsg& event) {
+	msg_listener_->Listen<AppLibvlcMediaPlayerPlayingMsg>([=, this](const AppLibvlcMediaPlayerPlayingMsg& event) {
 		context_->PostUITask([=, this]() {
 			stacked_widget_->setCurrentWidget(play_view_);
+		});
+	});
+
+	msg_listener_->Listen<AppOpenUrlMsg>([=, this](const AppOpenUrlMsg& event) {
+		context_->PostUITask([=, this]() {
 			play_view_->Play(event.url);
 		});
 	});
@@ -73,7 +80,7 @@ void PlayWidget::RegisterEvents() {
 	msg_listener_->Listen<AppLibvlcMediaPlayerEncounteredErrorMsg>([=, this](const AppLibvlcMediaPlayerEncounteredErrorMsg& event) {
 		context_->PostUITask([=, this]() {
 			stacked_widget_->setCurrentWidget(play_before_widget_);
-			// to do ���� 
+			// to do 弹窗 
 		});
 	});
 

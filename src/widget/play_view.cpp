@@ -1,5 +1,6 @@
 #include "play_view.h"
 #include <qsizepolicy.h>
+#include <qdebug.h>
 #include "vlc_wrapper/vlc_player.h"
 #include "context.h"
 #include "app_messages.h"
@@ -10,12 +11,26 @@ PlayView::PlayView(const std::shared_ptr<Context>& context, QWidget* parent) : c
 	setStyleSheet("QWidget {background-color: #000000;}");
 	HWND render_hwnd = (HWND)(this->winId());
 	vlc_player_ptr_ = VLCPlayer::Make(context_, render_hwnd);
-	EnableWindow(render_hwnd, FALSE); // 能让QT窗口接受事件
+	EnableWindow(render_hwnd, FALSE); // 鑳借QT绐楀彛鎺ュ彈浜嬩欢
 }
 
 PlayView::~PlayView() {
 
 }
+
+void PlayView::keyPressEvent(QKeyEvent* event) {
+	QWidget::keyPressEvent(event);
+}
+
+void PlayView::mouseDoubleClickEvent(QMouseEvent* event) {
+
+	if (event->button() == Qt::LeftButton) {
+		AppPlayViewMouseDoubleClickedMsg msg{};
+		context_->SendAppMessage(msg);
+	}
+	QWidget::mouseDoubleClickEvent (event);
+}
+
 
 bool PlayView::Play(const QString& url) {
 	return vlc_player_ptr_->OpenMediaFile(url);
@@ -49,5 +64,7 @@ void PlayView::SetUnmute() {
 void PlayView::SetVolume(int volume) {
 	vlc_player_ptr_->SetVolume(volume);
 }
+
+
 
 }

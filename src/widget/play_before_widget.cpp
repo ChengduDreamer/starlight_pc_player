@@ -150,6 +150,9 @@ void PlayBeforeWidget::InitSigChannel() {
 	connect(open_file_dialog_btn_, &QPushButton::clicked, this, [=]() {
 		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\code\\proj\\starlight_pc_player\\test_video", "ALL(*.*)");
 		qDebug() << "fileName = " << fileName;
+		if (fileName.isEmpty()) {
+			return;
+		}
 		AppOpenUrlMsg msg{ .url = fileName };
 		context_->SendAppMessage(msg);
 	});
@@ -163,6 +166,21 @@ void PlayBeforeWidget::InitSigChannel() {
 		AppOpenUrlMsg msg{ .url = url_link };
 		context_->SendAppMessage(msg);
 	});
+
+	open_file_dialog_btn_->installEventFilter(this);
+	open_url_btn_->installEventFilter(this);
+}
+
+bool PlayBeforeWidget::eventFilter(QObject* obj, QEvent* event) {
+	if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
+		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+		if (keyEvent->key() == Qt::Key_Space) {
+			if (obj == open_file_dialog_btn_ || obj == open_url_btn_) {
+				return true; // 阻止事件继续传播
+			}
+		}
+	}
+	return QWidget::eventFilter(obj, event);
 }
 
 PlayBeforeWidget::~PlayBeforeWidget() {

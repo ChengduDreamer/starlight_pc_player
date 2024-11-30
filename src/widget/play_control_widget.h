@@ -1,6 +1,7 @@
 #pragma once
 #include <qwidget.h>
 #include <memory>
+#include <qevent.h>
 
 class QVBoxLayout;
 class QHBoxLayout;
@@ -19,7 +20,7 @@ class PlayControlWidget : public QWidget {
 public:
 	PlayControlWidget(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~PlayControlWidget();
-
+	bool eventFilter(QObject* obj, QEvent* event) override;
 Q_SIGNALS:
 	void SigPlay();
 	void SigStop();
@@ -39,7 +40,7 @@ private:
 	void Restore();
 	QString GetFormatTimeString(int ms);
 
-	//表示正在seek
+	//琛ㄧず姝ｅ湪seek
 	bool progress_seeking_ = false;
 	int seek_pos_ = 0;
 	YKProgressBar* play_progress_bar_ = nullptr;
@@ -64,6 +65,7 @@ private:
 	YKIconButton* exit_fullscreen_btn_ = nullptr;
 
 private:
+	bool has_handle_playing_ = false;
 	std::shared_ptr<Context> context_ = nullptr;
 	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 };

@@ -19,7 +19,7 @@ namespace yk {
 		
 	};
 
-std::ifstream file; // Ê¹ÓÃ¿í×Ö·û
+std::ifstream file; // ä½¿ç”¨å®½å­—ç¬¦
 
 int	MediaOpen(void* opaque, void** datap, uint64_t* sizep)
 {
@@ -72,7 +72,9 @@ void MediaClose(void* opaque)
 }
 
 VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : context_(context), hwnd_(hwnd) {
+	msg_listener_ = context_->CreateMessageListener();
 	Init();
+	RegisterEvents();
 }
 
 VLCPlayer::~VLCPlayer() {
@@ -83,8 +85,8 @@ bool VLCPlayer::Init() {
 	const char* vlc_args[] = {
 		"--sub-filter=logo",
 		"--mouse-hide-timeout=2147483647",
-		"--no-xlib",                // ±ÜÃâÊ¹ÓÃ Xlib£¨ÔÚÄ³Ğ©Æ½Ì¨ÉÏ¿ÉÄÜĞèÒª£©
-		"--vout=opengl"           // Ö¸¶¨Ê¹ÓÃ OpenGL ×÷ÎªÊÓÆµÊä³ö
+		"--no-xlib",                // é¿å…ä½¿ç”¨ Xlibï¼ˆåœ¨æŸäº›å¹³å°ä¸Šå¯èƒ½éœ€è¦ï¼‰
+		"--vout=opengl"           // æŒ‡å®šä½¿ç”¨ OpenGL ä½œä¸ºè§†é¢‘è¾“å‡º
 	};
 	libvlc_instance_ = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	if (!libvlc_instance_) {
@@ -94,7 +96,7 @@ bool VLCPlayer::Init() {
 }
 
 bool VLCPlayer::OpenMediaFile(const QString& url) {
-	// ×Ô¶¨ÒåIO
+	// è‡ªå®šä¹‰IO
 	//libvlc_media_ = libvlc_media_new_callbacks(
 	//	libvlc_instance_, MediaOpen, MediaRead, MediaSeek, MediaClose, 
 	//	(void*)"C:\\code\\proj\\starlight_pc_player\\test_video\\1.mp4"
@@ -211,7 +213,7 @@ void VLCPlayer::SetUnmute() {
 
 
 void VLCPlayer::AttachEvents() {
-	// ÊÂ¼şÁĞ±í
+	// äº‹ä»¶åˆ—è¡¨
 	QList<libvlc_event_e> events;
 	events 
 		<< libvlc_MediaPlayerOpening
@@ -227,25 +229,60 @@ void VLCPlayer::AttachEvents() {
 		<< libvlc_MediaPlayerTimeChanged
 		<< libvlc_MediaPlayerPositionChanged
 		<< libvlc_MediaPlayerEndReached;
-	// ¶©ÔÄÊÂ¼ş
+	// è®¢é˜…äº‹ä»¶
 	libvlc_event_manager_ = libvlc_media_player_event_manager(libvlc_media_player_);
 	for (auto& event : events) {
 		libvlc_event_attach(libvlc_event_manager_, event, HandleLibvlcEvents, this);
 	}
 }
 
+void VLCPlayer::RegisterEvents() {
+	msg_listener_->Listen<AppPlayViewKeySpaceMsg>([=, this](const AppPlayViewKeySpaceMsg& event) {
+		context_->PostUITask([=, this]() {
+			if (NULL == libvlc_media_player_) {
+				return;
+			}
+			libvlc_state_t state = libvlc_media_player_get_state(libvlc_media_player_);
+			switch (state) {
+			case libvlc_Playing:
+				std::cout << "Player is currently playing." << std::endl;
+				Pause();
+				break;
+			case libvlc_Paused:
+				std::cout << "Player is currently paused." << std::endl;
+				Resume();
+				break;
+			case libvlc_Stopped:
+				std::cout << "Player is stopped." << std::endl;
+				break;
+			case libvlc_Ended:
+				std::cout << "Playback has ended." << std::endl;
+				break;
+			case libvlc_Error:
+				std::cout << "An error occurred with the player." << std::endl;
+				break;
+			default:
+				std::cout << "Player is in an unknown state." << std::endl;
+				break;
+			}
+		});
+	});
+}
+
 void VLCPlayer::HandleLibvlcEvents(const libvlc_event_t* event, void* user_data) {
 	VLCPlayer* player = static_cast<VLCPlayer*>(user_data);
 	switch (event->type) {
-		// ²¥·Å×´Ì¬¸Ä±ä
+		// æ’­æ”¾çŠ¶æ€æ”¹å˜
 	case libvlc_MediaPlayerOpening: {
 		qDebug() << "libvlc_MediaPlayerOpening";
 		break;
 	}
 	case libvlc_MediaPlayerBuffering: {
+		qDebug() << "libvlc_MediaPlayerBuffering";
 		break;
 	}
 	case libvlc_MediaPlayerPlaying: {
+		qDebug() << "libvlc_MediaPlayerPlaying";
 		AppLibvlcMediaPlayerPlayingMsg msg{};
 		player->context_->SendAppMessage(msg);
 		break;
@@ -256,7 +293,7 @@ void VLCPlayer::HandleLibvlcEvents(const libvlc_event_t* event, void* user_data)
 		break;
 	}
 	case libvlc_MediaPlayerStopped: {
-		//µ± libvlc_media_player_stop(libvlc_mp); ±»µ÷ÓÃ²Å»á´¥·¢¸ÃĞÅºÅ
+		//å½“ libvlc_media_player_stop(libvlc_mp); è¢«è°ƒç”¨æ‰ä¼šè§¦å‘è¯¥ä¿¡å·
 		AppLibvlcMediaPlayerStoppedMsg msg{};
 		player->context_->SendAppMessage(msg);
 		break;
@@ -269,28 +306,28 @@ void VLCPlayer::HandleLibvlcEvents(const libvlc_event_t* event, void* user_data)
 		player->context_->SendAppMessage(app_msg);
 		break;
 	}
-	// Ê±³¤¸Ä±äÊ±»ñÈ¡Ò»´Î×ÜÊ±³¤
+	// æ—¶é•¿æ”¹å˜æ—¶è·å–ä¸€æ¬¡æ€»æ—¶é•¿
 	case libvlc_MediaPlayerLengthChanged: {
 		player->duration_ = libvlc_media_player_get_length(player->libvlc_media_player_);
 		AppGotDurationMsg duration_msg{ .duration = player->duration_ };
 		player->context_->SendAppMessage(duration_msg);
 		break;
 	}
-	// ²¥·ÅÊ±¼ä¸Ä±ä
+	// æ’­æ”¾æ—¶é—´æ”¹å˜
 	case libvlc_MediaPlayerTimeChanged: {
-		//²¥·ÅÊ±¼äÊÇÒ»Ö±ÔÚ±äµÄ
+		//æ’­æ”¾æ—¶é—´æ˜¯ä¸€ç›´åœ¨å˜çš„
 		uint64_t curtime = libvlc_media_player_get_time(player->libvlc_media_player_);
 		AppLibvlcMediaPlayerTimeChangedMsg msg{ .current_movie_time = curtime };
 		player->context_->SendAppMessage(msg);
 		break;
 	}
-	// ²¥·ÅÎ»ÖÃ¸Ä±ä
+	// æ’­æ”¾ä½ç½®æ”¹å˜
 	case libvlc_MediaPlayerPositionChanged: {
-		//²¥·ÅÎ»ÖÃÊÇÒ»Ö±ÔÚ±äµÄ,¸öÈËÈÏÎªµÈÍ¬ libvlc_MediaPlayerTimeChanged
+		//æ’­æ”¾ä½ç½®æ˜¯ä¸€ç›´åœ¨å˜çš„,ä¸ªäººè®¤ä¸ºç­‰åŒ libvlc_MediaPlayerTimeChanged
 		break;
 	}
 	case libvlc_MediaPlayerEndReached: {
-		//µ±ÊÓÆµ²¥·Å½áÊøÊ±´¥·¢¸ÃĞÅºÅ
+		//å½“è§†é¢‘æ’­æ”¾ç»“æŸæ—¶è§¦å‘è¯¥ä¿¡å·
 		AppLibvlcMediaPlayerEndReachedMsg msg{};
 		player->context_->SendAppMessage(msg);
 		break;

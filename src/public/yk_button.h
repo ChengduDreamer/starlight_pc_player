@@ -14,7 +14,7 @@ public:
 	YKButton(QWidget* parent = nullptr);
 	~YKButton() = default;
 
-	// ±ß¿òĞÅÏ¢
+	// è¾¹æ¡†ä¿¡æ¯
 	struct BorderInfo {
 		int m_border_radius = 0;
 		int m_border_width = 0;

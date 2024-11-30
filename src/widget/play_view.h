@@ -2,6 +2,7 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#include <qevent.h>
 namespace yk {
 class Context;
 class VLCPlayer;
@@ -11,6 +12,9 @@ class PlayView : public QWidget {
 public:
 	PlayView(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~PlayView();
+
+	void mouseDoubleClickEvent(QMouseEvent* event) override;
+	void keyPressEvent(QKeyEvent* event) override;
 
 	bool Play(const QString& url);
 	void Stop();

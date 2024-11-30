@@ -1,5 +1,5 @@
 #pragma once
-
+#include <qevent.h>
 #include "qdrag_widget.h"
 class YKButton;
 class YKLineEdit;
@@ -12,6 +12,7 @@ class PlayBeforeWidget : public QDragWidget {
 	Q_OBJECT
 public:
 	PlayBeforeWidget(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
+	bool eventFilter(QObject* obj, QEvent* event) override;
 	~PlayBeforeWidget();
 private:
 	void InitView();
