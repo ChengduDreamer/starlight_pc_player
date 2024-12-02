@@ -1,147 +1,165 @@
 #pragma once
+#include <memory>
 #include <qstring.h>
+#include <qpixmap.h>
+
+class QWidget;
+ 
 namespace yk {
 	
-	// 1000ms timer
-	class AppTimer1000Msg {
+// 1000ms timer
+class AppTimer1000Msg {
 
-	};
+};
 
-	class AppOpenUrlMsg {
-	public:
-		QString url;
-	};
+class AppOpenUrlMsg {
+public:
+	QString url;
+};
 
-	class AppLibvlcMediaPlayerEncounteredErrorMsg {
-	public:
-		QString content;
-	};
+class AppLibvlcMediaPlayerEncounteredErrorMsg {
+public:
+	QString content;
+};
 
-	class AppStopPlayMsg {
-	public:
+class AppStopPlayMsg {
+public:
 		
-	};
+};
 
-	class AppPausePlayMsg {
-	public:
+class AppPausePlayMsg {
+public:
 
-	};
+};
 
-	class AppResumePlayMsg {
-	public:
+class AppResumePlayMsg {
+public:
 
-	};
+};
 
-	class AppSeekPosMsg {
-	public:
-		int pos = 0;
-	};
+class AppSeekPosMsg {
+public:
+	int pos = 0;
+};
 
-	class AppSetVolumeMsg {
-	public:
-		int volume = 0; // [0, 100]
-	};
+class AppSetVolumeMsg {
+public:
+	int volume = 0; // [0, 100]
+};
 
-	class AppSetMuteMsg {
-	public:
+class AppSetMuteMsg {
+public:
 		
-	};
+};
 
-	class AppSetUnmuteMsg {
-	public:
+class AppSetUnmuteMsg {
+public:
 
-	};
+};
 
-	class AppFullScreenMsg {
-	public:
+class AppFullScreenMsg {
+public:
 
-	};
+};
 
-	class AppExitFullScreenMsg {
-	public:
+class AppExitFullScreenMsg {
+public:
 
-	};
+};
 
-	class AppFullScreenTakeEffectMsg {
-	public:
+class AppFullScreenTakeEffectMsg {
+public:
 
-	};
+};
 
-	class AppExitFullScreenTakeEffectMsg {
-	public:
+class AppExitFullScreenTakeEffectMsg {
+public:
 
-	};
+};
 
-	class AppPlayViewMouseDoubleClickedMsg {
-	public:
+class AppPlayViewMouseDoubleClickedMsg {
+public:
 
-	};
+};
 
-	class AppPlayViewKeySpaceMsg {
-	public:
+class AppPlayViewKeySpaceMsg {
+public:
 
-	};
+};
 
-	class AppPlayViewKeyEscMsg {
-	public:
+class AppPlayViewKeyEscMsg {
+public:
 
-	};
+};
 
-	class AppMainWindowResizeMsg {
-	public:
+class AppMainWindowResizeMsg {
+public:
 
-	};
+};
 
-	class AppGotDurationMsg {
-	public:
-		float duration = 0.0f; // ms
-	};
+class AppGotDurationMsg {
+public:
+	float duration = 0.0f; // ms
+};
 
-	// 当媒体播放器开始打开媒体时触发。
-	class AppLibvlcMediaPlayerOpeningMsg {
-	public:
+// 当媒体播放器开始打开媒体时触发。
+class AppLibvlcMediaPlayerOpeningMsg {
+public:
 
-	};
+};
 
-	// 当媒体播放器需要缓冲数据时触发。
-	class AppLibvlMediaPlayerBufferingMsg {
-	public:
+// 当媒体播放器需要缓冲数据时触发。
+class AppLibvlMediaPlayerBufferingMsg {
+public:
 
-	};
+};
 
-	// 当媒体播放器开始播放媒体时触发。
-	class AppLibvlcMediaPlayerPlayingMsg {
-	public:
+// 当媒体播放器开始播放媒体时触发。
+class AppLibvlcMediaPlayerPlayingMsg {
+public:
 
-	};
+};
 
-	class AppLibvlcMediaPlayerPausedMsg {
-	public:
+class AppLibvlcMediaPlayerPausedMsg {
+public:
 
-	};
+};
 
-	class AppLibvlcMediaPlayerStoppedMsg {
-	public:
+class AppLibvlcMediaPlayerStoppedMsg {
+public:
 
-	};
+};
 
-	class AppLibvlcMediaPlayerEndReachedMsg {
-	public:
+class AppLibvlcMediaPlayerEndReachedMsg {
+public:
 
-	};
+};
 
-	class AppLibvlcMediaPlayerTimeChangedMsg {
-	public:
-		uint64_t current_movie_time = 0; //ms
-	};
+class AppLibvlcMediaPlayerTimeChangedMsg {
+public:
+	uint64_t current_movie_time = 0; //ms
+};
 
-	class AppLibvlcMediaPlayerMutedMsg {
-	public:
+class AppLibvlcMediaPlayerMutedMsg {
+public:
 		
-	};
+};
 
-	class AppLibvlcMediaPlayerUnmutedMsg {
-	public:
+class AppLibvlcMediaPlayerUnmutedMsg {
+public:
 		
-	};
+};
+
+
+class AppCaptureImageMsg {
+public:
+	QWidget* widget_ptr = nullptr;
+};
+
+class AppCaptureImageCompletedMsg {
+public:
+	bool success = false;
+	QPixmap pixmap;
+};
+
 }

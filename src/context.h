@@ -7,9 +7,9 @@
 #include "cpp_base_lib/thread.h"
 #include "cpp_base_lib/msg_notifier.h"
 
+class QWidget;
 
 namespace yk {
-
 class Settings;
 class MessageNotifier;
 
@@ -33,6 +33,7 @@ public:
 	}
 	std::shared_ptr<MessageListener> CreateMessageListener();
 	std::shared_ptr<MessageNotifier> GetMessageNotifier();
+	QWidget* video_render_widget_ = nullptr;
 private:
 	void InitTimers();
 
@@ -44,6 +45,8 @@ private:
 	std::shared_ptr<asio2::iopool> iopool_ = nullptr;
 	std::shared_ptr<asio2::iopool> net_iopool_ = nullptr;
 	std::shared_ptr<asio2::timer> timer_ = nullptr;
+
+	
 };
 
 

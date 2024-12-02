@@ -16,6 +16,9 @@
 #include "context.h"
 #include "app_messages.h"
 #include "cpp_base_lib/yk_logger.h"
+#include "media_operation/media_operation.h"
+#include "media_operation/image_view.h"
+#include "media_operation/image_panel.h"
 
 namespace yk {
 
@@ -75,6 +78,7 @@ MainWindow::MainWindow(const std::shared_ptr<Context>& context, QWidget* parent)
 
   
     located_screen_ = QGuiApplication::screenAt(this->pos());
+    media_operation_ = MediaOperation::Make(context_);
 }
 
 MainWindow::~MainWindow() {
@@ -133,6 +137,13 @@ void MainWindow::InitView() {
 #endif
 	main_hbox_layout_->addLayout(play_vbox_layout_, 6);
 	///main_hbox_layout_->addLayout(list_vbox_layout_, 1);
+
+    /*image_view_ = ImageView::Make(context_);
+    image_view_->hide();*/
+
+    image_panel_ = new ImagePanel(context_);
+    image_panel_->hide();
+    image_panel_->show();
 }
 
 void MainWindow::InstallWindowAgent() {
@@ -277,6 +288,24 @@ void MainWindow::RegisterEvents() {
             });
         });
     });
+
+    // test
+
+    //auto image_view = new ImageView(context_);
+    //image_view->hide();
+    msg_listener_->Listen<AppCaptureImageCompletedMsg>([=, this](const AppCaptureImageCompletedMsg& event) {
+        context_->PostUITask([=, this]() {
+            qDebug() << "mainwindow AppCaptureImageCompletedMsg";
+            if (!event.success) {
+                qDebug() << "mainwindow AppCaptureImageCompletedMsg error";
+                return;
+            }
+            /*image_view->SetPixmap(event.pixmap);
+            image_view->show();*/
+            image_panel_->show();
+        });
+    });
+
     this->installEventFilter(this);
 }
 

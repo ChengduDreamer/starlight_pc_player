@@ -21,18 +21,6 @@ public:
 	PlayControlWidget(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~PlayControlWidget();
 	bool eventFilter(QObject* obj, QEvent* event) override;
-Q_SIGNALS:
-	void SigPlay();
-	void SigStop();
-	void SigPause();
-	void SigContinue();
-	void SigPrevious();
-	void SigNext();
-	void SigFullScreen();
-	void SigExitFullScreen();
-	void SigSound();
-	void SigMute();
-
 private:
 	void InitView();
 	void InitSignalChannels();
@@ -63,6 +51,8 @@ private:
 	QStackedWidget* fullscreen_stack_ = nullptr;
 	YKIconButton* fullscreen_btn_ = nullptr;
 	YKIconButton* exit_fullscreen_btn_ = nullptr;
+
+	YKIconButton* capture_btn_ = nullptr;
 
 private:
 	bool has_handle_playing_ = false;

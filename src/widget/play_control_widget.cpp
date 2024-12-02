@@ -134,6 +134,11 @@ void PlayControlWidget::InitView() {
 	fullscreen_stack_->addWidget(exit_fullscreen_btn_);
 	fullscreen_stack_->setFixedSize(fullscreen_btn_->size());
 
+	capture_btn_ = new YKIconButton();
+	capture_btn_->Init(QSize(26, 26), ":/resource/media/capture_normal.svg",
+		":/resource/media/capture_hover.svg", ":/resource/media/capture_pressed.svg");
+	capture_btn_->setToolTip(QStringLiteral("截图"));
+
 	control_hbox_layout->addSpacing(20);
 	control_hbox_layout->addWidget(pos_dur_widget_);
 	control_hbox_layout->addSpacing(30);
@@ -150,6 +155,8 @@ void PlayControlWidget::InitView() {
 	control_hbox_layout->addWidget(voice_progressbar_);
 	control_hbox_layout->addSpacing(12);
 	control_hbox_layout->addWidget(fullscreen_stack_);
+	control_hbox_layout->addSpacing(12);
+	control_hbox_layout->addWidget(capture_btn_);
 	control_hbox_layout->addStretch(1);
 
 	main_vbox_layout->addSpacing(6);
@@ -166,7 +173,7 @@ void PlayControlWidget::InitSignalChannels() {
 		Restore();
 	});
 	connect(previous_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigPrevious();
+		
 	});
 	connect(pause_btn_, &QPushButton::clicked, this, [=]() {
 		AppPausePlayMsg msg{};
@@ -177,7 +184,7 @@ void PlayControlWidget::InitSignalChannels() {
 		context_->SendAppMessage(msg);
 	});
 	connect(next_btn_, &QPushButton::clicked, this, [=]() {
-		Q_EMIT SigNext();
+		
 	});
 	connect(mute_btn_, &QPushButton::clicked, this, [=]() {
 		AppSetUnmuteMsg msg{};
@@ -214,6 +221,11 @@ void PlayControlWidget::InitSignalChannels() {
 		context_->SendAppMessage(msg);
 	});
 
+
+	connect(capture_btn_, &QPushButton::clicked, this, [=]() {
+		AppCaptureImageMsg msg{.widget_ptr = context_->video_render_widget_};
+		context_->SendAppMessage(msg);
+	});
 }
 
 void PlayControlWidget::RegisterEvents() {

@@ -4,6 +4,7 @@
 #include <qstring.h>
 #include <qevent.h>
 namespace yk {
+class MessageListener;
 class Context;
 class VLCPlayer;
 
@@ -29,6 +30,7 @@ Q_SIGNALS:
 private:
 	std::shared_ptr<VLCPlayer> vlc_player_ptr_ = nullptr;
 	std::shared_ptr<Context> context_ = nullptr;
+	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
 };
 
 

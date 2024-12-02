@@ -211,6 +211,15 @@ void VLCPlayer::SetUnmute() {
 	libvlc_audio_set_mute(libvlc_media_player_, false);
 }
 
+bool VLCPlayer::TakeSnapshot(const std::string& file_path) {
+	if (NULL == libvlc_media_player_) {
+		return false;
+	}
+
+	YK_LOGI("TakeSnapshot file_path : {}", file_path);
+
+	return 0 == libvlc_video_take_snapshot(libvlc_media_player_, 0, file_path.c_str(), 0, 0);
+}
 
 void VLCPlayer::AttachEvents() {
 	// 事件列表

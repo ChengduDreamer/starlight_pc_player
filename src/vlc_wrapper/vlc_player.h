@@ -11,6 +11,7 @@ extern "C" {
 #include <memory>
 #include <functional>
 #include <qstring.h>
+#include <string>
 namespace yk {
 
 class Context;
@@ -33,6 +34,7 @@ public:
 	void SetPosition(float position);
 	void SetMute();
 	void SetUnmute();
+	bool TakeSnapshot(const std::string& file_path);
 
 private:
 	bool Init();

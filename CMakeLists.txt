@@ -65,6 +65,10 @@ set(src_SOURCES
 	src/widget/play_view.cpp
 	src/widget/qdrag_widget.cpp
 	src/widget/play_before_widget.cpp
+	src/media_operation/media_operation.cpp
+	src/media_operation/image_view.cpp
+	src/media_operation/image_panel.cpp
+	src/media_operation/image_toolbar.cpp
 	src/vlc_wrapper/vlc_player.cpp
 	ico.rc
 	resources.qrc

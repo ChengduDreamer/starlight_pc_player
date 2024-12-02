@@ -46,5 +46,9 @@
 		<file>resource/window/minimize.svg</file>
 		<file>resource/window/more-line.svg</file>
 		<file>resource/window/restore.svg</file>
+
+		<file>resource/media/capture_normal.svg</file>
+		<file>resource/media/capture_hover.svg</file>
+		<file>resource/media/capture_pressed.svg</file>
     </qresource>
 </RCC>

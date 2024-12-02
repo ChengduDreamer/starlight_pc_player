@@ -25,6 +25,9 @@ class PlayWidget;
 class PlayControlWidget;
 class PlayListWidget;
 class BgPage;
+class MediaOperation;
+class ImagePanel;
+//class ImageView;
 
 class MainWindow : public /*QMainWindow*/ QWidget  {
 	Q_OBJECT
@@ -74,10 +77,12 @@ private:
 
 	QTimer* timer_ = nullptr;
 	QScreen* located_screen_ = nullptr;
+	ImagePanel* image_panel_ = nullptr;
 private:
 
 	std::shared_ptr<Context> context_ = nullptr;
 	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+	std::shared_ptr <MediaOperation> media_operation_ = nullptr;
 };
 
 
