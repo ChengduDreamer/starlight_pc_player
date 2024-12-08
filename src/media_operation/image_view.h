@@ -15,7 +15,7 @@ public:
 	ImageView(const std::shared_ptr<Context>& context, QWidget* parent = nullptr);
 	~ImageView();
 	void paintEvent(QPaintEvent* event) override;
-	void SetPixmap(const QPixmap pixmap);
+	void SetPixmap(QPixmap&& pixmap);
 private:
 	QPixmap pixmap;
 

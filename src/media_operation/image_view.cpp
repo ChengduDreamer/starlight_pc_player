@@ -21,10 +21,10 @@ ImageView::~ImageView() {
 	YK_LOGI("~ImageView");
 }
 
-void ImageView::SetPixmap(const QPixmap p) {
-	pixmap = p;
+void ImageView::SetPixmap(QPixmap&& p) {
+	pixmap = std::move(p);
 	resize(p.width(), p.height());
-	update();
+	repaint();
 }
 
 void ImageView::paintEvent(QPaintEvent* event) {

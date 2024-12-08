@@ -69,6 +69,7 @@ set(src_SOURCES
 	src/media_operation/image_view.cpp
 	src/media_operation/image_panel.cpp
 	src/media_operation/image_toolbar.cpp
+	src/media_operation/image_container.cpp
 	src/vlc_wrapper/vlc_player.cpp
 	ico.rc
 	resources.qrc
