@@ -7,7 +7,7 @@ SystemData *SystemData::GetSystemData()
     return &g_SystemData;
 }
 
-ShapeData * SystemData::CreateShapeItem(EShapeType &type, QPoint &clickedPoint,QPoint &movePoint,QVector<QPoint> &Vec,ContentEdit &contentEdit,QVector<QPoint> &DemensionsVec){
+ShapeData * SystemData::CreateShapeItem(EShapeType &type, QPoint &clickedPoint,QPoint &movePoint,QVector<QPoint> &Vec,ContentEdit &contentEdit){
     ShapeData * temp = new ShapeData;
     switch (type) {
     case EShapeType::Shape_Reckangle:
@@ -40,13 +40,13 @@ ShapeData * SystemData::CreateShapeItem(EShapeType &type, QPoint &clickedPoint,Q
         temp =new ErasureData(Vec);
         break;
     }
-    case EShapeType::Shape_Demensions:
+   /* case EShapeType::Shape_Demensions:
     {
         if(DemensionsVec.size() == 3){
             temp = new DemensionsData(DemensionsVec);
         }
         break;
-    }
+    }*/
     default:
         break;
     }

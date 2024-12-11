@@ -1,7 +1,6 @@
 #ifndef DRAWWIDGET_H
 #define DRAWWIDGET_H
 
-//#include <QOpenGLWidget>
 #include <qopenglwidget.h>
 #include "systemdata.h"
 #include <QPainter>
@@ -20,17 +19,17 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
-enum class RotateType // 旋转类型
-{
-    Rotate_0 = 0,
-    Rotate_90 = 1,
-    Rotate_180 = 2,
-    Rotate_270 = 3
-};
+//enum class ERotateType // 旋转类型
+//{
+//    Rotate_0 = 0,
+//    Rotate_90 = 1,
+//    Rotate_180 = 2,
+//    Rotate_270 = 3
+//};
 
 class CDrawBoardWidget;
 
-class DrawWidget:public QOpenGLWidget
+class DrawWidget :public QOpenGLWidget
 {
     Q_OBJECT
     friend class CDrawBoardWidget;//
@@ -53,16 +52,16 @@ public:
     inline void SetShapeType(const EShapeType &shapeType){m_ShapeType = shapeType;}
     inline EShapeType GetShapeType(){return m_ShapeType;}
 
-    int RotateLeft();
-    int RotateRight();
+    /*int RotateLeft();
+    int RotateRight();*/
     bool m_SelectBtnClicked = false;// 是否是选择状态
     bool m_RotateBtnClicked = false;// 旋转按钮是否按下
-    void Demensions();
+    /*void Demensions();*/
 
 
 private slots:
     void fn_Recv_ContentEdit_GetContent(const QString &qstrContent);
-    void fn_Change_StatusEdit_Visual(const QString &qstrContent);
+    //void fn_Change_StatusEdit_Visual(const QString &qstrContent);
 
 private:
     class SystemData *m_pSystemData;//数据存储的对象指针
@@ -77,7 +76,7 @@ private:
     QPoint m_ClickPoint_Two;// 鼠标点击的第二个坐标，标注的时候需要
     QPoint m_MovePoint;// 鼠标移动的坐标
 
-    QLineEdit m_StatusEdit; // 文本框中的文字
+    //QLineEdit m_StatusEdit; // 文本框中的文字
 
     QPen m_BlackPen;//画笔
     QPen m_ErasurePen;// 橡皮檫
@@ -89,13 +88,13 @@ private:
     //    QVector<QVector<QPoint>> ErasurePoints;
     QVector<QPoint> ErasurePoint;// 橡皮檫的容器
 
-    bool m_DemensionBtnClicked = false;
-    QVector<QPoint> DemensionsPoint;// 标注的三个点
+    //bool m_DemensionBtnClicked = false;
+    //QVector<QPoint> DemensionsPoint;// 标注的三个点
 
-    RotateType m_RotateType;// 旋转角度
-    QPoint *m_StartingClickPoint;// 用于做旋转的基点指针
+    //ERotateType m_RotateType;// 旋转角度
+    //QPoint *m_StartingClickPoint;// 用于做旋转的基点指针
 
-    GLfloat zscale=1; // 缩放比例属性
+    //GLfloat zscale=1; // 缩放比例属性
 
     // 移动操作的变量
 

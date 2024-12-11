@@ -33,7 +33,8 @@ class SystemData
 
 public:
     static SystemData * GetSystemData();
-    ShapeData * CreateShapeItem(EShapeType &type, QPoint &clickedPoint,QPoint &movePoint,QVector<QPoint> &Vec,ContentEdit &contentEdit,QVector<QPoint> &DemensionsVec);
+    /*ShapeData * CreateShapeItem(EShapeType &type, QPoint &clickedPoint,QPoint &movePoint,QVector<QPoint> &Vec,ContentEdit &contentEdit,QVector<QPoint> &DemensionsVec);*/
+    ShapeData* CreateShapeItem(EShapeType& type, QPoint& clickedPoint, QPoint& movePoint, QVector<QPoint>& Vec, ContentEdit& contentEdit);
 
     inline void SetShapePointMap(const QPoint &point) {this->m_ShapePointMap.insert(point,this->m_ShapeVec.size()-1);}
     inline void RemoveShapePointMap(const int &objIndex) {
