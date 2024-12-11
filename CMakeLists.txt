@@ -127,6 +127,8 @@ endif()
 
 #test
 
+add_subdirectory(src/draw_board)
+
 add_executable(test_01
 		${unit_test_01_SOURCES}
 )
@@ -135,7 +137,7 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame libvlc libvlccore yk_base_lib)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame draw_board libvlc libvlccore yk_base_lib)
 
 configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
 configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)

@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icon/Ellipase.png</file>
+        <file>Icon/LeftRotate.png</file>
+        <file>Icon/Line.png</file>
+        <file>Icon/Rectangle.png</file>
+        <file>Icon/Reset.png</file>
+        <file>Icon/RightRotate.png</file>
+        <file>Icon/Text.png</file>
+        <file>Icon/Triangle.png</file>
+    </qresource>
+</RCC>

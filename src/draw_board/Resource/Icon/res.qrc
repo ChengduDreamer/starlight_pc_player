@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Ellipase.png</file>
+        <file>LeftRotate.png</file>
+        <file>Line.png</file>
+        <file>Rectangle.png</file>
+        <file>res.qrc</file>
+        <file>Reset.png</file>
+        <file>RightRotate.png</file>
+        <file>Text.png</file>
+        <file>Triangle.png</file>
+        <file>Erasure.png</file>
+        <file>Icon.png</file>
+        <file>Move.png</file>
+        <file>Scole.png</file>
+        <file>Select.png</file>
+        <file>Dimensions.png</file>
+    </qresource>
+</RCC>

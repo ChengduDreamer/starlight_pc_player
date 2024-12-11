@@ -8,6 +8,7 @@
 #include "yk_logger.h"
 
 #include "qdrag_widget.h"
+#include "draw_board/CDrawBoardWidget.h"
 
 using namespace yk;
 
@@ -32,6 +33,9 @@ int main(int argc, char* argv[])
     QDragWidget drag_widget{ context };
 
     drag_widget.show();
+
+    CDrawBoardWidget w;
+    w.show();
 
     return a.exec();
 }
