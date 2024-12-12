@@ -297,23 +297,12 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
             update();
             break;
         }
-        case EShapeType::Shape_Triangle:
-        {
-            int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
-            int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
-            QPoint dis = m_MovePoint - m_ClickPoint;
-            // 最上面的点坐标加进去
-            TriangeleData *pTriangle = new TriangeleData(double(Xmin),double(Ymin),qAbs(double(dis.x())),qAbs(double(dis.y())));
-            m_pSystemData->m_ShapeVec.push_back(pTriangle);
-            update();
-            break;
-        }
         case EShapeType::Shape_Line:
         {
             LineData *pLine = new  LineData(double(m_ClickPoint.x()),double(m_ClickPoint.y()),double(m_MovePoint.x()),double(m_MovePoint.y()));
             m_pSystemData->m_ShapeVec.push_back(pLine);
-            m_pSystemData->SetShapePointMap(m_ClickPoint); // 把直线的点插入到map中去
-            m_pSystemData->SetShapePointMap(m_MovePoint); // 每个点对应容器中的图像为位置
+            //m_pSystemData->SetShapePointMap(m_ClickPoint); // 把直线的点插入到map中去
+            //m_pSystemData->SetShapePointMap(m_MovePoint); // 每个点对应容器中的图像为位置
             //            qDebug()<<m_pSystemData->m_ShapePointMap.size();
             update();
             break;
@@ -359,6 +348,11 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
     QOpenGLWidget::mouseReleaseEvent(event);
 }
 
+void DrawWidget::Revoke() {
+    m_pSystemData->m_ShapeVec.pop_back();
+    update();
+}
+
 // 本窗口鼠标移动事件
 void DrawWidget::mouseMoveEvent(QMouseEvent *event)
 {
@@ -400,12 +394,12 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
 //int num =0;
 void DrawWidget::mouseOnOnePoint(QPoint &point)
 {
-    foreach (const QPoint &p, m_pSystemData->m_ShapePointMap.keys()) {
-        //        qDebug()<<num<< p << point;
-        if((point.x()-p.x())*(point.x()-p.x()) + (point.y()-p.y())*(point.y()-p.y()) < 25){
-            this->m_CapturePoint = &p;
-        }
-    }
+   //foreach (const QPoint &p, m_pSystemData->m_ShapePointMap.keys()) {
+   //    //        qDebug()<<num<< p << point;
+   //    if((point.x()-p.x())*(point.x()-p.x()) + (point.y()-p.y())*(point.y()-p.y()) < 25){
+   //        this->m_CapturePoint = &p;
+   //    }
+   //}
     //    num+= 1;
 }
 

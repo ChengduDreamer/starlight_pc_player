@@ -2,14 +2,12 @@
 #define DRAWWIDGET_H
 
 #include <qopenglwidget.h>
-#include "systemdata.h"
+
 #include <QPainter>
 #include <QPen>
 #include <QFont>
 #include <QBrush>
 #include <QMouseEvent>
-#include "shape/shapedata.h"
-#include "shape/contentedit.h"
 #include <QDebug>
 #include <QVector>
 #include <QPainterPath>
@@ -18,6 +16,16 @@
 #include <QPoint>
 #include <QLineEdit>
 #include <QKeyEvent>
+
+#include "systemdata.h"
+#include "shape/shapedata.h"
+#include "shape/contentedit.h"
+
+
+class QLineEdit;
+class QBrush;
+class QTimer;
+
 
 //enum class ERotateType // 旋转类型
 //{
@@ -34,7 +42,7 @@ class DrawWidget :public QOpenGLWidget
     Q_OBJECT
     friend class CDrawBoardWidget;//
 public:
-    DrawWidget(QWidget *parent  = nullptr);
+    DrawWidget(QWidget *parent = nullptr);
     ~DrawWidget();
 
     void paintEvent(QPaintEvent *event) override;
@@ -47,7 +55,7 @@ public:
     //    void keyReleaseEvent(QKeyEvent *event) override;
     //    void keyPressEvent(QKeyEvent *event) override; // 这里写没用，去主面板写
 
-    void  mouseOnOnePoint(QPoint &point);
+    void mouseOnOnePoint(QPoint &point);
 
     inline void SetShapeType(const EShapeType &shapeType){m_ShapeType = shapeType;}
     inline EShapeType GetShapeType(){return m_ShapeType;}
@@ -55,9 +63,12 @@ public:
     /*int RotateLeft();
     int RotateRight();*/
     bool m_SelectBtnClicked = false;// 是否是选择状态
-    bool m_RotateBtnClicked = false;// 旋转按钮是否按下
+   // bool m_RotateBtnClicked = false;// 旋转按钮是否按下
     /*void Demensions();*/
 
+
+
+    void Revoke();
 
 private slots:
     void fn_Recv_ContentEdit_GetContent(const QString &qstrContent);

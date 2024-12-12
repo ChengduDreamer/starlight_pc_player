@@ -82,6 +82,13 @@ void CDrawBoardWidget::InitView() {
     select_btn_->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
     select_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+    revoke_btn_ = new QToolButton(this);
+    revoke_btn_->setText("撤销");
+    revoke_btn_->setObjectName(QString("RotateBtn"));
+    revoke_btn_->setIcon(QIcon(QString(":/Select.png")));
+    revoke_btn_->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
+    revoke_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
     btn_group_->addButton(ellipase_btn_);
     btn_group_->addButton(rectangle_btn_);
     btn_group_->addButton(triangle_btn_);
@@ -89,6 +96,7 @@ void CDrawBoardWidget::InitView() {
     btn_group_->addButton(text_btn_);
     btn_group_->addButton(erasure_btn_);
     btn_group_->addButton(select_btn_);
+    btn_group_->addButton(revoke_btn_);
     btn_group_->setExclusive(true);
 
     operation_hlayout->addWidget(ellipase_btn_);
@@ -98,6 +106,7 @@ void CDrawBoardWidget::InitView() {
     operation_hlayout->addWidget(text_btn_);
     operation_hlayout->addWidget(erasure_btn_);
     operation_hlayout->addWidget(select_btn_);
+    operation_hlayout->addWidget(revoke_btn_);
 
     main_vlayout->addLayout(operation_hlayout);
 
@@ -114,6 +123,7 @@ void CDrawBoardWidget::InitSigChannel() {
     connect(text_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnTextBtnClicked);
     connect(erasure_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnErasureBtnClicked);
     connect(select_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnSelectBtnClicked);
+    connect(revoke_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnRevokeBtnClicked);
 }
 
 
@@ -133,7 +143,7 @@ void CDrawBoardWidget::keyPressEvent(QKeyEvent *event)
     {
         if(draw_widget_->m_curShapeIndex != -1){
             draw_widget_->m_pSystemData->m_ShapeVec.erase(draw_widget_->m_pSystemData->m_ShapeVec.begin() + draw_widget_->m_curShapeIndex);
-            draw_widget_->m_pSystemData->RemoveShapePointMap(draw_widget_->m_curShapeIndex);
+         //   draw_widget_->m_pSystemData->RemoveShapePointMap(draw_widget_->m_curShapeIndex);
             draw_widget_->m_curShape = NULL; // 边框也去除
         }
         break;
@@ -198,5 +208,10 @@ void CDrawBoardWidget::OnErasureBtnClicked() {
 void CDrawBoardWidget::OnSelectBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::Shape_Unkonwn);
     draw_widget_->m_SelectBtnClicked = true;
+}
+
+void CDrawBoardWidget::OnRevokeBtnClicked() {
+
+    draw_widget_->Revoke();
 }
 

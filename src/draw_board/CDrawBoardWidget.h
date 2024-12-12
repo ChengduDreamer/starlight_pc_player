@@ -28,6 +28,7 @@ public slots:
     void OnTextBtnClicked();   
     void OnErasureBtnClicked();
     void OnSelectBtnClicked();
+    void OnRevokeBtnClicked();
 private:
     void InitView();
     void InitSigChannel();
@@ -40,6 +41,7 @@ private:
     QToolButton* line_btn_ = nullptr;                            // 三角形
     QToolButton* text_btn_ = nullptr;                            // 文字             
     QToolButton* erasure_btn_ = nullptr;                         // 擦除
+    QToolButton* revoke_btn_ = nullptr;                          // 撤销上一步
     QButtonGroup* btn_group_ = nullptr;
 
 
