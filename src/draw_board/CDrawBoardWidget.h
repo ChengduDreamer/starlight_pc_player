@@ -23,12 +23,13 @@ public:
 public slots:
     void OnRectangleBtnClicked();
     void OnEllipseBtnClicked();
-    void OnTriangleBtnClicked();
+    //void OnTriangleBtnClicked();
     void OnLineBtnClicked();
     void OnTextBtnClicked();   
-    void OnErasureBtnClicked();
+    //void OnErasureBtnClicked();
     void OnSelectBtnClicked();
     void OnRevokeBtnClicked();
+    void OnCustomLineBtnClicked();
 private:
     void InitView();
     void InitSigChannel();
@@ -37,10 +38,11 @@ private:
 
     QToolButton* ellipase_btn_ = nullptr;                        // 椭圆
     QToolButton* rectangle_btn_ = nullptr;                       // 矩形
-    QToolButton* triangle_btn_ = nullptr;                        // 三角形
-    QToolButton* line_btn_ = nullptr;                            // 三角形
+    //QToolButton* triangle_btn_ = nullptr;                        // 三角形
+    QToolButton* line_btn_ = nullptr;                            // 直线
+    QToolButton* custom_line_btn_ = nullptr;                            // 画笔
     QToolButton* text_btn_ = nullptr;                            // 文字             
-    QToolButton* erasure_btn_ = nullptr;                         // 擦除
+    //QToolButton* erasure_btn_ = nullptr;                         // 擦除
     QToolButton* revoke_btn_ = nullptr;                          // 撤销上一步
     QButtonGroup* btn_group_ = nullptr;
 

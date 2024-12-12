@@ -18,6 +18,7 @@ enum class EShapeType
     Shape_Line = 4,// 线条
     Shape_Text = 5,// 文本
     Erasure = 6,// 橡皮檫
+    kCustomLine, //画笔画线
     //Shape_Demensions = 7,// 标注
 };
 

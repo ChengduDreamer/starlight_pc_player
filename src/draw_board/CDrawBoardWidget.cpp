@@ -47,12 +47,12 @@ void CDrawBoardWidget::InitView() {
     rectangle_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     rectangle_btn_->setStyleSheet(tool_btn_style_);
 
-    triangle_btn_ = new QToolButton(this);
+    /*triangle_btn_ = new QToolButton(this);
     triangle_btn_->setText("三角形");
     triangle_btn_->setIcon(QIcon(QString(":/Triangle.png")));
     triangle_btn_->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
     triangle_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    triangle_btn_->setStyleSheet(tool_btn_style_);
+    triangle_btn_->setStyleSheet(tool_btn_style_);*/
 
     line_btn_ = new QToolButton(this);
     line_btn_->setText("直线");
@@ -61,6 +61,14 @@ void CDrawBoardWidget::InitView() {
     line_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     line_btn_->setStyleSheet(tool_btn_style_);
 
+    custom_line_btn_ = new QToolButton(this);
+    custom_line_btn_->setText("画笔");
+    custom_line_btn_->setIcon(QIcon(QString(":/Line.png")));
+    custom_line_btn_->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
+    custom_line_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    custom_line_btn_->setStyleSheet(tool_btn_style_);
+
+
     text_btn_ = new QToolButton(this);
     text_btn_->setText("文字");
     text_btn_->setIcon(QIcon(QString(":/Text.png")));
@@ -68,12 +76,12 @@ void CDrawBoardWidget::InitView() {
     text_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     text_btn_->setStyleSheet(tool_btn_style_);
 
-    erasure_btn_ = new QToolButton(this);
+   /* erasure_btn_ = new QToolButton(this);
     erasure_btn_->setText("擦除");
     erasure_btn_->setObjectName(QString("RotateBtn"));
     erasure_btn_->setIcon(QIcon(QString(":/Erasure.png")));
     erasure_btn_->setIconSize(QSize(ICON_SIZE, ICON_SIZE));
-    erasure_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    erasure_btn_->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);*/
 
     select_btn_ = new QToolButton(this);
     select_btn_->setText("选择");
@@ -91,20 +99,22 @@ void CDrawBoardWidget::InitView() {
 
     btn_group_->addButton(ellipase_btn_);
     btn_group_->addButton(rectangle_btn_);
-    btn_group_->addButton(triangle_btn_);
+    //btn_group_->addButton(triangle_btn_);
     btn_group_->addButton(line_btn_);
+    btn_group_->addButton(custom_line_btn_);
     btn_group_->addButton(text_btn_);
-    btn_group_->addButton(erasure_btn_);
+    //btn_group_->addButton(erasure_btn_);
     btn_group_->addButton(select_btn_);
     btn_group_->addButton(revoke_btn_);
     btn_group_->setExclusive(true);
 
     operation_hlayout->addWidget(ellipase_btn_);
     operation_hlayout->addWidget(rectangle_btn_);
-    operation_hlayout->addWidget(triangle_btn_);
+    //operation_hlayout->addWidget(triangle_btn_);
     operation_hlayout->addWidget(line_btn_);
+    operation_hlayout->addWidget(custom_line_btn_);
     operation_hlayout->addWidget(text_btn_);
-    operation_hlayout->addWidget(erasure_btn_);
+    //operation_hlayout->addWidget(erasure_btn_);
     operation_hlayout->addWidget(select_btn_);
     operation_hlayout->addWidget(revoke_btn_);
 
@@ -118,12 +128,14 @@ void CDrawBoardWidget::InitView() {
 void CDrawBoardWidget::InitSigChannel() {
     connect(ellipase_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnEllipseBtnClicked);
     connect(rectangle_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnRectangleBtnClicked);
-    connect(triangle_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnTriangleBtnClicked);
+    //connect(triangle_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnTriangleBtnClicked);
     connect(line_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnLineBtnClicked);
     connect(text_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnTextBtnClicked);
-    connect(erasure_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnErasureBtnClicked);
+    //connect(erasure_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnErasureBtnClicked);
     connect(select_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnSelectBtnClicked);
     connect(revoke_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnRevokeBtnClicked);
+
+    connect(custom_line_btn_, &QToolButton::clicked, this, &CDrawBoardWidget::OnCustomLineBtnClicked);
 }
 
 
@@ -181,11 +193,11 @@ void CDrawBoardWidget::OnEllipseBtnClicked() {
     draw_widget_->m_SelectBtnClicked = false;
 }
 
-void CDrawBoardWidget::OnTriangleBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Triangle);
-    triangle_btn_->setStyleSheet(tool_btn_style_);
-    draw_widget_->m_SelectBtnClicked = false;
-}
+//void CDrawBoardWidget::OnTriangleBtnClicked() {
+//    draw_widget_->SetShapeType(EShapeType::Shape_Triangle);
+//    triangle_btn_->setStyleSheet(tool_btn_style_);
+//    draw_widget_->m_SelectBtnClicked = false;
+//}
 
 void CDrawBoardWidget::OnLineBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::Shape_Line);
@@ -199,11 +211,11 @@ void CDrawBoardWidget::OnTextBtnClicked() {
     draw_widget_->m_SelectBtnClicked = false;
 }
 
-void CDrawBoardWidget::OnErasureBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Erasure);
-    draw_widget_->m_SelectBtnClicked = false;
-    qDebug()<<QString(int(draw_widget_->GetShapeType()));
-}
+//void CDrawBoardWidget::OnErasureBtnClicked() {
+//    draw_widget_->SetShapeType(EShapeType::Erasure);
+//    draw_widget_->m_SelectBtnClicked = false;
+//    qDebug()<<QString(int(draw_widget_->GetShapeType()));
+//}
 
 void CDrawBoardWidget::OnSelectBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::Shape_Unkonwn);
@@ -215,3 +227,8 @@ void CDrawBoardWidget::OnRevokeBtnClicked() {
     draw_widget_->Revoke();
 }
 
+void CDrawBoardWidget::OnCustomLineBtnClicked() {
+    draw_widget_->SetShapeType(EShapeType::kCustomLine);
+   // line_btn_->setStyleSheet(tool_btn_style_);
+    draw_widget_->m_SelectBtnClicked = false;
+}

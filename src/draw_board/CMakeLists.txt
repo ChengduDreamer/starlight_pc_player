@@ -20,6 +20,7 @@ set(DRAW_BOARD_SOURCES
 	shape/shapedata.cpp
 	shape/textdata.cpp
 	shape/triangeledata.cpp
+	shape/custom_line.cpp
 	Resource/Res.qrc
 )
 

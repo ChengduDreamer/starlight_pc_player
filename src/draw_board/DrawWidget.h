@@ -20,6 +20,7 @@
 #include "systemdata.h"
 #include "shape/shapedata.h"
 #include "shape/contentedit.h"
+#include "shape/custom_line.h"
 
 
 class QLineEdit;
@@ -55,7 +56,7 @@ public:
     //    void keyReleaseEvent(QKeyEvent *event) override;
     //    void keyPressEvent(QKeyEvent *event) override; // 这里写没用，去主面板写
 
-    void mouseOnOnePoint(QPoint &point);
+    //void mouseOnOnePoint(QPoint &point);
 
     inline void SetShapeType(const EShapeType &shapeType){m_ShapeType = shapeType;}
     inline EShapeType GetShapeType(){return m_ShapeType;}
@@ -69,6 +70,9 @@ public:
 
 
     void Revoke();
+
+
+    QVector<QPoint> points_data_;
 
 private slots:
     void fn_Recv_ContentEdit_GetContent(const QString &qstrContent);
@@ -90,12 +94,12 @@ private:
     //QLineEdit m_StatusEdit; // 文本框中的文字
 
     QPen m_BlackPen;//画笔
-    QPen m_ErasurePen;// 橡皮檫
+    //QPen m_ErasurePen;// 橡皮檫
     QFont m_TextFont;// 文字字体
     QBrush m_NullBrush;//空画刷  背景
     QBrush m_WhiteBrush;// 白色  背景
     QBrush m_BackgroundBrush;// 自己设置测试的背景色
-    QBrush m_ErasureBrush;//橡皮檫颜色
+    //QBrush m_ErasureBrush;//橡皮檫颜色
     //    QVector<QVector<QPoint>> ErasurePoints;
     QVector<QPoint> ErasurePoint;// 橡皮檫的容器
 

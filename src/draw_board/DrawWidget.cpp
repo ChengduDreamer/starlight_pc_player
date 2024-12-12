@@ -23,8 +23,8 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
     m_BackgroundBrush.setColor(QColor(0 ,255, 0));
     m_BackgroundBrush.setStyle(Qt::BrushStyle::SolidPattern);
     m_NullBrush.setStyle(Qt::BrushStyle::NoBrush);
-    m_ErasureBrush = m_WhiteBrush;//画笔
-    m_ErasurePen = QPen(m_WhiteBrush,10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    //m_ErasureBrush = m_WhiteBrush;//画笔
+    //m_ErasurePen = QPen(m_WhiteBrush,10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     //    //    m_ErasurePen = QPen(QBrush(QColor(255,0,0)),10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
     //    DemensionsPoint.resize(3);// 确定存储三个点，没有的话就自动赋值就好了
@@ -139,12 +139,22 @@ void DrawWidget::paintEvent(QPaintEvent *event)
             painter.drawText(QPoint(m_TextPoint.x(), m_TextPoint.y()), m_ContentEdit.text());
             break;
         }
-        case EShapeType::Erasure:
+        case EShapeType::kCustomLine:
+        {
+            CustomLine custom_line;
+
+            custom_line.points_data_ = points_data_;
+
+            custom_line.drawShape(painter);
+
+            break;
+        }
+        /*case EShapeType::Erasure:
         {
             painter.setPen(m_ErasurePen);
             painter.drawPolyline(QPolygon(ErasurePoint));
             break;
-        }
+        }*/
         default:
             break;
         }
@@ -316,13 +326,18 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
             m_ContentEdit.setFocus();
             break;
         }
-        case EShapeType::Erasure:
+        case EShapeType::kCustomLine:
+        {
+            
+            break;
+        }
+        /*case EShapeType::Erasure:
         {
             ErasureData *pErasure = new ErasureData(ErasurePoint);
             m_pSystemData->m_ShapeVec.push_back(pErasure);
             this->ErasurePoint.clear();
             break;
-        }
+        }*/
         //case EShapeType::Shape_Demensions:
         //{
         //    if(DemensionsPoint.size() == 3){
@@ -358,7 +373,7 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
 {
     // 鼠标进行实时捕获，判断是否是在某个点的范围内
     QPoint point = event->pos();
-    this->mouseOnOnePoint(point);
+   // this->mouseOnOnePoint(point);
     if(this->m_CapturePoint){
         //        qDebug()<<"已经在点中了";
         this->setCursor(Qt::CrossCursor);
@@ -375,11 +390,15 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
     m_MovePoint = event->pos();
 
     if(m_bLBtnClicked){
-        if(m_ShapeType == EShapeType::Erasure){
+       /* if(m_ShapeType == EShapeType::Erasure){
             ErasurePoint.push_back(event->pos());
-        }
+        }*/
         m_MovePoint = event->pos();
         update();
+
+        if (EShapeType::kCustomLine == m_ShapeType) {
+            points_data_.append(event->pos());
+        }
     }
 
     //// 标注实时移动
@@ -392,8 +411,8 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 //int num =0;
-void DrawWidget::mouseOnOnePoint(QPoint &point)
-{
+//void DrawWidget::mouseOnOnePoint(QPoint &point)
+//{
    //foreach (const QPoint &p, m_pSystemData->m_ShapePointMap.keys()) {
    //    //        qDebug()<<num<< p << point;
    //    if((point.x()-p.x())*(point.x()-p.x()) + (point.y()-p.y())*(point.y()-p.y()) < 25){
@@ -401,7 +420,7 @@ void DrawWidget::mouseOnOnePoint(QPoint &point)
    //    }
    //}
     //    num+= 1;
-}
+//}
 
 // 文本编辑事件
 void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString &qstrContent)
