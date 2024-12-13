@@ -163,7 +163,7 @@ void CDrawBoardWidget::keyPressEvent(QKeyEvent *event)
         // ESC键
     case Qt::Key_Escape:
         qDebug() <<"ESC";
-        draw_widget_->SetShapeType(EShapeType::Shape_Unkonwn);
+        draw_widget_->SetShapeType(EShapeType::kUnkonwn);
         break;
         // 回车键
     case Qt::Key_Return:
@@ -182,13 +182,13 @@ void CDrawBoardWidget::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void CDrawBoardWidget::OnRectangleBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Reckangle);// 设置当前选中的图像类型
+    draw_widget_->SetShapeType(EShapeType::kReckangle);// 设置当前选中的图像类型
     rectangle_btn_->setStyleSheet(tool_btn_style_);// 设置现在选中的类型，进行按钮的颜色标记
     draw_widget_->m_SelectBtnClicked = false;// 这个按钮只有在需要选择面板中的图像元素的时候才进行设置true
 }
 
 void CDrawBoardWidget::OnEllipseBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Ellipse);
+    draw_widget_->SetShapeType(EShapeType::kEllipse);
     ellipase_btn_->setStyleSheet(tool_btn_style_);
     draw_widget_->m_SelectBtnClicked = false;
 }
@@ -200,13 +200,13 @@ void CDrawBoardWidget::OnEllipseBtnClicked() {
 //}
 
 void CDrawBoardWidget::OnLineBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Line);
+    draw_widget_->SetShapeType(EShapeType::kLine);
     line_btn_->setStyleSheet(tool_btn_style_);
     draw_widget_->m_SelectBtnClicked = false;
 }
 
 void CDrawBoardWidget::OnTextBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Text);
+    draw_widget_->SetShapeType(EShapeType::kText);
     text_btn_->setStyleSheet(tool_btn_style_);
     draw_widget_->m_SelectBtnClicked = false;
 }
@@ -218,7 +218,7 @@ void CDrawBoardWidget::OnTextBtnClicked() {
 //}
 
 void CDrawBoardWidget::OnSelectBtnClicked() {
-    draw_widget_->SetShapeType(EShapeType::Shape_Unkonwn);
+    draw_widget_->SetShapeType(EShapeType::kUnkonwn);
     draw_widget_->m_SelectBtnClicked = true;
 }
 

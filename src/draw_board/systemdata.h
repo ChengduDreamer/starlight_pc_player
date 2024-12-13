@@ -7,12 +7,12 @@
 #include "rectangledata.h"
 #include "DrawWidget.h"
 #include "shape/ellipsedata.h"
-#include "shape/triangeledata.h"
+//#include "shape/triangeledata.h"
 #include "shape/linedata.h"
 #include "shape/textdata.h"
-#include "shape/erasuredata.h"
+//#include "shape/erasuredata.h"
 #include "shape/contentedit.h"
-#include "shape/demensionsdata.h"
+//#include "shape/demensionsdata.h"
 #include <QSharedPointer>
 #include <QMultiHash>
 #include <QPoint>

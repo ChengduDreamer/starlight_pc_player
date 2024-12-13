@@ -2,7 +2,7 @@
 
 CustomLine::CustomLine()
 {
-    m_ShapeType = EShapeType::Shape_Line;
+    m_ShapeType = EShapeType::kCustomLine;
     this->m_dStartPosX = 0.0;
     this->m_dStartPosY = 0.0;
     this->m_dEndPosX = 0.0;
@@ -11,7 +11,7 @@ CustomLine::CustomLine()
 
 CustomLine::CustomLine(QPoint& clickPoint, QPoint& movePoint)
 {
-    m_ShapeType = EShapeType::Shape_Line;
+    m_ShapeType = EShapeType::kLine;
     this->m_dStartPosX = double(clickPoint.x());
     this->m_dStartPosY = double(clickPoint.y());
     this->m_dEndPosX = double(movePoint.x());
@@ -33,7 +33,7 @@ CustomLine::~CustomLine()
 
 CustomLine::CustomLine(const double& dStartPosX, const double& dStartPosY, const double& dEndPosX, const double dEndPosY)
 {
-    m_ShapeType = EShapeType::Shape_Line;
+    m_ShapeType = EShapeType::kLine;
     this->m_dStartPosX = dStartPosX;
     this->m_dStartPosY = dStartPosY;
     this->m_dEndPosX = dEndPosX;

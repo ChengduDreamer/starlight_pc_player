@@ -12,14 +12,14 @@ set(DRAW_BOARD_SOURCES
 	mypoint.cpp
 	systemdata.cpp
 	shape/contentedit.cpp
-	shape/demensionsdata.cpp
+	#shape/demensionsdata.cpp
 	shape/ellipsedata.cpp
-	shape/erasuredata.cpp
+	#shape/erasuredata.cpp
 	shape/linedata.cpp
 	shape/rectangledata.cpp
 	shape/shapedata.cpp
 	shape/textdata.cpp
-	shape/triangeledata.cpp
+	#shape/triangeledata.cpp
 	shape/custom_line.cpp
 	Resource/Res.qrc
 )

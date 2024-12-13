@@ -12,7 +12,7 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
     m_pSystemData = SystemData::GetSystemData();
 
     m_bLBtnClicked = false;
-    m_ShapeType = EShapeType::Shape_Unkonwn;
+    m_ShapeType = EShapeType::kUnkonwn;
 
     //m_StatusEdit.setParent(this);
     m_BlackPen.setColor(QColor(0,0,0));
@@ -84,7 +84,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
 
     // 设置画笔
     painter.setPen(m_BlackPen);
-    painter.setFont(m_TextFont);
+   // painter.setFont(m_TextFont);
     painter.setBrush(m_NullBrush);
 
     // 这里是对去全局进行绘画
@@ -93,7 +93,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
     // 画完容器里所有的图
     for(int i =0;i<iSize;++i ){
         m_pSystemData->m_ShapeVec.at(i)->drawShape(painter);
-        //        case EShapeType::Shape_Unkonwn:
+        //        case EShapeType::kUnkonwn:
     }
 
 
@@ -109,7 +109,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
         // 改进代码段1，源代码在最后面
 
         switch (m_ShapeType) {
-        case EShapeType::Shape_Reckangle:
+        case EShapeType::kReckangle:
         {
             ShapeData* pShape = m_pSystemData->CreateShapeItem(m_ShapeType, m_ClickPoint, m_MovePoint, ErasurePoint, m_ContentEdit);
             pShape->drawShape(painter);
@@ -117,7 +117,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
             pShape = nullptr;
             break;
         }
-        case EShapeType::Shape_Ellipse:
+        case EShapeType::kEllipse:
         {
             ShapeData* pShape = m_pSystemData->CreateShapeItem(m_ShapeType, m_ClickPoint, m_MovePoint, ErasurePoint, m_ContentEdit);
             pShape->drawShape(painter);
@@ -125,12 +125,12 @@ void DrawWidget::paintEvent(QPaintEvent *event)
             pShape = nullptr;
             break;
         }
-        case EShapeType::Shape_Line:
+        case EShapeType::kLine:
         {
             painter.drawLine(m_ClickPoint, m_MovePoint);
             break;
         }
-        case EShapeType::Shape_Text:
+        case EShapeType::kText:
         {
             m_TextPoint = m_ClickPoint;
             //            TextData *qText = TextData(m_TextPoint.x(),m_TextPoint.y(),m_ContentEdit.text());
@@ -149,12 +149,6 @@ void DrawWidget::paintEvent(QPaintEvent *event)
 
             break;
         }
-        /*case EShapeType::Erasure:
-        {
-            painter.setPen(m_ErasurePen);
-            painter.drawPolyline(QPolygon(ErasurePoint));
-            break;
-        }*/
         default:
             break;
         }
@@ -261,7 +255,7 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
 void DrawWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::MouseButton::LeftButton){
-        if(m_curShape && m_curShape->GetShapeType()== EShapeType::Shape_Text){
+        if(m_curShape && m_curShape->GetShapeType()== EShapeType::kText){
             this->doubleClicked = true; // 确定当前是双击，防止单击继续操作
             TextData * pText = static_cast<TextData *>(m_curShape); // 获取当前选中的文字框的信息
             m_TextPoint = QPoint(pText->GetStartPosX(),pText->GetStartPosY());
@@ -287,7 +281,7 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
         }
 
         switch (m_ShapeType) {
-        case EShapeType::Shape_Reckangle:
+        case EShapeType::kReckangle:
         {
             int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
             int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
@@ -297,7 +291,7 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
             update();
             break;
         }
-        case EShapeType::Shape_Ellipse:
+        case EShapeType::kEllipse:
         {
             int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
             int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
@@ -307,7 +301,7 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
             update();
             break;
         }
-        case EShapeType::Shape_Line:
+        case EShapeType::kLine:
         {
             LineData *pLine = new  LineData(double(m_ClickPoint.x()),double(m_ClickPoint.y()),double(m_MovePoint.x()),double(m_MovePoint.y()));
             m_pSystemData->m_ShapeVec.push_back(pLine);
@@ -317,7 +311,7 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
             update();
             break;
         }
-        case EShapeType::Shape_Text:
+        case EShapeType::kText:
         {
             m_TextPoint = m_MovePoint;
             m_ContentEdit.clear();
@@ -328,7 +322,17 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
         }
         case EShapeType::kCustomLine:
         {
-            
+            CustomLine* cl = new CustomLine();
+
+            cl->points_data_ = points_data_;
+
+
+            m_pSystemData->m_ShapeVec.push_back(cl);
+
+            points_data_.clear();
+
+
+
             break;
         }
         /*case EShapeType::Erasure:
@@ -346,7 +350,7 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
         //        m_pSystemData->m_ShapeVec.push_back(pDemensions);
         //        this->DemensionsPoint.clear();
         //        this->m_DemensionBtnClicked = false;// 如果想设置连续标注，可以设置变量来控制，保存上次按下的按钮，然后通过某个键盘来触发
-        //        this->SetShapeType(EShapeType::Shape_Unkonwn);// 不然回出错,为空的时候
+        //        this->SetShapeType(EShapeType::kUnkonwn);// 不然回出错,为空的时候
         //    }
         //    break;
         //}
@@ -530,13 +534,13 @@ void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString &qstrContent)
 
 // 这段代码经过改进：改进【1】
 //        switch (m_ShapeType) {
-//        case EShapeType::Shape_Reckangle:
+//        case EShapeType::kReckangle:
 //        {
 //            ShapeData *pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint);
 //            pShape->drawShape(painter);
 //            break;
 //        }
-//        case EShapeType::Shape_Ellipse:
+//        case EShapeType::kEllipse:
 //        {
 //            ShapeData *pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint);
 //            pShape->drawShape(painter);
@@ -556,12 +560,12 @@ void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString &qstrContent)
 //            painter.drawLine(point2,point3);
 //            break;
 //        }
-//        case EShapeType::Shape_Line:
+//        case EShapeType::kLine:
 //        {
 //            painter.drawLine(m_ClickPoint,m_MovePoint);
 //            break;
 //        }
-//        case EShapeType::Shape_Text:
+//        case EShapeType::kText:
 //        {
 //            m_TextPoint = m_ClickPoint;
 //            //            TextData *qText = TextData(m_TextPoint.x(),m_TextPoint.y(),m_ContentEdit.text());

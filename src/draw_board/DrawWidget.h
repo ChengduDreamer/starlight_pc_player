@@ -22,42 +22,27 @@
 #include "shape/contentedit.h"
 #include "shape/custom_line.h"
 
-
 class QLineEdit;
 class QBrush;
 class QTimer;
-
-
-//enum class ERotateType // 旋转类型
-//{
-//    Rotate_0 = 0,
-//    Rotate_90 = 1,
-//    Rotate_180 = 2,
-//    Rotate_270 = 3
-//};
 
 class CDrawBoardWidget;
 
 class DrawWidget :public QOpenGLWidget
 {
     Q_OBJECT
-    friend class CDrawBoardWidget;//
+    friend class CDrawBoardWidget;
 public:
     DrawWidget(QWidget *parent = nullptr);
     ~DrawWidget();
 
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-
     void mousePressEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    //    void keyReleaseEvent(QKeyEvent *event) override;
-    //    void keyPressEvent(QKeyEvent *event) override; // 这里写没用，去主面板写
-
-    //void mouseOnOnePoint(QPoint &point);
-
+   
     inline void SetShapeType(const EShapeType &shapeType){m_ShapeType = shapeType;}
     inline EShapeType GetShapeType(){return m_ShapeType;}
 

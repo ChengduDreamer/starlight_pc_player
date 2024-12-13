@@ -2,7 +2,7 @@
 
 RectangleData::RectangleData()
 {
-    m_ShapeType = EShapeType::Shape_Reckangle;
+    m_ShapeType = EShapeType::kReckangle;
     this->m_dStartPosX = 0.0;
     this->m_dStartPosY = 0.0;
     this->m_dHeight = 0.0;
@@ -15,7 +15,7 @@ RectangleData::RectangleData(QPoint &clickPoint, QPoint &movePoint)
     int Ymin = clickPoint.y() < movePoint.y()?clickPoint.y():movePoint.y();
     QPoint dis = movePoint - clickPoint;
 
-    m_ShapeType = EShapeType::Shape_Reckangle;
+    m_ShapeType = EShapeType::kReckangle;
     this->m_dStartPosX = double(Xmin);
     this->m_dStartPosY = double(Ymin);
     this->m_dWidth = qAbs(double(dis.x()));
@@ -25,7 +25,7 @@ RectangleData::RectangleData(QPoint &clickPoint, QPoint &movePoint)
 
 RectangleData::RectangleData(const double &dPosX, const double &dPosY, const double &dWidth, const double dHeight)
 {
-    m_ShapeType = EShapeType::Shape_Reckangle;
+    m_ShapeType = EShapeType::kReckangle;
     this->m_dStartPosX = dPosX;
     this->m_dStartPosY = dPosY;
     this->m_dHeight = dHeight;

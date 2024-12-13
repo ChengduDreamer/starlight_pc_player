@@ -2,7 +2,7 @@
 
 EllipseData::EllipseData()
 {
-    m_ShapeType = EShapeType::Shape_Ellipse;
+    m_ShapeType = EShapeType::kEllipse;
 
     m_dStartPosX = 0.0;
     m_dStartPosY = 0.0;
@@ -16,7 +16,7 @@ EllipseData::EllipseData(QPoint &clickPoint, QPoint &movePoint)
     int Ymin = clickPoint.y() < movePoint.y()?clickPoint.y():movePoint.y();
     QPoint dis = movePoint - clickPoint;
 
-    m_ShapeType = EShapeType::Shape_Ellipse;
+    m_ShapeType = EShapeType::kEllipse;
 
     m_dStartPosX = double(Xmin);
     m_dStartPosY = double(Ymin);
@@ -33,7 +33,7 @@ EllipseData::EllipseData(QPoint &clickPoint, QPoint &movePoint)
 */
 EllipseData::EllipseData(const double &dStartPosX, const double &dStartPosY, const double &dRadiusW, const double &dRediusH)
 {
-    m_ShapeType = EShapeType::Shape_Ellipse;
+    m_ShapeType = EShapeType::kEllipse;
 
     m_dStartPosX = dStartPosX;
     m_dStartPosY = dStartPosY;

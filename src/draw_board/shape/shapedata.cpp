@@ -2,7 +2,7 @@
 
 ShapeData::ShapeData()
 {
-    m_ShapeType = EShapeType::Shape_Unkonwn;
+    m_ShapeType = EShapeType::kUnkonwn;
 }
 
 void ShapeData::rotatePoint(QPoint &BasePoint,QPoint &point, double arg = 0.0)

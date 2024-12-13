@@ -2,14 +2,14 @@
 
 TextData::TextData()
 {
-    m_ShapeType = EShapeType::Shape_Text;
+    m_ShapeType = EShapeType::kText;
     m_qStartPosX = 0.0;
     m_qStartPosY = 0.0;
 }
 
 TextData::TextData(QPoint &clickPoint, ContentEdit &contentEdit)
 {
-    m_ShapeType = EShapeType::Shape_Text;
+    m_ShapeType = EShapeType::kText;
     m_qStartPosX = clickPoint.x();
     m_qStartPosY = clickPoint.y();
     contentEdit.clear();
@@ -20,7 +20,7 @@ TextData::TextData(QPoint &clickPoint, ContentEdit &contentEdit)
 
 TextData::TextData(const double &dStartPosX, const double &dStartPosY, const QString &qstrContent)
 {
-    m_ShapeType = EShapeType::Shape_Text;
+    m_ShapeType = EShapeType::kText;
     m_qStartPosX = dStartPosX;
     m_qStartPosY = dStartPosY;
     m_qstrContent = qstrContent;

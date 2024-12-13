@@ -10,34 +10,24 @@ SystemData *SystemData::GetSystemData()
 ShapeData * SystemData::CreateShapeItem(EShapeType &type, QPoint &clickedPoint,QPoint &movePoint,QVector<QPoint> &Vec,ContentEdit &contentEdit){
     ShapeData * temp = new ShapeData;
     switch (type) {
-    case EShapeType::Shape_Reckangle:
+    case EShapeType::kReckangle:
     {
         temp =new RectangleData(clickedPoint,movePoint);
         break;
     }
-    case EShapeType::Shape_Ellipse:
+    case EShapeType::kEllipse:
     {
         temp =new EllipseData(clickedPoint,movePoint);
         break;
     }
-    case EShapeType::Shape_Triangle:
-    {
-        temp =new TriangeleData(clickedPoint,movePoint);
-        break;
-    }
-    case EShapeType::Shape_Line:
+    case EShapeType::kLine:
     {
         temp =new LineData(clickedPoint,movePoint);
         break;
     }
-    case EShapeType::Shape_Text:
+    case EShapeType::kText:
     {
         temp =new TextData(clickedPoint,contentEdit);
-        break;
-    }
-    case EShapeType::Erasure:
-    {
-        temp =new ErasureData(Vec);
         break;
     }
    /* case EShapeType::Shape_Demensions:

@@ -11,15 +11,12 @@ const double PI = 3.1415926/180;
 
 enum class EShapeType
 {
-    Shape_Unkonwn = 0,// 未知形状
-    Shape_Reckangle = 1, // 矩形
-    Shape_Ellipse = 2,// 椭圆
-    Shape_Triangle = 3,// 三角形
-    Shape_Line = 4,// 线条
-    Shape_Text = 5,// 文本
-    Erasure = 6,// 橡皮檫
-    kCustomLine, //画笔画线
-    //Shape_Demensions = 7,// 标注
+    kUnkonwn,     // 未知形状
+    kReckangle,   // 矩形
+    kEllipse,     // 椭圆
+    kLine,        // 线条
+    kText,        // 文本
+    kCustomLine,  //画笔画线
 };
 
 //已知直线上的两点P1(X1,Y1) P2(X2,Y2)， P1 P2两点不重合。则直线的一般式方程AX+BY+C=0中，A B C分别等于：
