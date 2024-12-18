@@ -28,7 +28,8 @@
 class QLineEdit;
 class QBrush;
 class QTimer;
-class SystemData;
+//class SystemData;
+class TextEditWidget;
 
 class CDrawBoardWidget;
 
@@ -75,7 +76,9 @@ private:
     BaseShape *cur_select_shape_ = NULL;
 
     // 文本编辑窗口
-    ContentEdit content_edit_;        
+    //ContentEdit content_edit_;        
+
+    TextEditWidget* text_edit_ = nullptr;
 
     // 文本编辑位置
     QPoint text_point_;               

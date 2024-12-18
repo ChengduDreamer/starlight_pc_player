@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QObject>
+#include <qtextdocument.h>
 #include "base_shape.h"
 #include "content_edit.h"
 
@@ -45,11 +46,17 @@ public:
 
     bool EnterSelectRange(const QPoint& point) override;
 
+    QString html_content;
+
+    QTextDocument text_document;
+
 private:
     double start_pos_x_ = 0.0;
     double start_pos_y_ = 0.0;
     QString content_;
     int word_count_ = 0;
     bool selected_ = false;
+
+    
 };
 

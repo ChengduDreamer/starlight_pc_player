@@ -22,6 +22,9 @@ TextShape::TextShape(const double& start_pos_x, const double& start_pos_y, const
     start_pos_y_ = start_pos_y;
     content_ = content;
     word_count_ = content_.size();
+
+
+    html_content = content;
 }
 
 TextShape::~TextShape() {
@@ -43,7 +46,16 @@ bool TextShape::EnterSelectRange(const QPoint& point) {
 
 void TextShape::DrawShape(QPainter &painter)
 {
-    painter.drawText(QPoint(this->GetStartPosX(),this->GetStartPosY()),this->content_);
+    //painter.drawText(QPoint(this->GetStartPosX() - 100 ,this->GetStartPosY() - 100),this->content_);
+
+  
+
+   // QRectF rectf{ this->GetStartPosX(),this->GetStartPosY(), 200, 100 };
+    text_document.setHtml(this->content_);
+
+    QRectF rectf{ 10, 10, 200, 100 }; // 适当调整位置和大小
+
+    text_document.drawContents(&painter, rectf);
 }
 
 

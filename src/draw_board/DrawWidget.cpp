@@ -17,7 +17,7 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
 
     //m_StatusEdit.setParent(this);
     black_pen_.setColor(QColor(0,0,0));
-    text_font_.setFamily(QStringLiteral("楷体"));
+    text_font_.setFamily(QStringLiteral("Microsoft YaHei"));
     text_font_.setPixelSize(20);
     white_brush_.setColor(QColor(255,255,255));
     white_brush_.setStyle(Qt::BrushStyle::SolidPattern);
@@ -30,24 +30,30 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
 
     //    DemensionsPoint.resize(3);// 确定存储三个点，没有的话就自动赋值就好了
 
-    content_edit_.setParent(this);
-    content_edit_.hide();
-    content_edit_.setFont(text_font_);
+    //content_edit_.setParent(this);
+    //content_edit_.hide();
+    //content_edit_.setFont(text_font_);
     //m_RotateType = ERotateType::Rotate_0;// 默认0度
+
+
+    text_edit_ = new TextEditWidget(this);
+    text_edit_->hide();
+    text_edit_->setFont(text_font_);
+
 
     this->setMouseTracking(true);// 设置为不按下鼠标键触发moveEvent，对moveevent起作用
 
-    QObject::connect(&content_edit_,SIGNAL(Signal_GetContent(QString)),this,SLOT(fn_Recv_ContentEdit_GetContent(QString)),Qt::ConnectionType::DirectConnection);
+    //QObject::connect(&content_edit_,SIGNAL(Signal_GetContent(QString)),this,SLOT(fn_Recv_ContentEdit_GetContent(QString)),Qt::ConnectionType::DirectConnection);
 
     //m_StatusEdit.setGeometry(0,this->height() + 20,this->width(),20);
     //m_StatusEdit.setStyleSheet("QLineEdit{background-color:transparent}""QLineEdit{border-width:0;border-style:outset}");
     //connect(&m_StatusEdit,SIGNAL(textChanged(QString)),this,SLOT(fn_Change_StatusEdit_Visual(QString)),Qt::ConnectionType::DirectConnection);//有文本显示边框和背景颜色
 
-    TextEditWidget* ew = new TextEditWidget(this);
+    /*TextEditWidget* ew = new TextEditWidget(this);
 
     ew->move(200, 200);
 
-    ew->resize(200, 200);
+    ew->resize(200, 200);*/
 
 
    // AutoSizeWidget* aw = new AutoSizeWidget(false, this);
@@ -57,6 +63,15 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
    // aw->resize(200, 200);
 
     resize(800, 600);
+
+    connect(text_edit_, &TextEditWidget::SigHtml, this, [=](QString html) {
+        
+        std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), html);
+
+        shapes_.emplace_back(text_shape);
+       
+        text_edit_->hide();
+    });
 }
 
 DrawWidget::~DrawWidget()
@@ -74,29 +89,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);// 平滑曲线 防止图形走样
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);// 绘制结果 = 绘制输入，目的绘制区域原来的像素被完全覆盖。https://blog.csdn.net/yejin_tianming/article/details/105113668
 
-    // 旋转画笔
-   /* switch (m_RotateType) {
-    case ERotateType::Rotate_90:
-    {
-        painter.translate(this->width(),0.0);
-        painter.rotate(90);
-        break;
-    }
-    case ERotateType::Rotate_180:
-    {
-        painter.translate(this->width(),this->height());
-        painter.rotate(180);
-        break;
-    }
-    case ERotateType::Rotate_270:
-    {
-        painter.translate(0.0,this->height());
-        painter.rotate(270);
-        break;
-    }
-    default:
-        break;
-    }*/
+
 
     // 设置画笔
     painter.setPen(black_pen_);
@@ -137,10 +130,10 @@ void DrawWidget::paintEvent(QPaintEvent *event)
             break;
         }
         case EShapeType::kText: {
-            text_point_ = clicked_point_;
+            /*text_point_ = clicked_point_;
             content_edit_.show();
             content_edit_.setGeometry(text_point_.x(), text_point_.y(), 200, 100);
-            painter.drawText(QPoint(text_point_.x(), text_point_.y()), content_edit_.toPlainText());
+            painter.drawText(QPoint(text_point_.x(), text_point_.y()), content_edit_.toPlainText());*/
             break;
         }
         case EShapeType::kCustomLine: {
@@ -255,19 +248,19 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
 
 void DrawWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::MouseButton::LeftButton){
-        if(cur_select_shape_ && cur_select_shape_->GetShapeType() == EShapeType::kText){
-            this->double_clicked_ = true; // 确定当前是双击，防止单击继续操作
-            TextShape* text_shape = dynamic_cast<TextShape*>(cur_select_shape_); // 获取当前选中的文字框的信息
-            text_point_ = QPoint(text_shape->GetStartPosX(), text_shape->GetStartPosY());
-            content_edit_.show();
-            cur_select_shape_ = NULL;
-            update();
-            //            qDebug()<<"update";
-            content_edit_.setGeometry(text_point_.x()-3,text_point_.y()-22.5,200,30);
-            content_edit_.setPlainText(text_shape->GetContent());
-        }
-    }
+    //if(event->button() == Qt::MouseButton::LeftButton){
+    //    if(cur_select_shape_ && cur_select_shape_->GetShapeType() == EShapeType::kText){
+    //        this->double_clicked_ = true; // 确定当前是双击，防止单击继续操作
+    //        TextShape* text_shape = dynamic_cast<TextShape*>(cur_select_shape_); // 获取当前选中的文字框的信息
+    //        text_point_ = QPoint(text_shape->GetStartPosX(), text_shape->GetStartPosY());
+    //        content_edit_.show();
+    //        cur_select_shape_ = NULL;
+    //        update();
+    //        //            qDebug()<<"update";
+    //        content_edit_.setGeometry(text_point_.x()-3,text_point_.y()-22.5,200,30);
+    //        content_edit_.setPlainText(text_shape->GetContent());
+    //    }
+    //}
 
     QOpenGLWidget::mouseDoubleClickEvent(event);
 }
@@ -305,10 +298,16 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
         }
         case EShapeType::kText: {  //to do 这里需要看下
             text_point_ = move_point_;
-            content_edit_.clear();
+           /* content_edit_.clear();
             content_edit_.show();
             content_edit_.setGeometry(text_point_.x(), text_point_.y(), 200, 100);
-            content_edit_.setFocus();
+            content_edit_.setFocus();*/
+
+            text_edit_->show();
+            text_edit_->move(text_point_);
+            text_edit_->setFocus();
+
+
             break;
         }
         case EShapeType::kCustomLine: {
@@ -397,11 +396,11 @@ void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString& content) {
     //}
 
     std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), content);
-
+    
     shapes_.emplace_back(text_shape);
-
+    
     qDebug() << "recv content";
-
+    
     if (content.indexOf("\n") != -1) //数据中有\n，插入\r; 怎么应对一个以上的换行?
     {
         qDebug() << "content have \n";

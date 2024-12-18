@@ -8,6 +8,7 @@
 #include <qtextedit.h>
 #include <qplaintextedit.h>
 #include <qtoolbutton.h>
+#include <QTextBlock>
 #include <qevent.h>
 #include "auto_size_widget.h"
 
@@ -44,11 +45,22 @@ public:
     virtual void mousePressEvent(QMouseEvent* event) override;
     virtual void mouseReleaseEvent(QMouseEvent* event) override;
     
+
+Q_SIGNALS:
+    //void SigTextDocument(QTextDocument* text_doc);
+
+    //void SigTextEdit(QTextEdit);
+
+    void SigHtml(QString);
+
+private:
+    void ToPixmap();
+    void InitSigChannel();
 private:
     QWidget* title_bar_ = nullptr;
 
     QToolButton* close_btn_ = nullptr;
-    QPlainTextEdit* edit_ = nullptr;
+    QTextEdit* edit_ = nullptr;
     QToolButton* delete_all_btn_ = nullptr;
     QToolButton* ok_btn_ = nullptr;
 
