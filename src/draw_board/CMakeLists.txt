@@ -9,18 +9,16 @@ find_package(Qt5 COMPONENTS OpenGL REQUIRED)
 set(DRAW_BOARD_SOURCES
 	CDrawBoardWidget.cpp
 	DrawWidget.cpp
-	mypoint.cpp
-	systemdata.cpp
-	shape/contentedit.cpp
-	#shape/demensionsdata.cpp
-	shape/ellipsedata.cpp
-	#shape/erasuredata.cpp
-	shape/linedata.cpp
-	shape/rectangledata.cpp
-	shape/shapedata.cpp
-	shape/textdata.cpp
-	#shape/triangeledata.cpp
-	shape/custom_line.cpp
+	#mypoint.cpp
+	#systemdata.cpp
+	shape/content_edit.cpp
+	shape/ellipse_shape.cpp
+	shape/line_shape.cpp
+	shape/rectangle_shape.cpp
+	shape/base_shape.cpp
+	shape/text_shape.cpp
+	shape/custom_line_shape.cpp
+	shape/auto_size_widget.cpp
 	Resource/Res.qrc
 )
 

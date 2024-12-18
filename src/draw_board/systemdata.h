@@ -23,7 +23,7 @@ static uint qHash(const QPoint& key, uint seed) { //必须实现，此时会报�
     return qHash<int>(val, seed);
 }
 
-class DrawWidget;// 声明绘画窗口
+class DrawWidget;      // 声明绘画窗口
 class CDrawBoardWidget;//主窗体
 
 class SystemData

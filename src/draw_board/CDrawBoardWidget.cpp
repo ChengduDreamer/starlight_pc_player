@@ -6,6 +6,9 @@
 #include <qbuttongroup.h>
 
 CDrawBoardWidget::CDrawBoardWidget(QWidget *parent): QWidget(parent) {
+
+    resize(800, 600);
+
     InitView();
     InitSigChannel();
 }
@@ -15,6 +18,7 @@ CDrawBoardWidget::~CDrawBoardWidget() {
 }
 
 void CDrawBoardWidget::InitView() {
+    setMouseTracking(true);
     setAttribute(Qt::WA_StyledBackground);
     this->setWindowTitle(QStringLiteral("画图板"));
     this->setWindowIcon(QIcon(QString(":/Icon.png")));
@@ -153,10 +157,10 @@ void CDrawBoardWidget::keyPressEvent(QKeyEvent *event)
     // Delete
     case Qt::Key_Delete:
     {
-        if(draw_widget_->m_curShapeIndex != -1){
-            draw_widget_->m_pSystemData->m_ShapeVec.erase(draw_widget_->m_pSystemData->m_ShapeVec.begin() + draw_widget_->m_curShapeIndex);
-         //   draw_widget_->m_pSystemData->RemoveShapePointMap(draw_widget_->m_curShapeIndex);
-            draw_widget_->m_curShape = NULL; // 边框也去除
+        if(draw_widget_->cur_selected_shape_index_ != -1){ // to do 判断 shapes_ 数量
+            draw_widget_->shapes_.erase(draw_widget_->shapes_.begin() + draw_widget_->cur_selected_shape_index_);
+         //   draw_widget_->m_pSystemData->RemoveShapePointMap(draw_widget_->cur_selected_shape_index_);
+            draw_widget_->cur_select_shape_ = NULL; // 边框也去除
         }
         break;
     }
@@ -184,42 +188,42 @@ void CDrawBoardWidget::keyReleaseEvent(QKeyEvent *event) {
 void CDrawBoardWidget::OnRectangleBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kReckangle);// 设置当前选中的图像类型
     rectangle_btn_->setStyleSheet(tool_btn_style_);// 设置现在选中的类型，进行按钮的颜色标记
-    draw_widget_->m_SelectBtnClicked = false;// 这个按钮只有在需要选择面板中的图像元素的时候才进行设置true
+    draw_widget_->select_btn_clicked_ = false;// 这个按钮只有在需要选择面板中的图像元素的时候才进行设置true
 }
 
 void CDrawBoardWidget::OnEllipseBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kEllipse);
     ellipase_btn_->setStyleSheet(tool_btn_style_);
-    draw_widget_->m_SelectBtnClicked = false;
+    draw_widget_->select_btn_clicked_ = false;
 }
 
 //void CDrawBoardWidget::OnTriangleBtnClicked() {
 //    draw_widget_->SetShapeType(EShapeType::Shape_Triangle);
 //    triangle_btn_->setStyleSheet(tool_btn_style_);
-//    draw_widget_->m_SelectBtnClicked = false;
+//    draw_widget_->select_btn_clicked_ = false;
 //}
 
 void CDrawBoardWidget::OnLineBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kLine);
     line_btn_->setStyleSheet(tool_btn_style_);
-    draw_widget_->m_SelectBtnClicked = false;
+    draw_widget_->select_btn_clicked_ = false;
 }
 
 void CDrawBoardWidget::OnTextBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kText);
     text_btn_->setStyleSheet(tool_btn_style_);
-    draw_widget_->m_SelectBtnClicked = false;
+    draw_widget_->select_btn_clicked_ = false;
 }
 
 //void CDrawBoardWidget::OnErasureBtnClicked() {
 //    draw_widget_->SetShapeType(EShapeType::Erasure);
-//    draw_widget_->m_SelectBtnClicked = false;
+//    draw_widget_->select_btn_clicked_ = false;
 //    qDebug()<<QString(int(draw_widget_->GetShapeType()));
 //}
 
 void CDrawBoardWidget::OnSelectBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kUnkonwn);
-    draw_widget_->m_SelectBtnClicked = true;
+    draw_widget_->select_btn_clicked_ = true;
 }
 
 void CDrawBoardWidget::OnRevokeBtnClicked() {
@@ -230,5 +234,5 @@ void CDrawBoardWidget::OnRevokeBtnClicked() {
 void CDrawBoardWidget::OnCustomLineBtnClicked() {
     draw_widget_->SetShapeType(EShapeType::kCustomLine);
    // line_btn_->setStyleSheet(tool_btn_style_);
-    draw_widget_->m_SelectBtnClicked = false;
+    draw_widget_->select_btn_clicked_ = false;
 }

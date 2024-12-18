@@ -1,46 +1,62 @@
 #include "DrawWidget.h"
 #include <qsizepolicy.h>
+#include "shape/auto_size_widget.h"
 
 DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
 {
-
+    setMouseTracking(true);
     auto sizepolicy = this->sizePolicy();
     sizepolicy.setHorizontalPolicy(QSizePolicy::Expanding);
     sizepolicy.setVerticalPolicy(QSizePolicy::Expanding);
     setSizePolicy(sizepolicy);
 
-    m_pSystemData = SystemData::GetSystemData();
+    //m_pSystemData = SystemData::GetSystemData();
 
-    m_bLBtnClicked = false;
-    m_ShapeType = EShapeType::kUnkonwn;
+    mouse_left_btn_clicked_ = false;
+    shape_type_ = EShapeType::kUnkonwn;
 
     //m_StatusEdit.setParent(this);
-    m_BlackPen.setColor(QColor(0,0,0));
-    m_TextFont.setFamily(QStringLiteral("楷体"));
-    m_TextFont.setPixelSize(20);
-    m_WhiteBrush.setColor(QColor(255,255,255));
-    m_WhiteBrush.setStyle(Qt::BrushStyle::SolidPattern);
-    m_BackgroundBrush.setColor(QColor(0 ,255, 0));
-    m_BackgroundBrush.setStyle(Qt::BrushStyle::SolidPattern);
-    m_NullBrush.setStyle(Qt::BrushStyle::NoBrush);
-    //m_ErasureBrush = m_WhiteBrush;//画笔
-    //m_ErasurePen = QPen(m_WhiteBrush,10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    black_pen_.setColor(QColor(0,0,0));
+    text_font_.setFamily(QStringLiteral("楷体"));
+    text_font_.setPixelSize(20);
+    white_brush_.setColor(QColor(255,255,255));
+    white_brush_.setStyle(Qt::BrushStyle::SolidPattern);
+    /*m_BackgroundBrush.setColor(QColor(0 ,255, 0));
+    m_BackgroundBrush.setStyle(Qt::BrushStyle::SolidPattern);*/
+    null_brush_.setStyle(Qt::BrushStyle::NoBrush);
+    //m_ErasureBrush = white_brush_;//画笔
+    //m_ErasurePen = QPen(white_brush_,10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     //    //    m_ErasurePen = QPen(QBrush(QColor(255,0,0)),10, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
     //    DemensionsPoint.resize(3);// 确定存储三个点，没有的话就自动赋值就好了
 
-    m_ContentEdit.setParent(this);
-    m_ContentEdit.hide();
-    m_ContentEdit.setFont(m_TextFont);
+    content_edit_.setParent(this);
+    content_edit_.hide();
+    content_edit_.setFont(text_font_);
     //m_RotateType = ERotateType::Rotate_0;// 默认0度
 
     this->setMouseTracking(true);// 设置为不按下鼠标键触发moveEvent，对moveevent起作用
 
-    QObject::connect(&m_ContentEdit,SIGNAL(Signal_GetContent(QString)),this,SLOT(fn_Recv_ContentEdit_GetContent(QString)),Qt::ConnectionType::DirectConnection);
+    QObject::connect(&content_edit_,SIGNAL(Signal_GetContent(QString)),this,SLOT(fn_Recv_ContentEdit_GetContent(QString)),Qt::ConnectionType::DirectConnection);
 
     //m_StatusEdit.setGeometry(0,this->height() + 20,this->width(),20);
     //m_StatusEdit.setStyleSheet("QLineEdit{background-color:transparent}""QLineEdit{border-width:0;border-style:outset}");
     //connect(&m_StatusEdit,SIGNAL(textChanged(QString)),this,SLOT(fn_Change_StatusEdit_Visual(QString)),Qt::ConnectionType::DirectConnection);//有文本显示边框和背景颜色
+
+    TextEditWidget* ew = new TextEditWidget(this);
+
+    ew->move(200, 200);
+
+    ew->resize(200, 200);
+
+
+   // AutoSizeWidget* aw = new AutoSizeWidget(false, this);
+   //
+   // aw->move(100, 100);
+   //
+   // aw->resize(200, 200);
+
+    resize(800, 600);
 }
 
 DrawWidget::~DrawWidget()
@@ -53,7 +69,7 @@ void DrawWidget::paintEvent(QPaintEvent *event)
     QOpenGLWidget::paintEvent(event);    // 先调用再渲染
 
     QPainter painter(this);
-    painter.setBrush(m_WhiteBrush);
+    painter.setBrush(white_brush_);
     painter.drawRect(rect());// 整个窗体的矩形
     painter.setRenderHint(QPainter::Antialiasing);// 平滑曲线 防止图形走样
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);// 绘制结果 = 绘制输入，目的绘制区域原来的像素被完全覆盖。https://blog.csdn.net/yejin_tianming/article/details/105113668
@@ -83,70 +99,54 @@ void DrawWidget::paintEvent(QPaintEvent *event)
     }*/
 
     // 设置画笔
-    painter.setPen(m_BlackPen);
-   // painter.setFont(m_TextFont);
-    painter.setBrush(m_NullBrush);
+    painter.setPen(black_pen_);
+   // painter.setFont(text_font_);
+    painter.setBrush(null_brush_);
 
     // 这里是对去全局进行绘画
-    int iSize = m_pSystemData->m_ShapeVec.size();
+    //int iSize = m_pSystemData->m_ShapeVec.size();
+    //
+    //// 画完容器里所有的图
+    //for(int i =0;i<iSize;++i ){
+    //    m_pSystemData->m_ShapeVec.at(i)->drawShape(painter);
+    //    //        case EShapeType::kUnkonwn:
+    //}
 
-    // 画完容器里所有的图
-    for(int i =0;i<iSize;++i ){
-        m_pSystemData->m_ShapeVec.at(i)->drawShape(painter);
-        //        case EShapeType::kUnkonwn:
+    for (auto& shape : shapes_) {
+        shape->DrawShape(painter);
     }
 
-
     // 这里是对当前按下的按钮选项进行绘画
-    /*if(m_bLBtnClicked || (m_DemensionBtnClicked && this->DemensionsPoint.size() == 3)){*/
-    if (m_bLBtnClicked) {
-        //         QSharedPointer<ShapeData> pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint,m_ContentEdit,DemensionsPoint);
-       // ShapeData *pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint,m_ContentEdit);
-        //pShape->drawShape(painter);
-        //        pShape.clear();
-        //delete pShape;
-        //pShape = nullptr;//一定要记得删除，可以使用智能指针比较好
-        // 改进代码段1，源代码在最后面
-
-        switch (m_ShapeType) {
-        case EShapeType::kReckangle:
-        {
-            ShapeData* pShape = m_pSystemData->CreateShapeItem(m_ShapeType, m_ClickPoint, m_MovePoint, ErasurePoint, m_ContentEdit);
-            pShape->drawShape(painter);
-            delete pShape;
-            pShape = nullptr;
+    /*if(mouse_left_btn_clicked_ || (m_DemensionBtnClicked && this->DemensionsPoint.size() == 3)){*/
+    if (mouse_left_btn_clicked_) {
+        switch (shape_type_) {
+        case EShapeType::kReckangle: {
+            static RectangleShape rect_shape;
+            rect_shape.UpdateData(clicked_point_, move_point_);
+            rect_shape.DrawShape(painter);
             break;
         }
-        case EShapeType::kEllipse:
-        {
-            ShapeData* pShape = m_pSystemData->CreateShapeItem(m_ShapeType, m_ClickPoint, m_MovePoint, ErasurePoint, m_ContentEdit);
-            pShape->drawShape(painter);
-            delete pShape;
-            pShape = nullptr;
+        case EShapeType::kEllipse: {
+            static EllipseShape ell;
+            ell.UpdateData(clicked_point_, move_point_);
+            ell.DrawShape(painter);
             break;
         }
-        case EShapeType::kLine:
-        {
-            painter.drawLine(m_ClickPoint, m_MovePoint);
+        case EShapeType::kLine: {
+            painter.drawLine(clicked_point_, move_point_);
             break;
         }
-        case EShapeType::kText:
-        {
-            m_TextPoint = m_ClickPoint;
-            //            TextData *qText = TextData(m_TextPoint.x(),m_TextPoint.y(),m_ContentEdit.text());
-            m_ContentEdit.show();
-            m_ContentEdit.setGeometry(m_TextPoint.x(), m_TextPoint.y(), 200, 30);
-            painter.drawText(QPoint(m_TextPoint.x(), m_TextPoint.y()), m_ContentEdit.text());
+        case EShapeType::kText: {
+            text_point_ = clicked_point_;
+            content_edit_.show();
+            content_edit_.setGeometry(text_point_.x(), text_point_.y(), 200, 100);
+            painter.drawText(QPoint(text_point_.x(), text_point_.y()), content_edit_.toPlainText());
             break;
         }
-        case EShapeType::kCustomLine:
-        {
-            CustomLine custom_line;
-
+        case EShapeType::kCustomLine: {
+            static CustomLineShape custom_line;
             custom_line.points_data_ = points_data_;
-
-            custom_line.drawShape(painter);
-
+            custom_line.DrawShape(painter);
             break;
         }
         default:
@@ -158,8 +158,8 @@ void DrawWidget::paintEvent(QPaintEvent *event)
 
     // 对尺寸进行标记
 
-    if(m_curShape){
-        m_curShape->paintFrame(painter);
+    if(cur_select_shape_){
+        cur_select_shape_->PaintFrame(painter);
     }
 
     update();
@@ -173,13 +173,14 @@ void DrawWidget::resizeEvent(QResizeEvent *event)
 void DrawWidget::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::MouseButton::LeftButton){
-        m_bLBtnClicked = true; // 鼠标左键按下
-        if(this->m_CapturePoint){ // 如果鼠标捕获了点，就直接以捕获点为绘制的点
-            m_ClickPoint = *(this->m_CapturePoint);
-
-        }else {
-            m_ClickPoint = event->pos();// 设置按下的位置
-        }
+        mouse_left_btn_clicked_ = true; // 鼠标左键按下
+        //if(this->m_CapturePoint){ // 如果鼠标捕获了点，就直接以捕获点为绘制的点
+        //    clicked_point_ = *(this->m_CapturePoint);
+        //
+        //}else {
+        //    clicked_point_ = event->pos();// 设置按下的位置
+        //}
+        clicked_point_ = event->pos();
         // 旋转需要执行的操作
         //if(this->m_RotateBtnClicked){
         //    QStringList rotateArgList = this->m_StatusEdit.text().split(":");
@@ -195,8 +196,8 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
         //        arg = temp;
         //        //                qDebug() << QString("this arg")<< QString("%1").arg(arg);
         //    }
-        //    //this->m_StartingClickPoint = &m_ClickPoint;
-        //    this->m_curShape->rotate(m_ClickPoint,arg);
+        //    //this->m_StartingClickPoint = &clicked_point_;
+        //    this->cur_select_shape_->rotate(clicked_point_,arg);
         //    this->m_RotateBtnClicked = false;
         //    this->m_StatusEdit.clear();
         //}
@@ -204,7 +205,7 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
         // 这里是对鼠标标注的操作
         //if(this->m_DemensionBtnClicked){
         //    //            qDebug() << QString("this->DemensionsPoint.size() press in:") <<  this->DemensionsPoint.size();
-        //    this->DemensionsPoint.push_back(m_ClickPoint);
+        //    this->DemensionsPoint.push_back(clicked_point_);
         //    if(this->DemensionsPoint.size() == 1){
         //        this->m_StatusEdit.setText("Select the second point of the object");
         //    }
@@ -221,29 +222,29 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
             this->m_StatusEdit.clear();
         }*/
 
-        m_MovePoint = event->pos(); // 单击时，对移动位置进行初始化
-        m_curShape  = NULL; // 每次单击，首先清空之前选中的对象
-        if(m_SelectBtnClicked){ // 如果选择按钮按下，需要判断是否选择对象，如果选择进行标记,选择图像进行旋转和移动
-            int iSize = m_pSystemData->m_ShapeVec.size();
-            for(int i =0;i<iSize;++i ){
-                if(m_curShape){ // 判断是否已经有了选中的图形
-                    break;
-                }
-                if(this->doubleClicked){ // 如果进行了双击，第二次不要操作，否则文字选中会有边框
-                    this->doubleClicked = false;
-                    this->m_curShape = NULL;
-                    break;
-                }
-                //                qDebug()<<i;
-                ShapeData * pShape= m_pSystemData->m_ShapeVec.at(i);
-                if(pShape->hasSelected(m_ClickPoint)){ // 如果点击了当前的图形，进行赋值
-                    m_curShape = pShape;
-                    this->m_curShapeIndex = i;
-                }
-            }
-        }
+        move_point_ = event->pos(); // 单击时，对移动位置进行初始化
+        cur_select_shape_  = NULL; // 每次单击，首先清空之前选中的对象
+        //if(select_btn_clicked_){ // 如果选择按钮按下，需要判断是否选择对象，如果选择进行标记,选择图像进行旋转和移动
+        //    int iSize = m_pSystemData->m_ShapeVec.size();
+        //    for(int i =0;i<iSize;++i ){
+        //        if(cur_select_shape_){ // 判断是否已经有了选中的图形
+        //            break;
+        //        }
+        //        if(this->double_clicked_){ // 如果进行了双击，第二次不要操作，否则文字选中会有边框
+        //            this->double_clicked_ = false;
+        //            this->cur_select_shape_ = NULL;
+        //            break;
+        //        }
+        //        //                qDebug()<<i;
+        //        BaseShape * pShape= m_pSystemData->m_ShapeVec.at(i);
+        //        if(pShape->HasSelected(clicked_point_)){ // 如果点击了当前的图形，进行赋值
+        //            cur_select_shape_ = pShape;
+        //            this->cur_selected_shape_index_ = i;
+        //        }
+        //    }
+        //}
 
-       /* if(this->m_DemensionBtnClicked == true && m_ShapeType != EShapeType::Shape_Demensions ){
+       /* if(this->m_DemensionBtnClicked == true && shape_type_ != EShapeType::Shape_Demensions ){
             this->m_DemensionBtnClicked = false;
             this->DemensionsPoint.clear();
         }*/
@@ -255,16 +256,16 @@ void DrawWidget::mousePressEvent(QMouseEvent *event)
 void DrawWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::MouseButton::LeftButton){
-        if(m_curShape && m_curShape->GetShapeType()== EShapeType::kText){
-            this->doubleClicked = true; // 确定当前是双击，防止单击继续操作
-            TextData * pText = static_cast<TextData *>(m_curShape); // 获取当前选中的文字框的信息
-            m_TextPoint = QPoint(pText->GetStartPosX(),pText->GetStartPosY());
-            m_ContentEdit.show();
-            m_curShape = NULL;
+        if(cur_select_shape_ && cur_select_shape_->GetShapeType() == EShapeType::kText){
+            this->double_clicked_ = true; // 确定当前是双击，防止单击继续操作
+            TextShape* text_shape = dynamic_cast<TextShape*>(cur_select_shape_); // 获取当前选中的文字框的信息
+            text_point_ = QPoint(text_shape->GetStartPosX(), text_shape->GetStartPosY());
+            content_edit_.show();
+            cur_select_shape_ = NULL;
             update();
             //            qDebug()<<"update";
-            m_ContentEdit.setGeometry(m_TextPoint.x()-3,m_TextPoint.y()-22.5,200,30);
-            m_ContentEdit.setText(pText->GetContent());
+            content_edit_.setGeometry(text_point_.x()-3,text_point_.y()-22.5,200,30);
+            content_edit_.setPlainText(text_shape->GetContent());
         }
     }
 
@@ -274,101 +275,61 @@ void DrawWidget::mouseDoubleClickEvent(QMouseEvent *event)
 void DrawWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::MouseButton::LeftButton){
-        m_bLBtnClicked = false;
-        m_MovePoint = event->pos();
-        if(this->m_curShapeIndex == -1){
-            m_TextPoint = event->pos();
+        mouse_left_btn_clicked_ = false;
+        move_point_ = event->pos();
+        if(this->cur_selected_shape_index_ == -1){
+            text_point_ = event->pos();
         }
 
-        switch (m_ShapeType) {
-        case EShapeType::kReckangle:
-        {
-            int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
-            int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
-            QPoint dis = m_MovePoint - m_ClickPoint;
-            RectangleData * pRectangle = new RectangleData(double(Xmin),double(Ymin),qAbs(double(dis.x())),qAbs(double(dis.y())));
-            m_pSystemData->m_ShapeVec.push_back(pRectangle);
-            update();
+        switch (shape_type_) {
+        case EShapeType::kReckangle: {
+            int min_x = clicked_point_.x() < move_point_.x()?clicked_point_.x():move_point_.x();
+            int min_y = clicked_point_.y() < move_point_.y()?clicked_point_.y():move_point_.y();
+            QPoint dis = move_point_ - clicked_point_;
+            std::shared_ptr<RectangleShape> rect = std::make_shared<RectangleShape>(double(min_x), double(min_y), qAbs(double(dis.x())), qAbs(double(dis.y())));
+            shapes_.emplace_back(rect);
             break;
         }
-        case EShapeType::kEllipse:
-        {
-            int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
-            int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
-            QPoint dis = m_MovePoint - m_ClickPoint;
-            EllipseData *pEllipse = new EllipseData(double(Xmin),double(Ymin),qAbs(double(dis.x())),qAbs(double(dis.y())));
-            m_pSystemData->m_ShapeVec.push_back(pEllipse);
-            update();
+        case EShapeType::kEllipse: {
+            int min_x = clicked_point_.x() < move_point_.x()?clicked_point_.x():move_point_.x();
+            int min_y = clicked_point_.y() < move_point_.y()?clicked_point_.y():move_point_.y();
+            QPoint dis = move_point_ - clicked_point_;
+            std::shared_ptr<EllipseShape> elli = std::make_shared<EllipseShape>(double(min_x), double(min_y), qAbs(double(dis.x())), qAbs(double(dis.y())));
+            shapes_.emplace_back(elli);
             break;
         }
-        case EShapeType::kLine:
-        {
-            LineData *pLine = new  LineData(double(m_ClickPoint.x()),double(m_ClickPoint.y()),double(m_MovePoint.x()),double(m_MovePoint.y()));
-            m_pSystemData->m_ShapeVec.push_back(pLine);
-            //m_pSystemData->SetShapePointMap(m_ClickPoint); // 把直线的点插入到map中去
-            //m_pSystemData->SetShapePointMap(m_MovePoint); // 每个点对应容器中的图像为位置
-            //            qDebug()<<m_pSystemData->m_ShapePointMap.size();
-            update();
+        case EShapeType::kLine: {
+            std::shared_ptr<LineShape> line = std::make_shared<LineShape>(double(clicked_point_.x()), double(clicked_point_.y()), double(move_point_.x()), double(move_point_.y()));   
+            shapes_.emplace_back(line);
             break;
         }
-        case EShapeType::kText:
-        {
-            m_TextPoint = m_MovePoint;
-            m_ContentEdit.clear();
-            m_ContentEdit.show();
-            m_ContentEdit.setGeometry(m_TextPoint.x(),m_TextPoint.y(),200,30);
-            m_ContentEdit.setFocus();
+        case EShapeType::kText: {  //to do 这里需要看下
+            text_point_ = move_point_;
+            content_edit_.clear();
+            content_edit_.show();
+            content_edit_.setGeometry(text_point_.x(), text_point_.y(), 200, 100);
+            content_edit_.setFocus();
             break;
         }
-        case EShapeType::kCustomLine:
-        {
-            CustomLine* cl = new CustomLine();
-
-            cl->points_data_ = points_data_;
-
-
-            m_pSystemData->m_ShapeVec.push_back(cl);
-
-            points_data_.clear();
-
-
-
-            break;
+        case EShapeType::kCustomLine: {
+            if (points_data_.size() >= 10) {
+                std::shared_ptr<CustomLineShape> cli = std::make_shared<CustomLineShape>();
+                cli->points_data_ = points_data_;
+                shapes_.emplace_back(cli);
+                points_data_.clear();
+                break;
+            }
         }
-        /*case EShapeType::Erasure:
-        {
-            ErasureData *pErasure = new ErasureData(ErasurePoint);
-            m_pSystemData->m_ShapeVec.push_back(pErasure);
-            this->ErasurePoint.clear();
-            break;
-        }*/
-        //case EShapeType::Shape_Demensions:
-        //{
-        //    if(DemensionsPoint.size() == 3){
-        //        DemensionsData *pDemensions = new DemensionsData(this->DemensionsPoint);
-        //        //                pDemensions->SetShowText();// 如果只想计算一次，这里打开，类里的关闭
-        //        m_pSystemData->m_ShapeVec.push_back(pDemensions);
-        //        this->DemensionsPoint.clear();
-        //        this->m_DemensionBtnClicked = false;// 如果想设置连续标注，可以设置变量来控制，保存上次按下的按钮，然后通过某个键盘来触发
-        //        this->SetShapeType(EShapeType::kUnkonwn);// 不然回出错,为空的时候
-        //    }
-        //    break;
-        //}
         default:
             break;
         }
-
-        //if(this->DemensionsPoint.size() == 2){
-        //    //            qDebug() << QString("this->DemensionsPoint.size() release:") <<  this->DemensionsPoint.size();
-        //    this->DemensionsPoint.push_back(m_MovePoint);
-        //}
     }
-
+    update();
     QOpenGLWidget::mouseReleaseEvent(event);
 }
 
 void DrawWidget::Revoke() {
-    m_pSystemData->m_ShapeVec.pop_back();
+    shapes_.pop_back();
     update();
 }
 
@@ -378,209 +339,77 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
     // 鼠标进行实时捕获，判断是否是在某个点的范围内
     QPoint point = event->pos();
    // this->mouseOnOnePoint(point);
-    if(this->m_CapturePoint){
-        //        qDebug()<<"已经在点中了";
-        this->setCursor(Qt::CrossCursor);
-    }else{
-        this->setCursor(Qt::ArrowCursor);  //范围之外变回原来形状  https://blog.csdn.net/technologyleader/article/details/82981718
-    }
-    this->m_CapturePoint = nullptr;
+    //if(this->m_CapturePoint){
+    //    //        qDebug()<<"已经在点中了";
+    //    this->setCursor(Qt::CrossCursor);
+    //}else{
+    //    this->setCursor(Qt::ArrowCursor);  //范围之外变回原来形状  https://blog.csdn.net/technologyleader/article/details/82981718
+    //}
+    //this->m_CapturePoint = nullptr;
 
     // ]
-    if(m_curShape && m_bLBtnClicked){
-        m_curShape->moveShape(m_MovePoint,event->pos());
+
+
+    for (auto& shape: shapes_) {
+    
+        qDebug() << "EnterSelectRange :" <<  shape->EnterSelectRange(point);
+    }
+
+
+
+    // 移动选中的对象
+    if(cur_select_shape_ && mouse_left_btn_clicked_){
+        cur_select_shape_->MoveShape(move_point_, event->pos());
         update();
     }
-    m_MovePoint = event->pos();
+    move_point_ = event->pos();
 
-    if(m_bLBtnClicked){
-       /* if(m_ShapeType == EShapeType::Erasure){
-            ErasurePoint.push_back(event->pos());
-        }*/
-        m_MovePoint = event->pos();
+    if(mouse_left_btn_clicked_) {
+        move_point_ = event->pos();
         update();
 
-        if (EShapeType::kCustomLine == m_ShapeType) {
+        if (EShapeType::kCustomLine == shape_type_) {
             points_data_.append(event->pos());
         }
     }
 
-    //// 标注实时移动
-    //if(DemensionsPoint.size() == 3){
-    //    //        qDebug() << QString("this->DemensionsPoint.size() move:") <<  this->DemensionsPoint.size();
-    //    DemensionsPoint[2] = m_MovePoint;// 更新移动
-    //}
-
     QOpenGLWidget::mouseMoveEvent(event);
 }
 
-//int num =0;
-//void DrawWidget::mouseOnOnePoint(QPoint &point)
-//{
-   //foreach (const QPoint &p, m_pSystemData->m_ShapePointMap.keys()) {
-   //    //        qDebug()<<num<< p << point;
-   //    if((point.x()-p.x())*(point.x()-p.x()) + (point.y()-p.y())*(point.y()-p.y()) < 25){
-   //        this->m_CapturePoint = &p;
-   //    }
-   //}
-    //    num+= 1;
-//}
 
 // 文本编辑事件
-void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString &qstrContent)
-{
-    if(!qstrContent.isEmpty()){
-        if(this->m_curShapeIndex != -1){
-            TextData *pText = new TextData(double(m_TextPoint.x()),double(m_TextPoint.y()),qstrContent);
-            m_pSystemData->m_ShapeVec[this->m_curShapeIndex] = pText;
-            //            qDebug()<<"m_pSystemData->m_ShapeVec[this->m_curShapeIndex] = pText;";
-        }else{
-            //            qDebug()<<" m_pSystemData->m_ShapeVec.push_back(pText);";
-            TextData *pText = new TextData(double(m_TextPoint.x())+3,double(m_TextPoint.y()+22.5),qstrContent);
-            //            m_pSystemData->m_ShapeVec.pop_back();
-            m_pSystemData->m_ShapeVec.push_back(pText);
-        }
+void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString& content) {
+
+    if (content.isEmpty()) {
+        return;
     }
+
+    //if (this->cur_selected_shape_index_ != -1) {
+    //    TextData* pText = new TextData(double(text_point_.x()), double(text_point_.y()), qstrContent);
+    //    m_pSystemData->m_ShapeVec[this->cur_selected_shape_index_] = pText;
+    //    //            qDebug()<<"m_pSystemData->m_ShapeVec[this->cur_selected_shape_index_] = pText;";
+    //}
+    //else {
+    //    //            qDebug()<<" m_pSystemData->m_ShapeVec.push_back(pText);";
+    //    TextData* pText = new TextData(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), qstrContent);
+    //    //            m_pSystemData->m_ShapeVec.pop_back();
+    //    m_pSystemData->m_ShapeVec.push_back(pText);
+    //}
+
+    std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), content);
+
+    shapes_.emplace_back(text_shape);
+
+    qDebug() << "recv content";
+
+    if (content.indexOf("\n") != -1) //数据中有\n，插入\r; 怎么应对一个以上的换行?
+    {
+        qDebug() << "content have \n";
+    }
+
+
+
     update();
-    this->m_curShapeIndex = -1;
+    this->cur_selected_shape_index_ = -1;
 }
-
-//void DrawWidget::fn_Change_StatusEdit_Visual(const QString &qstrContent){
-//    if(qstrContent.isEmpty()){
-//        this->m_StatusEdit.setStyleSheet("QLineEdit{background-color:transparent}"
-//                                         "QLineEdit{border-width:0;border-style:outset}");
-//    }else{
-//        this->m_StatusEdit.setStyleSheet("color: blue;"
-//                                         "background-color: yellow;"
-//                                         "selection-color: yellow;"
-//                                         "selection-background-color: blue;");
-//    }
-//    this->paintEvent(NULL);
-//    update();
-//}
-
-// 左旋转角度
-//int DrawWidget::RotateLeft()
-//{
-//    switch(m_RotateType){
-//    case ERotateType::Rotate_180:
-//    {
-//        m_RotateType = ERotateType::Rotate_90;
-//        break;
-//    }
-//    case ERotateType::Rotate_270:
-//    {
-//        m_RotateType = ERotateType::Rotate_180;
-//        break;
-//    }
-//    case ERotateType::Rotate_90:
-//    {
-//        m_RotateType = ERotateType::Rotate_0;
-//        break;
-//    }
-//    case ERotateType::Rotate_0:
-//    {
-//        m_RotateType = ERotateType::Rotate_270;
-//        break;
-//    }
-//    default:
-//        break;
-//    }
-//    update();
-//    return NORMAL_RETURN;
-//}
-
-//// 右旋转角度
-//int DrawWidget::RotateRight()
-//{
-//    switch(m_RotateType){
-//    case ERotateType::Rotate_180:
-//    {
-//        m_RotateType = ERotateType::Rotate_270;
-//        break;
-//    }
-//    case ERotateType::Rotate_270:
-//    {
-//        m_RotateType = ERotateType::Rotate_0;
-//        break;
-//    }
-//    case ERotateType::Rotate_90:
-//    {
-//        m_RotateType = ERotateType::Rotate_180;
-//        break;
-//    }
-//    case ERotateType::Rotate_0:
-//    {
-//        m_RotateType = ERotateType::Rotate_90;
-//        break;
-//    }
-//    default:
-//        break;
-//    }
-//    update();
-//    return NORMAL_RETURN;
-//}
-
-// 进行尺寸的标记
-//void DrawWidget::Demensions()
-//{
-//    m_DemensionBtnClicked = true;
-//    if(this->DemensionsPoint.size() == 0){
-//        this->m_StatusEdit.setText("Select the first point of the object");
-//    }
-//}
-
-
-
-// 这段代码经过改进：改进【1】
-//        switch (m_ShapeType) {
-//        case EShapeType::kReckangle:
-//        {
-//            ShapeData *pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint);
-//            pShape->drawShape(painter);
-//            break;
-//        }
-//        case EShapeType::kEllipse:
-//        {
-//            ShapeData *pShape = m_pSystemData->CreateShapeItem(m_ShapeType,m_ClickPoint,m_MovePoint,ErasurePoint);
-//            pShape->drawShape(painter);
-//            break;
-//        }
-//        case EShapeType::Shape_Triangle:
-//        {
-//            int Xmin = m_ClickPoint.x() < m_MovePoint.x()?m_ClickPoint.x():m_MovePoint.x();
-//            int Ymin = m_ClickPoint.y() < m_MovePoint.y()?m_ClickPoint.y():m_MovePoint.y();
-//            QPoint dis = m_MovePoint - m_ClickPoint;
-
-//            QPoint point1(Xmin,Ymin);
-//            QPoint point2(Xmin-qAbs(dis.x()),Ymin+qAbs(dis.y()));
-//            QPoint point3(Xmin+qAbs(dis.x()),Ymin+qAbs(dis.y()));
-//            painter.drawLine(point1,point2);
-//            painter.drawLine(point1,point3);
-//            painter.drawLine(point2,point3);
-//            break;
-//        }
-//        case EShapeType::kLine:
-//        {
-//            painter.drawLine(m_ClickPoint,m_MovePoint);
-//            break;
-//        }
-//        case EShapeType::kText:
-//        {
-//            m_TextPoint = m_ClickPoint;
-//            //            TextData *qText = TextData(m_TextPoint.x(),m_TextPoint.y(),m_ContentEdit.text());
-//            m_ContentEdit.show();
-//            m_ContentEdit.setGeometry(m_TextPoint.x(),m_TextPoint.y(),200,30);
-//            painter.drawText(QPoint(m_TextPoint.x(),m_TextPoint.y()),m_ContentEdit.text());
-//            break;
-//        }
-//        case EShapeType::Erasure:
-//        {
-//            painter.setPen(m_ErasurePen);
-//            painter.drawPolyline(QPolygon(ErasurePoint));
-//            break;
-//        }
-//        default:
-//            break;
-//        }
 
