@@ -16,7 +16,10 @@ TextShape::TextShape(QPoint& click_point, ContentEdit& content_edit) {
     content_edit.setFocus();
 }
 
-TextShape::TextShape(const double& start_pos_x, const double& start_pos_y, const QString& content) {
+TextShape::TextShape(const double& start_pos_x, const double& start_pos_y, const QString& content, QWidget* parent) {
+
+    qDebug() << "TextShape start_pos_x : " << start_pos_x << ", start_pos_y : " << start_pos_y;
+
     shape_type_ = EShapeType::kText;
     start_pos_x_ = start_pos_x;
     start_pos_y_ = start_pos_y;
@@ -24,7 +27,9 @@ TextShape::TextShape(const double& start_pos_x, const double& start_pos_y, const
     word_count_ = content_.size();
 
 
-    html_content = content;
+    html_content_ = content;
+
+    parent_ = parent;
 }
 
 TextShape::~TextShape() {
@@ -51,11 +56,49 @@ void TextShape::DrawShape(QPainter &painter)
   
 
    // QRectF rectf{ this->GetStartPosX(),this->GetStartPosY(), 200, 100 };
-    text_document.setHtml(this->content_);
+   
+    
+//    QRectF rectf{ start_pos_x_, start_pos_y_, doc_size.width(), doc_size.height()}; // 适当调整位置和大小
 
-    QRectF rectf{ 10, 10, 200, 100 }; // 适当调整位置和大小
+    //qDebug() << "doc_size:" << doc_size;
+    //qDebug() << "start_pos_x_ = " << start_pos_x_ << ",start_pos_y_ =  " << start_pos_y_;
 
-    text_document.drawContents(&painter, rectf);
+    //QRectF rectf{ start_pos_x_, start_pos_y_, doc_size.width(), doc_size.height() }; // 适当调整位置和大小
+
+    text_document_.setParent(parent_);  // 这一步重要，因为 drawContents 可以基于 parent 的坐标
+
+    text_document_.setHtml(this->html_content_);
+
+    //text_document_.setPlainText("11");
+
+    QSizeF doc_size = text_document_.size();
+
+    QRectF rectf;
+    rectf.setRect(start_pos_x_, start_pos_y_, doc_size.width(), doc_size.height());
+
+    qDebug() << "rectf: " << rectf;
+
+
+    //painter.setBrush(QColor(0xff, 0x00, 0x00));
+
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    //painter.drawRect(start_pos_x_, start_pos_y_, doc_size.width(), doc_size.height()); // 可以画出矩形
+
+    //text_document_.setTextWidth(271); // 若不调用此句，则水平方向的对齐设置会被忽略；
+    
+    //text_document_.drawContents(&painter, rectf);
+
+    //text_document_.drawContents(&painter, QRect(0, 0, 200, 70));// 指定绘制区域
+
+
+    painter.save();
+    painter.translate(start_pos_x_, start_pos_y_);   // 重要
+    
+    text_document_.drawContents(&painter, QRectF(0, 0, doc_size.width() + 10, doc_size.height() + 10));  // 重要
+
+    painter.restore();
 }
 
 

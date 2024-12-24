@@ -12,7 +12,7 @@ class TextShape : public BaseShape
 public:
     TextShape();
     TextShape(QPoint& click_point, ContentEdit& content_edit);
-    TextShape(const double& start_pos_x, const double& start_pos_y, const QString& content);
+    TextShape(const double& start_pos_x, const double& start_pos_y, const QString& content, QWidget* parent);
     ~TextShape();
 
     inline void SetStartPosX(const double& pos_x) {
@@ -46,9 +46,9 @@ public:
 
     bool EnterSelectRange(const QPoint& point) override;
 
-    QString html_content;
+    QString html_content_;
 
-    QTextDocument text_document;
+    QTextDocument text_document_;
 
 private:
     double start_pos_x_ = 0.0;
@@ -57,6 +57,6 @@ private:
     int word_count_ = 0;
     bool selected_ = false;
 
-    
+    QWidget* parent_ = nullptr;
 };
 

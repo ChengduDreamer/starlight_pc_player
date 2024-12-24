@@ -66,11 +66,17 @@ DrawWidget::DrawWidget(QWidget *parent):QOpenGLWidget(parent)
 
     connect(text_edit_, &TextEditWidget::SigHtml, this, [=](QString html) {
         
-        std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), html);
 
-        shapes_.emplace_back(text_shape);
+       // qDebug() << "text_edit_ x = " << text_point_.x() << ", y = " << text_point_.y();
+
+        qDebug() << "text_edit_ x = " << double(text_edit_->pos().x()) + 4 << ", y = " << double(text_edit_->pos().y() + 30);
+
+        
+       std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_edit_->pos().x()) + 4, double(text_edit_->pos().y() + 30), html, this);
        
-        text_edit_->hide();
+       shapes_.emplace_back(text_shape);
+       
+       text_edit_->hide();
     });
 }
 
@@ -351,7 +357,7 @@ void DrawWidget::mouseMoveEvent(QMouseEvent *event)
 
     for (auto& shape: shapes_) {
     
-        qDebug() << "EnterSelectRange :" <<  shape->EnterSelectRange(point);
+        //qDebug() << "EnterSelectRange :" <<  shape->EnterSelectRange(point);
     }
 
 
@@ -395,20 +401,20 @@ void DrawWidget::fn_Recv_ContentEdit_GetContent(const QString& content) {
     //    m_pSystemData->m_ShapeVec.push_back(pText);
     //}
 
-    std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), content);
-    
-    shapes_.emplace_back(text_shape);
-    
-    qDebug() << "recv content";
-    
-    if (content.indexOf("\n") != -1) //数据中有\n，插入\r; 怎么应对一个以上的换行?
-    {
-        qDebug() << "content have \n";
-    }
-
-
-
-    update();
-    this->cur_selected_shape_index_ = -1;
+   // std::shared_ptr<TextShape> text_shape = std::make_shared<TextShape>(double(text_point_.x()) + 3, double(text_point_.y() + 22.5), content, this);
+   // 
+   // shapes_.emplace_back(text_shape);
+   // 
+   // qDebug() << "recv content";
+   // 
+   // if (content.indexOf("\n") != -1) //数据中有\n，插入\r; 怎么应对一个以上的换行?
+   // {
+   //     qDebug() << "content have \n";
+   // }
+   //
+   //
+   //
+   // update();
+   // this->cur_selected_shape_index_ = -1;
 }
 

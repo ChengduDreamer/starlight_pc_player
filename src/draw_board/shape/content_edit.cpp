@@ -144,7 +144,6 @@ void TextEditWidget::mouseMoveEvent(QMouseEvent* event) {
 
 
     QRect title_rect = title_bar_->geometry();
-    qDebug() << "0 title_rect: " << title_rect;
     title_rect.setY(title_rect.y() + 16);
     if (title_rect.contains(event->pos())) {
         if (pressed_) {
