@@ -17,7 +17,7 @@
 #include "app_messages.h"
 #include "cpp_base_lib/yk_logger.h"
 #include "media_operation/media_operation.h"
-#include "media_operation/image_view.h"
+//#include "media_operation/image_view.h"
 #include "media_operation/image_panel.h"
 
 namespace yk {
@@ -143,7 +143,7 @@ void MainWindow::InitView() {
 
     image_panel_ = new ImagePanel(context_);
     image_panel_->hide();
-    image_panel_->show();
+    //image_panel_->show();
 }
 
 void MainWindow::InstallWindowAgent() {
@@ -302,7 +302,9 @@ void MainWindow::RegisterEvents() {
             }
             /*image_view->SetPixmap(event.pixmap);
             image_view->show();*/
-            image_panel_->show();
+            //image_panel_->show();
+
+            image_panel_->showMaximized();
         });
     });
 

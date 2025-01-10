@@ -5,11 +5,14 @@
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qdebug.h>
+#include <qsettings.h>
 #include "yk_label.h"
 #include "yk_button.h"
 #include "yk_line_edit.h"
 #include "app_messages.h"
 #include "context.h"
+
+static const QString kOpenMediaDir = "yk_open_media_dir";
 
 namespace yk {
 
@@ -144,16 +147,34 @@ void PlayBeforeWidget::InitView() {
 	main_vbox_layout->addLayout(op_url_hbox_layout);
 	main_vbox_layout->setAlignment(op_url_hbox_layout, Qt::AlignHCenter);
 	main_vbox_layout->addStretch(1);
+
+	qsettings_ = std::make_shared<QSettings>("YKSoftWare", "YKStarlightWinPcPlayer");
 }
 
 void PlayBeforeWidget::InitSigChannel() {
 	connect(open_file_dialog_btn_, &QPushButton::clicked, this, [=]() {
-		QString fileName = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), "C:\\code\\proj\\starlight_pc_player\\test_video", "ALL(*.*)");
-		qDebug() << "fileName = " << fileName;
-		if (fileName.isEmpty()) {
+
+		QString open_dir_str = qsettings_->value(kOpenMediaDir).toString();
+		bool dir_exists = false;
+		if (!open_dir_str.isEmpty()) {
+			QDir open_dir{ open_dir_str };
+			if (open_dir.exists()) {
+				dir_exists = true;
+			}
+		}
+
+
+		QString file_name = QFileDialog::getOpenFileName(this, QStringLiteral("选择视频文件"), dir_exists ? open_dir_str : QString(""), "ALL(*.*)");
+		qDebug() << "fileName = " << file_name;
+		if (file_name.isEmpty()) {
 			return;
 		}
-		AppOpenUrlMsg msg{ .url = fileName };
+
+		QFileInfo file_info{ file_name };
+		qsettings_->setValue(kOpenMediaDir, file_info.absolutePath());
+		qsettings_->sync();
+
+		AppOpenUrlMsg msg{ .url = file_name };
 		context_->SendAppMessage(msg);
 	});
 

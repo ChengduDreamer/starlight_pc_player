@@ -30,10 +30,8 @@ int main(int argc, char* argv[])
     std::shared_ptr<MainWindow> main_window = std::make_shared<MainWindow>(context);
     main_window->show();
 
-    
-
-    DrawBoardWidget w;
-    w.show();
+   /* DrawBoardWidget w;
+    w.show();*/
 
     return a.exec();
 }

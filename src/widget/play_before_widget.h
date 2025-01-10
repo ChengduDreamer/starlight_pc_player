@@ -3,7 +3,7 @@
 #include "qdrag_widget.h"
 class YKButton;
 class YKLineEdit;
-
+class QSettings;
 namespace yk {
 
 class Context;
@@ -21,6 +21,10 @@ private:
 	YKButton* open_file_dialog_btn_ = nullptr;
 	YKLineEdit* url_edit_ = nullptr;
 	YKButton* open_url_btn_ = nullptr;
+
+private:
+private:
+	std::shared_ptr<QSettings> qsettings_ = nullptr;
 };
 
 }
