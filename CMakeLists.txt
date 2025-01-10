@@ -25,7 +25,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+if(MSVC)
+	add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
+	add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/bigobj>")
+endif()
+
 add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN)
+
+add_definitions(-DSPDLOG_USE_STD_FORMAT)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Core REQUIRED)
@@ -37,6 +44,8 @@ if(${CMAKE_SIZEOF_VOID_P} STREQUAL "4")
 else()
 	set(PLATFORM_WIN64 TRUE)
 endif()
+
+add_subdirectory(3rdparty)
 
 include_directories(${CMAKE_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/src
@@ -72,26 +81,21 @@ set(src_SOURCES
 	resources.qrc
 	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/mainwindow/mainwindow.qrc
 	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/shared/resources/shared.qrc
-	
+	${DRAW_BOARD_QRC}
 )
+
+message(DRAW_BOARD_QRC = ${DRAW_BOARD_QRC})
 
 set(unit_test_01_SOURCES
 	unit_test/test_01.cpp
 ) 
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-
-if(MSVC)
-	add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
-	add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/bigobj>")
-endif()
 
 #add_compile_definitions(ASIO2_ENABLE_SSL ASIO2_ENABLE_LOG)
 
 set(OPENSSL_ROOT_DIR ${CMAKE_SOURCE_DIR}/3rdparty/libopenssl/win64)
 
-add_subdirectory(3rdparty)
+
 
 include_directories(
 				${OPENSSL_ROOT_DIR}/include

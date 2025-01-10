@@ -30,9 +30,7 @@ int main(int argc, char* argv[])
     std::shared_ptr<MainWindow> main_window = std::make_shared<MainWindow>(context);
     main_window->show();
 
-   // QDragWidget drag_widget{ context };
-   //
-   // drag_widget.show();
+    
 
     DrawBoardWidget w;
     w.show();
