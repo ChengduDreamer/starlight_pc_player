@@ -45,14 +45,11 @@ include_directories(${CMAKE_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/3rdparty/asio2/include
 					${CMAKE_SOURCE_DIR}/3rdparty/asio2/3rd
 					${CMAKE_SOURCE_DIR}/src/widget
+					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/whiteboard/3rdparty/kk_qu_ui/src
+					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/whiteboard/src
 )
 
 set(src_SOURCES
-	src/public/yk_icon_button.cpp 
-	src/public/yk_progress_bar.cpp 
-	src/public/yk_button.cpp
-	src/public/yk_line_edit.cpp
-	src/public/yk_label.cpp
 	src/main.cpp
 	src/context.cpp
 	src/settings.cpp
@@ -84,8 +81,6 @@ set(unit_test_01_SOURCES
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
-#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 
 if(MSVC)
 	add_compile_options($<IF:$<CONFIG:Debug>,/MTd,/MT>)
@@ -127,7 +122,7 @@ endif()
 
 #test
 
-add_subdirectory(src/draw_board)
+
 
 add_executable(test_01
 		${unit_test_01_SOURCES}

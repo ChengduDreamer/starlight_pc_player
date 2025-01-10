@@ -9,3 +9,6 @@ add_subdirectory(spdlog)
 
 set(YK_ENABLE_D3DTexture false)
 add_subdirectory(cpp_base_lib)
+
+add_subdirectory(whiteboard)
+

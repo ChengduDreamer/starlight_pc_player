@@ -7,9 +7,9 @@
 #include <qpixmap.h>
 #include <qtimer.h>
 
-#include "public/yk_icon_button.h"
-#include "public/yk_progress_bar.h"
-#include "public/yk_style_sheet.h"
+#include "yk_icon_button.h"
+#include "yk_progress_bar.h"
+#include "yk_style_sheet.h"
 #include "app_messages.h"
 #include "context.h"
 

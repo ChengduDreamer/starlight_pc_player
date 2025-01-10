@@ -5,9 +5,9 @@
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qdebug.h>
-#include "public/yk_label.h"
-#include "public/yk_button.h"
-#include "public/yk_line_edit.h"
+#include "yk_label.h"
+#include "yk_button.h"
+#include "yk_line_edit.h"
 #include "app_messages.h"
 #include "context.h"
 

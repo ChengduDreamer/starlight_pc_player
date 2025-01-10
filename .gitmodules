@@ -14,3 +14,6 @@
 [submodule "3rdparty/asio2"]
 	path = 3rdparty/asio2
 	url = https://github.com/zhllxt/asio2.git
+[submodule "3rdparty/whiteboard"]
+	path = 3rdparty/whiteboard
+	url = git@github.com:ChengduDreamer/whiteboard.git

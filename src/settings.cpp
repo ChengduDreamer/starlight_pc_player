@@ -15,7 +15,7 @@ Settings::Settings() {
 	if (!dir.exists()) {
 		dir.mkpath(qvcapdir);
 	}
-	// to do еп╤о,╟яж╝г╟╣д╫ьм╪и╬ЁЩ╣Т
+	// to do Е┬╓Ф√╜,Ф┼┼Д╧▀Е┴█Г └Ф┬╙Е⌡╬Е┬═И≥╓Ф▌┴
 }
 
 Settings::~Settings() {
