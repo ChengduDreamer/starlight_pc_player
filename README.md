@@ -3,6 +3,7 @@
 StarlightPlayer 是一款基于QT + vlc 开发的视频播放器, 可以截取当前正在播放的画面,并且可以对截取到的画面进行标记，或者是做文字笔记。
 
 #### 适合用来学习视频课程，截图做笔记
+<img width="599" alt="1736586854690" src="https://github.com/user-attachments/assets/e0dbe574-2ba6-4c11-8452-da857fc05592" />
 <img width="806" alt="1736587530635" src="https://github.com/user-attachments/assets/c92b12a5-3147-4883-b69d-91fe9a24cd61" />
 点击按钮截图，会出现截图窗口
 <img width="1450" alt="1736587579562" src="https://github.com/user-attachments/assets/200d730b-a91f-4973-ab86-99e89c4f94d7" />
