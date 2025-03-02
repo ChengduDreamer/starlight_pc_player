@@ -108,11 +108,11 @@ link_directories(
 		${VLC_LIB_ROOT}/sdk/lib
 )
 
-#set(GENERATE_SETUP true)
+set(GENERATE_SETUP false)
 
 if(${GENERATE_SETUP})
 	#WIN32
-	add_executable(${PROJECT_NAME} #WIN32
+	add_executable(${PROJECT_NAME} WIN32
 		${src_SOURCES}
 	)
 else()

@@ -35,7 +35,7 @@ public:
 	void SetMute();
 	void SetUnmute();
 	bool TakeSnapshot(const std::string& file_path);
-
+	void SetUseCustomIO(bool use);
 private:
 	bool Init();
 	void AttachEvents();
@@ -53,6 +53,8 @@ private:
 
 	std::shared_ptr<Context> context_ = nullptr;
 	std::shared_ptr<MessageListener> msg_listener_ = nullptr;
+	
+	bool use_custom_io_ = true;
 };
 
 }

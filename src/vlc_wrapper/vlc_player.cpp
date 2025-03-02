@@ -14,10 +14,70 @@
 namespace yk {
 
 
-	struct yk_media_file_t
-	{
+struct yk_media_file_t
+{
 		
-	};
+};
+
+std::string GbkToUtf8(const char* src_str)
+{
+	int len = MultiByteToWideChar(CP_ACP, 0, src_str, -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_ACP, 0, src_str, -1, wstr, len);
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char* str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+	std::string strTemp = str;
+	if (wstr) delete[] wstr;
+	if (str) delete[] str;
+	return strTemp;
+}
+
+std::string Utf8ToGbk(const char* src_str)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, src_str, -1, NULL, 0);
+	wchar_t* wszGBK = new wchar_t[len + 1];
+	memset(wszGBK, 0, len * 2 + 2);
+	MultiByteToWideChar(CP_UTF8, 0, src_str, -1, wszGBK, len);
+	len = WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, NULL, 0, NULL, NULL);
+	char* szGBK = new char[len + 1];
+	memset(szGBK, 0, len + 1);
+	WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, szGBK, len, NULL, NULL);
+	std::string strTemp(szGBK);
+	if (wszGBK) delete[] wszGBK;
+	if (szGBK) delete[] szGBK;
+	return strTemp;
+}
+
+
+FILE* g_custom_libvlc_log_file_ptr_ = nullptr;
+
+void CustomLibVlcLogCallback(void* data, int level, const libvlc_log_t* ctx, const char* fmt, va_list args)
+{
+	char buffer[2048] = {0, }; // 存储格式化后的日志信息
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
+
+	// 输出到控制台
+	std::cout << "----[LibVLC] " << buffer << std::endl;
+
+	std::string log_content = buffer;
+	log_content += "\n";
+
+	std::cout << "log_content size: " << log_content.size() << std::endl;
+
+	std::string utf8_log = Utf8ToGbk(log_content.c_str());
+
+	std::cout << "----[LibVLC utf8_log] " << utf8_log << std::endl;
+
+	// 额外写入到日志文件
+	auto file_ptr = static_cast<FILE*>(data);
+	if (file_ptr) {
+		fwrite(log_content.data(), 1, log_content.size(), file_ptr);
+	}
+}
+
 
 std::ifstream file; // 使用宽字符
 
@@ -92,15 +152,24 @@ bool VLCPlayer::Init() {
 	if (!libvlc_instance_) {
 		return false;
 	}
+
+	// 打开日志文件
+	std::ofstream logFile("libvlc_log.txt", std::ios::app);
+	if (!logFile.is_open()) {
+		std::cerr << "Failed to open log file." << std::endl;
+		return -1;
+	}
+
+	g_custom_libvlc_log_file_ptr_ = fopen(".\\yk_libvlc_log.txt", "ab");
+	// 设置日志回调
+	if (g_custom_libvlc_log_file_ptr_) {
+		libvlc_log_set(libvlc_instance_, CustomLibVlcLogCallback, static_cast<void*>(g_custom_libvlc_log_file_ptr_));
+	}
 	return true;
 }
 
 bool VLCPlayer::OpenMediaFile(const QString& url) {
-	// 自定义IO
-	//libvlc_media_ = libvlc_media_new_callbacks(
-	//	libvlc_instance_, MediaOpen, MediaRead, MediaSeek, MediaClose, 
-	//	(void*)"C:\\code\\proj\\starlight_pc_player\\test_video\\1.mp4"
-	//);
+	
 	libvlc_media_ = nullptr;
 	bool is_local_file = false;
 	QString media_url = url;
@@ -114,12 +183,33 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	media_file_url_ = media_url;
 	std::string url_str = media_url.toStdString();
 	const char* url_cstr = url_str.c_str();
-	if (is_local_file) {
-		libvlc_media_ = libvlc_media_new_path(libvlc_instance_, url_cstr);
+
+	if (use_custom_io_) {
+		// 自定义IO
+		if (is_local_file) {
+			libvlc_media_ = libvlc_media_new_callbacks(
+				libvlc_instance_, MediaOpen, MediaRead, MediaSeek, MediaClose,
+				(void*)url_cstr
+			);
+		}
+		else {
+			
+
+
+		}
+		
 	}
 	else {
-		libvlc_media_ = libvlc_media_new_location(libvlc_instance_, url_cstr);
+		if (is_local_file) {
+			libvlc_media_ = libvlc_media_new_path(libvlc_instance_, url_cstr);
+		}
+		else {
+			libvlc_media_ = libvlc_media_new_location(libvlc_instance_, url_cstr);
+		}
 	}
+
+	
+
 	if (!libvlc_media_) {
 		YK_LOGE("libvlc_media_ is nullptr.");
 		return false;
@@ -354,6 +444,10 @@ void VLCPlayer::HandleLibvlcEvents(const libvlc_event_t* event, void* user_data)
 	default:
 		break;
 	}
+}
+
+void VLCPlayer::SetUseCustomIO(bool use) {
+	use_custom_io_ = use;
 }
 
 }
