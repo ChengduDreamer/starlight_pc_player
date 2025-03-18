@@ -14,6 +14,13 @@ using namespace yk;
 
 int main(int argc, char* argv[])
 {
+#ifdef WIN32
+    // 设置命令行窗口的输出编码为 UTF-8
+    SetConsoleOutputCP(CP_UTF8);
+    // 设置输入编码为 UTF-8（可选）
+    SetConsoleCP(CP_UTF8);
+#endif // WIN32
+
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
     QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);

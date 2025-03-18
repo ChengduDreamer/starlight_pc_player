@@ -7,70 +7,32 @@
 #include <qstring.h>
 #include <qdebug.h>
 #include "cpp_base_lib/time_ext.h"
+
 #include "yk_logger.h"
 #include "app_messages.h"
 #include "context.h"
 
 namespace yk {
 
-
-struct yk_media_file_t
-{
-		
-};
-
-std::string GbkToUtf8(const char* src_str)
-{
-	int len = MultiByteToWideChar(CP_ACP, 0, src_str, -1, NULL, 0);
-	wchar_t* wstr = new wchar_t[len + 1];
-	memset(wstr, 0, len + 1);
-	MultiByteToWideChar(CP_ACP, 0, src_str, -1, wstr, len);
-	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-	char* str = new char[len + 1];
-	memset(str, 0, len + 1);
-	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
-	std::string strTemp = str;
-	if (wstr) delete[] wstr;
-	if (str) delete[] str;
-	return strTemp;
-}
-
-std::string Utf8ToGbk(const char* src_str)
-{
-	int len = MultiByteToWideChar(CP_UTF8, 0, src_str, -1, NULL, 0);
-	wchar_t* wszGBK = new wchar_t[len + 1];
-	memset(wszGBK, 0, len * 2 + 2);
-	MultiByteToWideChar(CP_UTF8, 0, src_str, -1, wszGBK, len);
-	len = WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, NULL, 0, NULL, NULL);
-	char* szGBK = new char[len + 1];
-	memset(szGBK, 0, len + 1);
-	WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, szGBK, len, NULL, NULL);
-	std::string strTemp(szGBK);
-	if (wszGBK) delete[] wszGBK;
-	if (szGBK) delete[] szGBK;
-	return strTemp;
-}
-
+//libvlc_media_new_callbacks
 
 FILE* g_custom_libvlc_log_file_ptr_ = nullptr;
+
+
+
+struct CustomFileContext {
+	
+};
 
 void CustomLibVlcLogCallback(void* data, int level, const libvlc_log_t* ctx, const char* fmt, va_list args)
 {
 	char buffer[2048] = {0, }; // 存储格式化后的日志信息
 	vsnprintf(buffer, sizeof(buffer), fmt, args);
-
 	// 输出到控制台
-	std::cout << "----[LibVLC] " << buffer << std::endl;
-
+	std::cout << "[CustomLibVlcLogCallback:] " << buffer << std::endl; // 乱码
 	std::string log_content = buffer;
 	log_content += "\n";
-
-	std::cout << "log_content size: " << log_content.size() << std::endl;
-
-	std::string utf8_log = Utf8ToGbk(log_content.c_str());
-
-	std::cout << "----[LibVLC utf8_log] " << utf8_log << std::endl;
-
+	//std::cout << "log_content size: " << log_content.size() << std::endl;
 	// 额外写入到日志文件
 	auto file_ptr = static_cast<FILE*>(data);
 	if (file_ptr) {
@@ -81,20 +43,79 @@ void CustomLibVlcLogCallback(void* data, int level, const libvlc_log_t* ctx, con
 
 std::ifstream file; // 使用宽字符
 
-int	MediaOpen(void* opaque, void** datap, uint64_t* sizep)
-{
-	file.open((char*)opaque, std::ios::binary | std::ios::in);
+FILE* g_libvlc_file_ = nullptr;
+
+int	OpenMedia(void* opaque, void** datap, uint64_t* sizep) {
+
+	std::cout << "---------------------------------------------------------------------OpenMedia" << std::endl;
+	QString* path_ptr = (QString*)(opaque);
+	QString media_qpath = *path_ptr;
+	media_qpath = media_qpath.replace("\\", "/");
+	qDebug() << "media_qpath:" << media_qpath;
+	std::string media_path = media_qpath.toStdString();
+
+	g_libvlc_file_ = fopen(media_path.c_str(), "rb");
+
+	fseek(g_libvlc_file_, 0, SEEK_END);
+	auto size = ftell(g_libvlc_file_);
+	fseek(g_libvlc_file_, 0, SEEK_SET);
+
+	*sizep = size;
+	*datap = g_libvlc_file_;
+
+
+	//tc::File* tc_file = (tc::File*)opaque;
+	/*QString* path_ptr = (QString*)(opaque);
+	QString media_qpath = *path_ptr;
+	media_qpath = media_qpath.replace("\\", "/");
+	qDebug() << "media_qpath:" << media_qpath;
+	std::string media_path = media_qpath.toStdString();
+	std::cout << "OpenMedia media_path : " << media_path << std::endl;
+
+	tc::File* tc_file = new tc::File(media_path, "rb");
+	*sizep = tc_file->Size();
+	*datap = (void*)tc_file;
+	std::cout << "OpenMedia size : " << tc_file->Size();*/
+
+	/*file.open((char*)opaque, std::ios::binary | std::ios::in);
 	file.seekg(0, std::ios::end);
 	int len = file.tellg();
 	file.seekg(0);
 	*sizep = len;
-	*datap = &file;
+	*datap = &file;*/
 	return 0;
 }
 
-ssize_t MediaRead(void* opaque, unsigned char* buf, size_t len)
-{
-	std::ifstream* in = (std::ifstream*)opaque;
+ssize_t ReadMedia(void* opaque, unsigned char* buf, size_t len) {
+
+	std::cout << "---------------------------------------------------------------------ReadMedia" << std::endl;
+
+	size_t readed_size = fread(buf, 1, len, g_libvlc_file_);
+
+	if (0 == readed_size) {
+		if (feof(g_libvlc_file_)) {
+			return 0;
+		}
+		else {
+			return -1;
+		}
+	}
+
+	return readed_size;
+
+	/*tc::File* tc_file = (tc::File*)opaque;
+	uint64_t readed_size = 0;
+	tc::DataPtr data_ptr = tc_file->Read(len, readed_size);
+	if (!data_ptr) {
+		if (tc_file->Eof()) {
+			return 0;
+		}
+		return -1;
+	}
+	buf = (unsigned char*)data_ptr->CStr();
+	return data_ptr->Size();*/
+
+	/*std::ifstream* in = (std::ifstream*)opaque;
 	in->read((char*)buf, len);
 	auto s = in->gcount();
 
@@ -113,22 +134,45 @@ ssize_t MediaRead(void* opaque, unsigned char* buf, size_t len)
 			return -1;
 		}
 	}
-	return s;
+	return s;*/
 }
-int	MediaSeek(void* opaque, uint64_t offset)
-{
-	std::ifstream* in = (std::ifstream*)opaque;
+int	SeekMedia(void* opaque, uint64_t offset) {
+
+	std::cout << "---------------------------------------------------------------------SeekMedia" << std::endl;
+
+	if (0 == fseek(g_libvlc_file_, offset, SEEK_SET)) {
+		return 0;
+	}
+	return -1;
+
+	
+
+	/*tc::File* tc_file = (tc::File*)opaque;
+	
+	if (tc_file->Seek(offset)) {
+		return 0;
+	}
+	return -1;*/
+
+	/*std::ifstream* in = (std::ifstream*)opaque;
 	in->clear();
 	in->seekg(offset);
 	std::cout << "offset = " << offset << std::endl;
-	return 0;
+	return 0;*/
 }
 
-void MediaClose(void* opaque)
-{
-	std::ifstream* in = (std::ifstream*)opaque;
+void CloseMedia(void* opaque) {
+
+	std::cout << "---------------------------------------------------------------------CloseMedia" << std::endl;
+
+	fclose(g_libvlc_file_);
+	g_libvlc_file_ = nullptr;
+
+	/*tc::File* tc_file = (tc::File*)opaque;
+	tc_file->Close();*/
+	/*std::ifstream* in = (std::ifstream*)opaque;
 	in->close();
-	std::cout << "close\n";
+	std::cout << "close\n";*/
 }
 
 VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : context_(context), hwnd_(hwnd) {
@@ -138,7 +182,9 @@ VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : conte
 }
 
 VLCPlayer::~VLCPlayer() {
-	
+	if (g_custom_libvlc_log_file_ptr_) {
+		fclose(g_custom_libvlc_log_file_ptr_);
+	}
 }
 
 bool VLCPlayer::Init() {
@@ -151,13 +197,6 @@ bool VLCPlayer::Init() {
 	libvlc_instance_ = libvlc_new(sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args);
 	if (!libvlc_instance_) {
 		return false;
-	}
-
-	// 打开日志文件
-	std::ofstream logFile("libvlc_log.txt", std::ios::app);
-	if (!logFile.is_open()) {
-		std::cerr << "Failed to open log file." << std::endl;
-		return -1;
 	}
 
 	g_custom_libvlc_log_file_ptr_ = fopen(".\\yk_libvlc_log.txt", "ab");
@@ -187,9 +226,16 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	if (use_custom_io_) {
 		// 自定义IO
 		if (is_local_file) {
+
+			//local_file_ptr = tc::File::OpenForReadB(url_str);
+
+			
+
 			libvlc_media_ = libvlc_media_new_callbacks(
-				libvlc_instance_, MediaOpen, MediaRead, MediaSeek, MediaClose,
-				(void*)url_cstr
+				libvlc_instance_, OpenMedia, ReadMedia, SeekMedia, CloseMedia,
+				/*(void*)local_file_ptr.get()*/
+				//(void*)url_cstr
+				(void*)&media_file_url_
 			);
 		}
 		else {
