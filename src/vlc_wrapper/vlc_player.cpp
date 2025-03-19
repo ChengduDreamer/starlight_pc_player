@@ -7,7 +7,8 @@
 #include <qstring.h>
 #include <qdebug.h>
 #include "cpp_base_lib/time_ext.h"
-
+#include "cpp_base_lib/file.h"
+#include "cpp_base_lib/data.h"
 #include "yk_logger.h"
 #include "app_messages.h"
 #include "context.h"
@@ -18,7 +19,9 @@ namespace yk {
 
 FILE* g_custom_libvlc_log_file_ptr_ = nullptr;
 
+std::shared_ptr<yk::File> local_media_file_ptr_ = nullptr;
 
+std::shared_ptr<yk::Data> media_data_ptr_ = nullptr;
 
 struct CustomFileContext {
 	
@@ -48,7 +51,7 @@ FILE* g_libvlc_file_ = nullptr;
 int	OpenMedia(void* opaque, void** datap, uint64_t* sizep) {
 
 	std::cout << "---------------------------------------------------------------------OpenMedia" << std::endl;
-	QString* path_ptr = (QString*)(opaque);
+	/*QString* path_ptr = (QString*)(opaque);
 	QString media_qpath = *path_ptr;
 	media_qpath = media_qpath.replace("\\", "/");
 	qDebug() << "media_qpath:" << media_qpath;
@@ -61,36 +64,20 @@ int	OpenMedia(void* opaque, void** datap, uint64_t* sizep) {
 	fseek(g_libvlc_file_, 0, SEEK_SET);
 
 	*sizep = size;
-	*datap = g_libvlc_file_;
-
-
-	//tc::File* tc_file = (tc::File*)opaque;
-	/*QString* path_ptr = (QString*)(opaque);
-	QString media_qpath = *path_ptr;
-	media_qpath = media_qpath.replace("\\", "/");
-	qDebug() << "media_qpath:" << media_qpath;
-	std::string media_path = media_qpath.toStdString();
-	std::cout << "OpenMedia media_path : " << media_path << std::endl;
-
-	tc::File* tc_file = new tc::File(media_path, "rb");
-	*sizep = tc_file->Size();
-	*datap = (void*)tc_file;
-	std::cout << "OpenMedia size : " << tc_file->Size();*/
-
-	/*file.open((char*)opaque, std::ios::binary | std::ios::in);
-	file.seekg(0, std::ios::end);
-	int len = file.tellg();
-	file.seekg(0);
-	*sizep = len;
-	*datap = &file;*/
-	return 0;
+	*datap = g_libvlc_file_;*/
+	auto file_size_res = local_media_file_ptr_->Size();
+	if (file_size_res.has_value()) {
+		*sizep = file_size_res.value();
+		return 0;
+	}
+	return -1;
 }
 
 ssize_t ReadMedia(void* opaque, unsigned char* buf, size_t len) {
 
 	std::cout << "---------------------------------------------------------------------ReadMedia" << std::endl;
 
-	size_t readed_size = fread(buf, 1, len, g_libvlc_file_);
+	/*size_t readed_size = fread(buf, 1, len, g_libvlc_file_);
 
 	if (0 == readed_size) {
 		if (feof(g_libvlc_file_)) {
@@ -101,78 +88,46 @@ ssize_t ReadMedia(void* opaque, unsigned char* buf, size_t len) {
 		}
 	}
 
-	return readed_size;
+	return readed_size;*/
 
-	/*tc::File* tc_file = (tc::File*)opaque;
-	uint64_t readed_size = 0;
-	tc::DataPtr data_ptr = tc_file->Read(len, readed_size);
-	if (!data_ptr) {
-		if (tc_file->Eof()) {
-			return 0;
-		}
-		return -1;
-	}
-	buf = (unsigned char*)data_ptr->CStr();
-	return data_ptr->Size();*/
-
-	/*std::ifstream* in = (std::ifstream*)opaque;
-	in->read((char*)buf, len);
-	auto s = in->gcount();
-
-	std::cout << "len = " << len << std::endl;
-
-	std::cout << "s = " << s << std::endl;
-
-	if (s == 0)
-	{
-		if (in->eof())
-		{
-			return 0;
-		}
-		else
-		{
+	auto readed_size_res = local_media_file_ptr_->Read(buf, len);
+	if (readed_size_res.has_value()) {
+		uint64_t readed_size = readed_size_res.value();
+		if (0 == readed_size) {
+			if (local_media_file_ptr_->IsEnd()) {
+				return 0;
+			}
 			return -1;
 		}
-	}
-	return s;*/
+		return readed_size;
+	} 
+	return -1;
+	
 }
 int	SeekMedia(void* opaque, uint64_t offset) {
 
 	std::cout << "---------------------------------------------------------------------SeekMedia" << std::endl;
 
-	if (0 == fseek(g_libvlc_file_, offset, SEEK_SET)) {
-		return 0;
-	}
-	return -1;
-
-	
-
-	/*tc::File* tc_file = (tc::File*)opaque;
-	
-	if (tc_file->Seek(offset)) {
+	/*if (0 == fseek(g_libvlc_file_, offset, SEEK_SET)) {
 		return 0;
 	}
 	return -1;*/
 
-	/*std::ifstream* in = (std::ifstream*)opaque;
-	in->clear();
-	in->seekg(offset);
-	std::cout << "offset = " << offset << std::endl;
-	return 0;*/
+	if (local_media_file_ptr_->Seek(offset)) {
+		return 0;
+	}
+	return -1;
 }
 
 void CloseMedia(void* opaque) {
 
 	std::cout << "---------------------------------------------------------------------CloseMedia" << std::endl;
 
-	fclose(g_libvlc_file_);
-	g_libvlc_file_ = nullptr;
+	/*fclose(g_libvlc_file_);
+	g_libvlc_file_ = nullptr;*/
 
-	/*tc::File* tc_file = (tc::File*)opaque;
-	tc_file->Close();*/
-	/*std::ifstream* in = (std::ifstream*)opaque;
-	in->close();
-	std::cout << "close\n";*/
+	local_media_file_ptr_->Close();
+
 }
 
 VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : context_(context), hwnd_(hwnd) {
@@ -223,6 +178,8 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	std::string url_str = media_url.toStdString();
 	const char* url_cstr = url_str.c_str();
 
+	local_media_file_ptr_ = yk::File::OpenForReadB(url_str);
+
 	if (use_custom_io_) {
 		// 自定义IO
 		if (is_local_file) {
@@ -235,7 +192,8 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 				libvlc_instance_, OpenMedia, ReadMedia, SeekMedia, CloseMedia,
 				/*(void*)local_file_ptr.get()*/
 				//(void*)url_cstr
-				(void*)&media_file_url_
+				//(void*)&media_file_url_
+				nullptr
 			);
 		}
 		else {

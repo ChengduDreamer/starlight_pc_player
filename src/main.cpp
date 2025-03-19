@@ -15,9 +15,9 @@ using namespace yk;
 int main(int argc, char* argv[])
 {
 #ifdef WIN32
-    // ÉèÖÃÃüÁîĞĞ´°¿ÚµÄÊä³ö±àÂëÎª UTF-8
+    // è®¾ç½®å‘½ä»¤è¡Œçª—å£çš„è¾“å‡ºç¼–ç ä¸º UTF-8
     SetConsoleOutputCP(CP_UTF8);
-    // ÉèÖÃÊäÈë±àÂëÎª UTF-8£¨¿ÉÑ¡£©
+    // è®¾ç½®è¾“å…¥ç¼–ç ä¸º UTF-8ï¼ˆå¯é€‰ï¼‰
     SetConsoleCP(CP_UTF8);
 #endif // WIN32
 
