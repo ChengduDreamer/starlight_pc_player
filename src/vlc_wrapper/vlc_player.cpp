@@ -51,20 +51,6 @@ FILE* g_libvlc_file_ = nullptr;
 int	OpenMedia(void* opaque, void** datap, uint64_t* sizep) {
 
 	std::cout << "---------------------------------------------------------------------OpenMedia" << std::endl;
-	/*QString* path_ptr = (QString*)(opaque);
-	QString media_qpath = *path_ptr;
-	media_qpath = media_qpath.replace("\\", "/");
-	qDebug() << "media_qpath:" << media_qpath;
-	std::string media_path = media_qpath.toStdString();
-
-	g_libvlc_file_ = fopen(media_path.c_str(), "rb");
-
-	fseek(g_libvlc_file_, 0, SEEK_END);
-	auto size = ftell(g_libvlc_file_);
-	fseek(g_libvlc_file_, 0, SEEK_SET);
-
-	*sizep = size;
-	*datap = g_libvlc_file_;*/
 	auto file_size_res = local_media_file_ptr_->Size();
 	if (file_size_res.has_value()) {
 		*sizep = file_size_res.value();
@@ -74,45 +60,19 @@ int	OpenMedia(void* opaque, void** datap, uint64_t* sizep) {
 }
 
 ssize_t ReadMedia(void* opaque, unsigned char* buf, size_t len) {
-
 	std::cout << "---------------------------------------------------------------------ReadMedia" << std::endl;
-
-	/*size_t readed_size = fread(buf, 1, len, g_libvlc_file_);
-
-	if (0 == readed_size) {
-		if (feof(g_libvlc_file_)) {
+	auto data_ptr = local_media_file_ptr_->Read(len);
+	if (!data_ptr) {
+		if (local_media_file_ptr_->IsEnd()) {
 			return 0;
 		}
-		else {
-			return -1;
-		}
+		return -1;
 	}
-
-	return readed_size;*/
-
-	auto readed_size_res = local_media_file_ptr_->Read(buf, len);
-	if (readed_size_res.has_value()) {
-		uint64_t readed_size = readed_size_res.value();
-		if (0 == readed_size) {
-			if (local_media_file_ptr_->IsEnd()) {
-				return 0;
-			}
-			return -1;
-		}
-		return readed_size;
-	} 
-	return -1;
-	
+	memcpy(buf, data_ptr->CStr(), data_ptr->Size());
+	return data_ptr->Size();
 }
 int	SeekMedia(void* opaque, uint64_t offset) {
-
 	std::cout << "---------------------------------------------------------------------SeekMedia" << std::endl;
-
-	/*if (0 == fseek(g_libvlc_file_, offset, SEEK_SET)) {
-		return 0;
-	}
-	return -1;*/
-
 	if (local_media_file_ptr_->Seek(offset)) {
 		return 0;
 	}
@@ -120,14 +80,8 @@ int	SeekMedia(void* opaque, uint64_t offset) {
 }
 
 void CloseMedia(void* opaque) {
-
 	std::cout << "---------------------------------------------------------------------CloseMedia" << std::endl;
-
-	/*fclose(g_libvlc_file_);
-	g_libvlc_file_ = nullptr;*/
-
 	local_media_file_ptr_->Close();
-
 }
 
 VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : context_(context), hwnd_(hwnd) {
