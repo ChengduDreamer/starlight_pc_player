@@ -17,3 +17,6 @@
 [submodule "3rdparty/whiteboard"]
 	path = 3rdparty/whiteboard
 	url = git@github.com:ChengduDreamer/whiteboard.git
+[submodule "3rdparty/poco"]
+	path = 3rdparty/poco
+	url = https://github.com/pocoproject/poco.git
