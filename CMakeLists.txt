@@ -81,6 +81,10 @@ set(src_SOURCES
 	src/media_operation/media_operation.cpp
 	src/media_operation/image_panel.cpp
 	src/vlc_wrapper/vlc_player.cpp
+	src/customize_io/file_get_base.cpp
+    src/customize_io/file_get_http.cpp
+    src/customize_io/file_get_http_impl.cpp
+    src/customize_io/file_get_local.cpp
 	ico.rc
 	resources.qrc
 	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/mainwindow/mainwindow.qrc
@@ -140,7 +144,12 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame draw_board libvlc libvlccore yk_base_lib)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame draw_board libvlc libvlccore yk_base_lib 
+	Poco::Foundation
+    Poco::Util
+    Poco::Net
+	Poco::NetSSL
+)
 
 configure_file(${VLC_LIB_ROOT}/libvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libvlc.dll COPYONLY)
 configure_file(${VLC_LIB_ROOT}/npvlc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/npvlc.dll COPYONLY)
