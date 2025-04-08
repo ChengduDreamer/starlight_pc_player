@@ -11,13 +11,15 @@ extern "C" {
 #include <memory>
 #include <functional>
 #include <qstring.h>
+#include <qobject.h>
 #include <string>
 namespace yk {
 
 class Context;
 class MessageListener;
 
-class VLCPlayer {
+class VLCPlayer : public QObject {
+	Q_OBJECT
 public:
 	static std::shared_ptr<VLCPlayer> Make(const std::shared_ptr<Context>& context, HWND hwnd) {
 		return std::make_shared<VLCPlayer>(context, hwnd);

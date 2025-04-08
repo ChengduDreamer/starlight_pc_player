@@ -6,6 +6,7 @@
 #include <mutex>
 #include <qstring.h>
 #include <qdebug.h>
+#include <qtimer.h>
 #include "cpp_base_lib/time_ext.h"
 #include "cpp_base_lib/file.h"
 #include "cpp_base_lib/data.h"
@@ -85,6 +86,7 @@ void CloseMedia(void* opaque) {
 }
 
 VLCPlayer::VLCPlayer(const std::shared_ptr<Context>& context, HWND hwnd) : context_(context), hwnd_(hwnd) {
+	QObject();
 	msg_listener_ = context_->CreateMessageListener();
 	Init();
 	RegisterEvents();
@@ -99,7 +101,6 @@ VLCPlayer::~VLCPlayer() {
 bool VLCPlayer::Init() {
 	const char* vlc_args[] = {
 		"--sub-filter=logo",
-		"--mouse-hide-timeout=2147483647",
 		"--no-xlib",                // 避免使用 Xlib（在某些平台上可能需要）
 		"--vout=opengl"           // 指定使用 OpenGL 作为视频输出
 	};
@@ -114,6 +115,61 @@ bool VLCPlayer::Init() {
 		libvlc_log_set(libvlc_instance_, CustomLibVlcLogCallback, static_cast<void*>(g_custom_libvlc_log_file_ptr_));
 	}
 	return true;
+}
+
+// 640 368
+
+void set_marquee(libvlc_media_player_t* player, const char* text, int position) {
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Enable, 1);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Color, 0xFF0000); // 白色
+
+	
+
+	std::string spaces(28 * 4, ' '); // 生成25个空格
+	QString spaces_str = QString::fromStdString(spaces);
+	//QString text_str = QStringLiteral("水%1试 \n\n\n\n\n\n\n\n\n\n\n\n\n\n测").arg(spaces_str);
+
+	QString text_str = QStringLiteral("水\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t\n\t测");
+
+	//QString text_str = QStringLiteral("<span style='line-height: 2em;'>水<br><br><br><br><br><br><br><br><br><br><br><br>测</span>");
+
+	std::string text_str_std = text_str.toStdString();
+
+	libvlc_video_set_marquee_string(player, libvlc_marquee_Text, text_str_std.c_str());
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Opacity, 255);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Size, 20);
+	//libvlc_video_set_marquee_int(player, libvlc_marquee_Position, 0);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Timeout, 10); // 持续显示
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Refresh, 100); // 不刷新
+	
+	 // 新增：强制刷新显示
+	/*libvlc_video_set_marquee_int(player, libvlc_marquee_X, 10);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Y, 10);*/
+
+	// 设置水印距离左上角的偏移量（单位：像素）
+	static int x = 20;
+	libvlc_video_set_marquee_int(player, libvlc_marquee_X, 0);  // 水平右移20px
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Y, 0);  // 垂直下移30px
+}
+
+void set_marquee2(libvlc_media_player_t* player, const char* text, int position) {
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Enable, 1);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Color, 0xFF0000); // 白色
+	libvlc_video_set_marquee_string(player, libvlc_marquee_Text, "222\\n22222");
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Opacity, 255);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Size, 20);
+	//libvlc_video_set_marquee_int(player, libvlc_marquee_Position, 0);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Timeout, 10000); // 持续显示
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Refresh, 100); // 不刷新
+
+	 // 新增：强制刷新显示
+	/*libvlc_video_set_marquee_int(player, libvlc_marquee_X, 10);
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Y, 10);*/
+
+	// 设置水印距离左上角的偏移量（单位：像素）
+	static int x = 20;
+	libvlc_video_set_marquee_int(player, libvlc_marquee_X, 300);  // 水平右移20px
+	libvlc_video_set_marquee_int(player, libvlc_marquee_Y, 400);  // 垂直下移30px
 }
 
 bool VLCPlayer::OpenMediaFile(const QString& url) {
@@ -179,9 +235,52 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	}
 	AttachEvents();
 
+
+	//// 启用水印
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Enable, 1);
+
+	//// 设置水印文本
+	//libvlc_video_set_marquee_string(libvlc_media_player_, libvlc_marquee_Text, "11111111111");
+
+	//// 设置文字颜色 (RGB格式)
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Color, 0xFF0000); // 白色
+
+	//// 设置透明度 (0=完全透明, 255=完全不透明)
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Opacity, 255);
+
+	//// 设置字体大小
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Size, 30);
+
+	//// 设置位置 (0=居中, 1=左上, 2=右上, 3=左下, 4=右下)
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Position, 1); // 左上角
+
+	//// 设置显示时间 (单位：毫秒，0 表示持续显示)
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Timeout, 10000); // 显示10秒
+
+	//// 设置刷新间隔 (单位：毫秒，0 表示不刷新)
+	//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Refresh, 0); // 禁止刷新
+
+
+	//set_marquee(libvlc_media_player_, nullptr, 1);
+
+
 	libvlc_video_set_mouse_input(libvlc_media_player_, false);
 
 	libvlc_video_set_key_input(libvlc_media_player_, false);
+
+
+	QTimer* timer = new QTimer();
+	connect(timer, &QTimer::timeout, this, [=]() {
+		//libvlc_video_set_marquee_int(libvlc_media_player_, libvlc_marquee_Position, 1); // 左上角
+		
+	
+		set_marquee(libvlc_media_player_, nullptr, 1);
+		//Sleep(100);
+		
+	});
+	timer->setInterval(10);
+	timer->start();
+
 
 	libvlc_media_parse(libvlc_media_);
 

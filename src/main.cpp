@@ -37,8 +37,7 @@ int main(int argc, char* argv[])
     std::shared_ptr<MainWindow> main_window = std::make_shared<MainWindow>(context);
     main_window->show();
 
-   /* DrawBoardWidget w;
-    w.show();*/
+    // 研究下APIMonitor的实现，看看如何防录屏
 
     return a.exec();
 }
