@@ -1,54 +1,49 @@
 <RCC>
     <qresource prefix="/">
-		<file>resource/control/fullscreen_exit_normal.svg</file>
-		<file>resource/control/fullscreen_exit_hover.svg</file>
-		<file>resource/control/fullscreen_exit_press.svg</file>
-
-		<file>resource/control/pause_normal.svg</file>
-		<file>resource/control/pause_hover.svg</file>
-		<file>resource/control/pause_press.svg</file>
-
-		<file>resource/control/play_normal.svg</file>
-		<file>resource/control/play_hover.svg</file>
-		<file>resource/control/play_press.svg</file>
-
-		<file>resource/control/skip_next_normal.svg</file>
-		<file>resource/control/skip_next_hover.svg</file>
-		<file>resource/control/skip_next_press.svg</file>
-
-		<file>resource/control/skip_previous_normal.svg</file>
-		<file>resource/control/skip_previous_hover.svg</file>
-		<file>resource/control/skip_previous_press.svg</file>
-
-		<file>resource/control/stop_normal.svg</file>
-		<file>resource/control/stop_hover.svg</file>
-		<file>resource/control/stop_press.svg</file>
-
-		<file>resource/control/volume_normal.svg</file>
-		<file>resource/control/volume_hover.svg</file>
-		<file>resource/control/volume_press.svg</file>
-
-		<file>resource/control/volume_off_normal.svg</file>
-		<file>resource/control/volume_off_hover.svg</file>
-		<file>resource/control/volume_off_press.svg</file>
-
-		<file>resource/control/fullscreen_normal.svg</file>
-		<file>resource/control/fullscreen_hover.svg</file>
-		<file>resource/control/fullscreen_press.svg</file>
-
-		<file>resource/play_before/open_file_normal.svg</file>
-		<file>resource/play_before/open_file_hover.svg</file>
-		<file>resource/play_before/open_file_press.svg</file>
-
-		<file>resource/window/close.svg</file>
-		<file>resource/window/fullscreen.svg</file>
-		<file>resource/window/maximize.svg</file>
-		<file>resource/window/minimize.svg</file>
-		<file>resource/window/more-line.svg</file>
-		<file>resource/window/restore.svg</file>
-
-		<file>resource/media/capture_normal.svg</file>
-		<file>resource/media/capture_hover.svg</file>
-		<file>resource/media/capture_pressed.svg</file>
+        <file>resource/control/fullscreen_exit_normal.svg</file>
+        <file>resource/control/fullscreen_exit_hover.svg</file>
+        <file>resource/control/fullscreen_exit_press.svg</file>
+        <file>resource/control/pause_normal.svg</file>
+        <file>resource/control/pause_hover.svg</file>
+        <file>resource/control/pause_press.svg</file>
+        <file>resource/control/play_normal.svg</file>
+        <file>resource/control/play_hover.svg</file>
+        <file>resource/control/play_press.svg</file>
+        <file>resource/control/skip_next_normal.svg</file>
+        <file>resource/control/skip_next_hover.svg</file>
+        <file>resource/control/skip_next_press.svg</file>
+        <file>resource/control/skip_previous_normal.svg</file>
+        <file>resource/control/skip_previous_hover.svg</file>
+        <file>resource/control/skip_previous_press.svg</file>
+        <file>resource/control/stop_normal.svg</file>
+        <file>resource/control/stop_hover.svg</file>
+        <file>resource/control/stop_press.svg</file>
+        <file>resource/control/volume_normal.svg</file>
+        <file>resource/control/volume_hover.svg</file>
+        <file>resource/control/volume_press.svg</file>
+        <file>resource/control/volume_off_normal.svg</file>
+        <file>resource/control/volume_off_hover.svg</file>
+        <file>resource/control/volume_off_press.svg</file>
+        <file>resource/control/fullscreen_normal.svg</file>
+        <file>resource/control/fullscreen_hover.svg</file>
+        <file>resource/control/fullscreen_press.svg</file>
+        <file>resource/play_before/open_file_normal.svg</file>
+        <file>resource/play_before/open_file_hover.svg</file>
+        <file>resource/play_before/open_file_press.svg</file>
+        <file>resource/window/close.svg</file>
+        <file>resource/window/fullscreen.svg</file>
+        <file>resource/window/maximize.svg</file>
+        <file>resource/window/minimize.svg</file>
+        <file>resource/window/more-line.svg</file>
+        <file>resource/window/restore.svg</file>
+        <file>resource/media/capture_normal.svg</file>
+        <file>resource/media/capture_hover.svg</file>
+        <file>resource/media/capture_pressed.svg</file>
+        <file>resource/list/clear_normal.svg</file>
+        <file>resource/list/add_file_hover.svg</file>
+        <file>resource/list/add_file_normal.svg</file>
+        <file>resource/list/add_file_press.svg</file>
+        <file>resource/list/clear_hover.svg</file>
+        <file>resource/list/clear_press.svg</file>
     </qresource>
 </RCC>

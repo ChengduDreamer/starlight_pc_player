@@ -1,0 +1,1 @@
+EventBus.lib 是由vs2019 x64 编译的, 因为播放器项目引入poco后，经常出现找不到EventBus.lib的情况，时间原因，这里先放一个编译好的

@@ -107,10 +107,8 @@ void MainWindow::InitView() {
     
 	bg_page_ = new BgPage(this);
     bg_page_->setMouseTracking(true);
-    //setCentralWidget(bg_page_);
 	bg_page_->setContentsMargins(0,0,0,0);
-	//bg_page_->setStyleSheet("QWidget {background-color: #ff6632;}");
-    bg_page_->setStyleSheet("QWidget {background-color: #0000ff;}");
+    bg_page_->setStyleSheet("QWidget {background-color: #000000;}");
     bg_page_->setMouseTracking(true);
     bg_page_->setMinimumHeight(200);
 	main_hbox_layout_ = new QHBoxLayout();
@@ -128,22 +126,20 @@ void MainWindow::InitView() {
     
 	play_vbox_layout_->addWidget(play_widget_, 8);
 	play_vbox_layout_->addWidget(play_control_widget_, 1);
-#if 0
+
 	list_vbox_layout_ = new QVBoxLayout();
 	list_vbox_layout_->setSpacing(0);
 	list_vbox_layout_->setContentsMargins(0, 0, 0, 0);
 	list_widget_ = new PlayListWidget(this);
 	list_vbox_layout_->addWidget(list_widget_);
-#endif
-	main_hbox_layout_->addLayout(play_vbox_layout_, 6);
-	///main_hbox_layout_->addLayout(list_vbox_layout_, 1);
 
-    /*image_view_ = ImageView::Make(context_);
-    image_view_->hide();*/
+	main_hbox_layout_->addLayout(play_vbox_layout_, 6);
+	main_hbox_layout_->addLayout(list_vbox_layout_, 1);
+
 
     image_panel_ = new ImagePanel(context_);
     image_panel_->hide();
-    //image_panel_->show();
+
 }
 
 void MainWindow::InstallWindowAgent() {
@@ -289,10 +285,7 @@ void MainWindow::RegisterEvents() {
         });
     });
 
-    // test
-
-    //auto image_view = new ImageView(context_);
-    //image_view->hide();
+  
     msg_listener_->Listen<AppCaptureImageCompletedMsg>([=, this](const AppCaptureImageCompletedMsg& event) {
         context_->PostUITask([=, this]() {
             qDebug() << "mainwindow AppCaptureImageCompletedMsg";
@@ -300,10 +293,6 @@ void MainWindow::RegisterEvents() {
                 qDebug() << "mainwindow AppCaptureImageCompletedMsg error";
                 return;
             }
-            /*image_view->SetPixmap(event.pixmap);
-            image_view->show();*/
-            //image_panel_->show();
-
             image_panel_->showMaximized();
         });
     });

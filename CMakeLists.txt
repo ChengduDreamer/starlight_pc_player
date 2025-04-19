@@ -78,6 +78,9 @@ set(src_SOURCES
 	src/widget/play_view.cpp
 	src/widget/qdrag_widget.cpp
 	src/widget/play_before_widget.cpp
+	src/widget/play_list/media_list_widget.cpp
+	src/widget/play_list/list_widget.cpp
+	src/widget/play_list/list_func_page.cpp
 	src/media_operation/media_operation.cpp
 	src/media_operation/image_panel.cpp
 	src/vlc_wrapper/vlc_player.cpp
@@ -117,6 +120,7 @@ include_directories(
 link_directories(
 		${OPENSSL_ROOT_DIR}/lib/VC/static
 		${VLC_LIB_ROOT}/sdk/lib
+		${CMAKE_SOURCE_DIR}/prebuild
 )
 
 set(GENERATE_SETUP false)

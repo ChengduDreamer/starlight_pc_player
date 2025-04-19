@@ -30,7 +30,7 @@ void PlayControlWidget::InitView() {
 	setFixedHeight(60);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	setAttribute(Qt::WA_StyledBackground);
-	setStyleSheet("QWidget {background-color: #000000;}");
+	setStyleSheet("QWidget {background-color: #090909;}");
 
 	QVBoxLayout* main_vbox_layout = new QVBoxLayout(this);
 	main_vbox_layout->setAlignment(Qt::AlignTop);
