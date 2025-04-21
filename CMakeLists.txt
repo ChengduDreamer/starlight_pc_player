@@ -61,8 +61,11 @@ include_directories(${CMAKE_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/3rdparty/asio2/include
 					${CMAKE_SOURCE_DIR}/3rdparty/asio2/3rd
 					${CMAKE_SOURCE_DIR}/src/widget
+					${CMAKE_SOURCE_DIR}/src/data_base
 					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/whiteboard/3rdparty/kk_qu_ui/src
 					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/whiteboard/src
+					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/sqlitecpp
+					${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/sqlite_orm_include
 )
 
 set(src_SOURCES
@@ -88,6 +91,7 @@ set(src_SOURCES
     src/customize_io/file_get_http.cpp
     src/customize_io/file_get_http_impl.cpp
     src/customize_io/file_get_local.cpp
+	src/data_base/data_base.cpp
 	ico.rc
 	resources.qrc
 	${CMAKE_SOURCE_DIR}/3rdparty/qwindowkit/examples/mainwindow/mainwindow.qrc
@@ -148,7 +152,7 @@ target_link_libraries(test_01 libvlc libvlccore)
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level=\'requireAdministrator\' uiAccess=\'false\'\"")
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame draw_board libvlc libvlccore yk_base_lib 
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Network Qt5::Svg QWKCore QWKWidgets WidgetFrame draw_board libvlc libvlccore yk_base_lib SQLiteCpp
 	Poco::Foundation
     Poco::Util
     Poco::Net

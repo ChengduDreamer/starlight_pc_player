@@ -137,14 +137,14 @@ namespace yk {
             }
 
             Poco::Net::HTTPRequest range_request(Poco::Net::HTTPRequest::HTTP_GET, path);
-            range_request.set("Range", "bytes=0-0"); // ÇëÇóµÚÒ»¸ö×Ö½Ú
+            range_request.set("Range", "bytes=0-0"); // è¯·æ±‚ç¬¬ä¸€ä¸ªå­—èŠ‚
 
             client_session->sendRequest(range_request);
             Poco::Net::HTTPResponse range_response;
             client_session->receiveResponse(range_response);
 
             if (range_response.getStatus() == Poco::Net::HTTPResponse::HTTP_PARTIAL_CONTENT) {
-                return {true}; // ·şÎñÆ÷Ö§³Ö Range ÇëÇó
+                return {true}; // æœåŠ¡å™¨æ”¯æŒ Range è¯·æ±‚
             }
             return {false};
         }

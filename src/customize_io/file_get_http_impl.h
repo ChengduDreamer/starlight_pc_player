@@ -38,9 +38,9 @@ namespace yk {
 		std::string uri_path_;
 		std::string uri_domain_;
 		
-		int64_t size_ = -1;       // ÎÄ¼ş×Ü´óĞ¡£¨³õÊ¼Î´Öª£©
-		int64_t position_ = 0;    // µ±Ç°¶ÁÈ¡Î»ÖÃ
-		int timeout_s_ = 12;      // ³¬Ê±Ê±¼ä£¨Ä¬ÈÏ 6 Ãë£©
+		int64_t size_ = -1;       // æ–‡ä»¶æ€»å¤§å°ï¼ˆåˆå§‹æœªçŸ¥ï¼‰
+		int64_t position_ = 0;    // å½“å‰è¯»å–ä½ç½®
+		int timeout_s_ = 12;      // è¶…æ—¶æ—¶é—´ï¼ˆé»˜è®¤ 6 ç§’ï¼‰
 	};
 
 

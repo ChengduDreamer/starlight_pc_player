@@ -13,3 +13,5 @@ add_subdirectory(whiteboard)
 
 set(ENABLE_NETSSL ON CACHE BOOL "Enable NetSSL crypto engine")
 add_subdirectory(poco)
+
+add_subdirectory(sqlitecpp)
