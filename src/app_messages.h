@@ -162,4 +162,9 @@ public:
 	QPixmap pixmap;
 };
 
+class AppPlayMediaMsg {
+public:
+    QString url;
+};
+
 }

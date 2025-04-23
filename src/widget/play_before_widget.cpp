@@ -11,6 +11,7 @@
 #include "yk_line_edit.h"
 #include "app_messages.h"
 #include "context.h"
+#include "popup_widget/popup_widget.h"
 
 static const QString kOpenMediaDir = "yk_open_media_dir";
 
@@ -181,7 +182,12 @@ void PlayBeforeWidget::InitSigChannel() {
 	connect(open_url_btn_, &QPushButton::clicked, this, [=]() {
 		auto url_link = url_edit_->text().trimmed();
 		if (url_link.isEmpty()) {
-			// to do 弹窗
+			
+			PopupWidget popup_widget{};
+			popup_widget.SetData(QStringLiteral("提示"), QStringLiteral("输入的播放地址为空"));
+			popup_widget.DelayClose(2000);
+			popup_widget.exec();
+
 			return;
 		}
 		AppOpenUrlMsg msg{ .url = url_link };

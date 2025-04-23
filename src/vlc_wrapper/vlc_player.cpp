@@ -185,16 +185,8 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	if (use_custom_io_) {
 		// 自定义IO
 		if (is_local_file) {
-
-			//local_file_ptr = tc::File::OpenForReadB(url_str);
-
-			
-
 			libvlc_media_ = libvlc_media_new_callbacks(
 				libvlc_instance_, OpenMedia, ReadMedia, SeekMedia, CloseMedia,
-				/*(void*)local_file_ptr.get()*/
-				//(void*)url_cstr
-				//(void*)&media_file_url_
 				nullptr
 			);
 		}
@@ -227,6 +219,7 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 	}
 	AttachEvents();
 
+
 	libvlc_video_set_mouse_input(libvlc_media_player_, false);
 
 	libvlc_video_set_key_input(libvlc_media_player_, false);
@@ -253,6 +246,9 @@ bool VLCPlayer::OpenMediaFile(const QString& url) {
 
 	AppGotDurationMsg duration_msg{.duration = duration_ };
 	context_->SendAppMessage(duration_msg);
+
+	AppPlayMediaMsg play_msg{.url = media_url };
+	context_->SendAppMessage(play_msg);
 	return true;
 }
 

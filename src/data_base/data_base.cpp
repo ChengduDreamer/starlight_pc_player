@@ -10,7 +10,6 @@ namespace yk {
 
 	sqlite3* db = nullptr;
 
-
 	const std::string kDBDeviceNameKey = "devicename";
 
 	const std::string kDBEncryKey = "encrykey";
@@ -21,11 +20,12 @@ namespace yk {
 	auto MakeMediaListStorege() {
 		return  make_storage(kDBName,
 			make_table("media_list",
-				make_column("id", &Database::MediaRecord::id, primary_key().autoincrement()),
-				make_column("name", &Database::MediaRecord::name),
-				make_column("url", &Database::MediaRecord::url),
-				make_column("add_time", &Database::MediaRecord::add_time),
-				make_column("last_play_time", &Database::MediaRecord::last_play_time)
+				make_column("id", &MediaRecord::id, primary_key().autoincrement()),
+				make_column("last_pos", &MediaRecord::last_pos),
+				make_column("name", &MediaRecord::name),
+				make_column("url", &MediaRecord::url),
+				make_column("add_time", &MediaRecord::add_time),
+				make_column("last_play_time", &MediaRecord::last_play_time)
 			));
 	}
 
@@ -110,10 +110,6 @@ namespace yk {
 		sqlite3_finalize(stmt);
 	}
 
-
-	/*static std::string DBName() {
-		return db_name_default;
-	}*/
 	//展示方案
 	const std::string db_display_scheme_key = "displayscheme";
 
@@ -143,11 +139,6 @@ namespace yk {
 	)";
 
 
-	
-
-
-	
-
 	Database::Database() {
 		Init();
 	}
@@ -173,7 +164,7 @@ namespace yk {
 
 		rc = sqlite3_exec(db, create_media_list_table.c_str(), callback, 0, &zErrMsg);
 		if (rc != SQLITE_OK) {
-			YK_LOGE("{} create_users_table SQL error is {}", __func__, zErrMsg);
+			YK_LOGE("{} create_media_list_table SQL error is {}", __func__, zErrMsg);
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 		}
@@ -283,6 +274,13 @@ namespace yk {
 		}
 	}
 
+	std::tuple<bool, std::string> Database::InsertMediaRecord(std::shared_ptr<MediaRecord> record_ptr) {
+		if (!record_ptr) {
+			return {false, "record_ptr is nullptr"};
+		}
+		return InsertMediaRecord(record_ptr->name, record_ptr->url);
+	}
+
 	std::tuple<bool, std::string> Database::InsertMediaRecord(const std::string& name, const std::string& url) {
 		try {
 			auto storage = MakeMediaListStorege();
@@ -291,7 +289,7 @@ namespace yk {
 			if (!ids.empty()) {
 				return { false, "Media Record exists" };
 			}
-			MediaRecord new_record{ -1, name, url };
+			MediaRecord new_record{ .id =  -1, .name = name, .url = url };
 			new_record.add_time = new_record.last_play_time = TimeExt::GetCurrentTimestamp() / 1000;
 			std::lock_guard<std::mutex> lck{ mutex_ };
 			int id = storage.insert(new_record);
@@ -347,11 +345,11 @@ namespace yk {
 		}
 	}
 
-	std::tuple<bool, std::string, std::vector<Database::MediaRecord>> Database::GetMediaRecordList() {
+	std::tuple<bool, std::string, std::vector<MediaRecord>> Database::GetMediaRecordList() {
 		try {
 			auto storage = MakeMediaListStorege();
 			std::lock_guard<std::mutex> lck{ mutex_ };
-			auto results = storage.get_all<Database::MediaRecord>();
+			auto results = storage.get_all<MediaRecord>();
 			if (results.empty()) {
 				return { false, "The MediaRecordList is null", {} };
 			}

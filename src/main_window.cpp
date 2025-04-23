@@ -130,7 +130,7 @@ void MainWindow::InitView() {
 	list_vbox_layout_ = new QVBoxLayout();
 	list_vbox_layout_->setSpacing(0);
 	list_vbox_layout_->setContentsMargins(0, 0, 0, 0);
-	list_widget_ = new PlayListWidget(this);
+	list_widget_ = new PlayListWidget(context_, this);
 	list_vbox_layout_->addWidget(list_widget_);
 
 	main_hbox_layout_->addLayout(play_vbox_layout_, 6);

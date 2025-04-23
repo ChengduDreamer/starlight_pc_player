@@ -9,6 +9,7 @@
 
 #include "qdrag_widget.h"
 #include "draw_board/draw_board_widget.h"
+#include "data_base/data_base.h"
 
 using namespace yk;
 
@@ -33,6 +34,7 @@ int main(int argc, char* argv[])
         YK_LOGE("Context init error.");
         return -1;
     }
+    Database::Instance();
 
     std::shared_ptr<MainWindow> main_window = std::make_shared<MainWindow>(context);
     main_window->show();

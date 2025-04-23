@@ -2,10 +2,11 @@
 #include <qboxlayout.h>
 #include "play_list/media_list_widget.h"
 #include "play_list/list_func_page.h"
-
+#include "context.h"
+#include "app_messages.h"
 namespace yk {
 
-PlayListWidget::PlayListWidget(QWidget* parent) : QWidget(parent) {
+PlayListWidget::PlayListWidget(std::shared_ptr<Context> context, QWidget* parent) : QWidget(parent), context_(context) {
 	
 	InitView();
 }
@@ -23,7 +24,7 @@ void PlayListWidget::InitView() {
     vbox_main_layout_->setContentsMargins(0, 0, 0, 0);
     vbox_main_layout_->setSpacing(0);
 
-	media_list_widget_ = new MediaListWidget(this); 
+	media_list_widget_ = new MediaListWidget(context_, this);
 	vbox_main_layout_->addWidget(media_list_widget_);
 
 	list_func_page_ = new ListFuncPage(this);

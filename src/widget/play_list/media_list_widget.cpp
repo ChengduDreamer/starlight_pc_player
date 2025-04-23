@@ -1,4 +1,5 @@
 #include "media_list_widget.h"
+#include <iostream>
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
@@ -7,6 +8,12 @@
 #include <qurlquery.h>
 #include <qpainter.h>
 #include <qboxlayout.h>
+#include "data_base/data_base.h"
+#include "cpp_base_lib/yk_logger.h"
+#include "cpp_base_lib/msg_notifier.h"
+#include "context.h"
+#include "app_messages.h"
+
 
 static QString kCallBackHomePageButtonStyle = "QPushButton{border:0px groove gray;border-radius:6px;background-color:#4E99EC;padding:2px 4px;border-style: solid;\
 		font-family:Microsoft YaHei;font-size:%1px; color:#ffffff;}";
@@ -46,7 +53,8 @@ namespace yk {
 
 	void MediaItemWidget::SetData(const QString& name, const QString& url) {
 		name_lab_->setText(name);
-		url_ = url;
+		url_ = url; 
+		name_ = name;
 	}
 
 	void MediaItemWidget::InitView() {
@@ -73,8 +81,9 @@ namespace yk {
 	}
 
 	//列表
-	MediaListWidget::MediaListWidget(QWidget* parent) : ListWidget(parent) {
+	MediaListWidget::MediaListWidget(const std::shared_ptr<Context>& context, QWidget* parent) : ListWidget(parent), context_(context) {
 		InitView();
+		RegisterEvents();
 	}
 
 	void MediaListWidget::InitView() {
@@ -108,5 +117,44 @@ namespace yk {
 		this->setItemWidget(item, pItem);
 		item->setHidden(true);
 		return item;
+	}
+
+	void MediaListWidget::AddMediRecord(std::shared_ptr<MediaRecord> record_ptr) {
+		if (!record_ptr) {
+			return;
+		}
+		auto record_exist_res = Database::Instance()->ExistMediaRecord(record_ptr->name, record_ptr->url);
+		std::string err_msg = std::get<1>(record_exist_res);
+		if (!err_msg.empty()) {
+			YK_LOGE("ExistMediaRecord error : {}", err_msg);
+		} 
+		bool exist = std::get<0>(record_exist_res);
+        if (exist) {
+			YK_LOGI("MediaRecord exist : {}", record_ptr->name);
+			return;
+		}
+		Database::Instance()->InsertMediaRecord(record_ptr);
+
+		auto item = new MediaItemWidget(0, this);
+		item->SetData(QString::fromStdString(record_ptr->name), QString::fromStdString(record_ptr->url));
+		AddItem(item);
+	}
+
+	void MediaListWidget::RegisterEvents() {
+		msg_listener_ = context_->CreateMessageListener();
+		msg_listener_->Listen<AppPlayMediaMsg>([=, this](const AppPlayMediaMsg& event) {
+
+			std::cout << "recv AppPlayMediaMsg : url is " << event.url.toStdString() << std::endl;
+
+			context_->PostUITask([=, this]() {
+				
+				auto record = MediaRecord::Make("xxx", "xxxxxxx");
+
+
+
+				AddMediRecord(record);
+
+			});
+		});
 	}
 }
